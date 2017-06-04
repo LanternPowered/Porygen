@@ -1,0 +1,75 @@
+plugins {
+    id "com.github.hierynomus.license" version "0.13.1"
+    id "org.spongepowered.plugin" version "0.8"
+}
+
+// Basic project information
+group = 'org.lanterpowered'
+archivesBaseName = 'porygen'
+version = '1.0.0-SNAPSHOT'
+
+defaultTasks 'licenseFormat', 'build'
+
+sponge {
+    plugin {
+        id = "porygen"
+        meta {
+            name = rootProject.name
+            description = "A polygonal world generator. This is the official world generator for Lantern."
+            authors = [ "Cybermaxke" ]
+        }
+    }
+}
+
+// Repositories
+repositories {
+    mavenCentral()
+    maven {
+        url 'http://repo.spongepowered.org/maven'
+    }
+}
+
+// Project dependencies
+dependencies {
+    compile 'org.spongepowered:spongeapi:7.0.0-SNAPSHOT'
+}
+
+def jarBaseName = "${archivesBaseName}-${version}"
+
+jar {
+	archiveName = "${jarBaseName}.jar"
+}
+
+processResources {
+    from 'LICENSE.txt'
+}
+
+task sourceJar(type: Jar) {
+    archiveName = "${jarBaseName}-sources.jar"
+    from sourceSets.main.allSource
+}
+assemble.dependsOn sourceJar
+
+license {
+    header project.file('HEADER.txt')
+    sourceSets = project.sourceSets
+    include '**/*.java'
+
+    strictCheck true
+    ignoreFailures = false
+
+    ext {
+        name = project.name
+        url = project.url
+        organization = project.organization
+    }
+
+    mapping {
+        java = 'SLASHSTAR_STYLE'
+    }
+}
+
+// Gradle version used for generating the Gradle wrapper
+task wrapper(type: Wrapper) {
+    gradleVersion = '3.5'
+}
