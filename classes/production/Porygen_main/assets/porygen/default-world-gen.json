@@ -1,0 +1,8 @@
+{
+    "default": "porygen:overworld",
+    "overworld": "porygen:overworld",
+    "the_end": "porygen:the_end",
+    "nether": "porygen:nether",
+    "amplified": "porygen:amplified",
+    "large_biomes": "porygen:large_biomes"
+}

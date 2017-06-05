@@ -8,6 +8,10 @@ group = 'org.lanterpowered'
 archivesBaseName = 'porygen'
 version = '1.0.0-SNAPSHOT'
 
+// Minimum version of Java required
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
 defaultTasks 'licenseFormat', 'build'
 
 sponge {
