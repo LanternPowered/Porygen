@@ -48,17 +48,18 @@ public class ChunkBasedPointsGenerator implements PointsGenerator {
 
     @Override
     public void generatePoints(World world, Random random, Rectangled rectangle, List<Vector2d> points) {
-        final int minX = ((int) rectangle.getMin().getX()) >> 4;
-        final int minZ = ((int) rectangle.getMin().getY()) >> 4;
-        final int maxX = ((int) rectangle.getMax().getX()) >> 4;
-        final int maxZ = ((int) rectangle.getMax().getY()) >> 4;
+        final int minX = rectangle.getMin().getFloorX() >> 4;
+        final int minZ = rectangle.getMin().getFloorY() >> 4;
+        final int maxX = rectangle.getMax().getFloorX() >> 4;
+        final int maxZ = rectangle.getMax().getFloorY() >> 4;
         final long worldSeed = world.getProperties().getSeed();
         for (int x = minX; x <= maxX; x++) {
             for (int z = minZ; z <= maxZ; z++) {
                 random.setSeed(((long) x * 341873128712L + (long) z * 132897987541L) ^ worldSeed);
                 final int xPos = x << 4;
                 final int zPos = z << 4;
-                this.parent.generatePoints(world, random, new Rectangled(new Vector2d(xPos, zPos), new Vector2d(xPos & 0xf, zPos & 0xf)), points);
+                this.parent.generatePoints(world, random, new Rectangled(new Vector2d(xPos, zPos),
+                        new Vector2d(xPos & 0xf, zPos & 0xf)), points);
             }
         }
     }

@@ -35,14 +35,12 @@ public final class FeatureType extends AbstractCatalogType {
 
     private final Class<? extends Feature> featureClass;
 
-    public FeatureType(String pluginId, String name, Class<? extends Feature> featureClass) {
-        super(pluginId, name);
-        checkNotNull(featureClass, "featureClass");
-        this.featureClass = featureClass;
+    public FeatureType(String id, Class<? extends Feature> featureClass) {
+        this(id, id, featureClass);
     }
 
-    public FeatureType(String pluginId, String id, String name, Class<? extends Feature> featureClass) {
-        super(pluginId, id, name);
+    public FeatureType(String id, String name, Class<? extends Feature> featureClass) {
+        super(id, name);
         checkNotNull(featureClass, "featureClass");
         this.featureClass = featureClass;
     }

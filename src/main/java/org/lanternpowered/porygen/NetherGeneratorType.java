@@ -32,8 +32,8 @@ public class NetherGeneratorType extends PorygenGeneratorType {
     // The maximum generator height of the nether is 128
     public static final int MAX_GENERATOR_HEIGHT = 128;
 
-    NetherGeneratorType(String pluginId, String id, String name) {
-        super(pluginId, id, name);
+    NetherGeneratorType(String id, String name) {
+        super(id, name);
     }
 
     @Override

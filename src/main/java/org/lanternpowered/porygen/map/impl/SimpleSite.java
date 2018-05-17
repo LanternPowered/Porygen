@@ -25,7 +25,7 @@
 package org.lanternpowered.porygen.map.impl;
 
 import com.flowpowered.math.vector.Vector2d;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import org.lanternpowered.porygen.map.Cell;
 import org.lanternpowered.porygen.map.Site;
 
@@ -51,7 +51,7 @@ public class SimpleSite implements Site {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("point", this.point)
                 .toString();
     }

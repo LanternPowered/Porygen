@@ -24,17 +24,17 @@
  */
 package org.lanternpowered.porygen.util;
 
-import static com.google.common.base.Objects.toStringHelper;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.flowpowered.math.vector.Vector2i;
+import com.google.common.base.MoreObjects;
 
 import java.util.Objects;
 
 /**
  * Represents a rectangle.
  */
-public final class Rectanglei {
+public class Rectanglei {
 
     private final Vector2i min;
     private final Vector2i max;
@@ -81,7 +81,7 @@ public final class Rectanglei {
 
     @Override
     public String toString() {
-        return toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("min", this.min)
                 .add("max", this.max)
                 .toString();

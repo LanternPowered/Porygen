@@ -28,6 +28,7 @@ import com.google.inject.Inject;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.game.GameRegistryEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
@@ -51,24 +52,6 @@ public final class PorygenPlugin {
 
     @Listener
     public void onGamePreInit(GamePreInitializationEvent event) {
-        // Register the generator types
-        this.game.getRegistry().register(GeneratorType.class, new OverworldGeneratorType(
-                this.container.getId(), "overworld", "Porygen Overworld"));
-        this.game.getRegistry().register(GeneratorType.class, new NetherGeneratorType(
-                this.container.getId(), "nether", "Porygen Nether"));
-        this.game.getRegistry().register(GeneratorType.class, new TheEndGeneratorType(
-                this.container.getId(), "the_end", "Porygen The End"));
-
-        // TODO
-        // These will just be the same as overworld, but with some custom settings
-        this.game.getRegistry().register(GeneratorType.class, new OverworldGeneratorType(
-                this.container.getId(), "amplified", "Porygen Amplified Overworld"));
-        this.game.getRegistry().register(GeneratorType.class, new OverworldGeneratorType(
-                this.container.getId(), "large_biomes", "Porygen Large Biomes Overworld"));
-
-        // The default-world-gen.json is lantern related, a way to register the porygen
-        // generator types as the default ones. The lantern default ones are flat generator,
-        // this plugin is required for awesomeness.
     }
 
     @Listener
@@ -77,6 +60,23 @@ public final class PorygenPlugin {
 
     @Listener
     public void onGamePostInit(GamePostInitializationEvent event) {
+    }
+
+    @Listener
+    public void onRegisterGeneratorTypes(GameRegistryEvent.Register<GeneratorType> event) {
+        // Register the generator types
+        event.register(new OverworldGeneratorType("overworld", "Porygen Overworld"));
+        event.register(new NetherGeneratorType("nether", "Porygen Nether"));
+        event.register(new TheEndGeneratorType("the_end", "Porygen The End"));
+
+        // TODO
+        // These will just be the same as overworld, but with some custom settings
+        event.register(new OverworldGeneratorType("amplified", "Porygen Amplified Overworld"));
+        event.register(new OverworldGeneratorType("large_biomes", "Porygen Large Biomes Overworld"));
+
+        // The default-world-gen.json is lantern related, a way to register the porygen
+        // generator types as the default ones. The lantern default ones are flat generator,
+        // this plugin is required for awesomeness.
     }
 
     /**

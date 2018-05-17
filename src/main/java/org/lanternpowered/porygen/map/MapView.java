@@ -31,7 +31,7 @@ import java.util.List;
 
 /**
  * Represents a piece of a voronoi {@link Map}. It allows access to all the
- * {@link Cell}s, {@link Triangle}s, etc. that are visible in this {@link MapView}.
+ * {@link Cell}s, etc. that are visible in this {@link MapView}.
  */
 public interface MapView {
 

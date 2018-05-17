@@ -27,6 +27,7 @@ package org.lanternpowered.porygen.util;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.flowpowered.math.vector.Vector2d;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 public class Rectangled {
@@ -49,11 +50,26 @@ public class Rectangled {
         return this.max;
     }
 
+    /**
+     * Gets whether this rectangle contains the
+     * specified coordinates.
+     *
+     * @param point The point coordinates
+     * @return Whether this rectangle contains the coordinates
+     */
     public boolean contains(Vector2d point) {
         checkNotNull(point, "points");
         return contains(point.getX(), point.getY());
     }
 
+    /**
+     * Gets whether this rectangle contains the
+     * specified coordinates.
+     *
+     * @param x The x coordinate
+     * @param y The y coordinate
+     * @return Whether this rectangle contains the coordinates
+     */
     public boolean contains(double x, double y) {
         return x <= this.max.getX() && x >= this.min.getX() &&
                 y <= this.max.getY() && y >= this.min.getY();
@@ -61,7 +77,7 @@ public class Rectangled {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("min", this.min)
                 .add("max", this.max)
                 .toString();

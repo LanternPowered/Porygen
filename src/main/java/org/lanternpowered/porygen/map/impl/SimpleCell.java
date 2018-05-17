@@ -30,9 +30,6 @@ import org.lanternpowered.porygen.map.Site;
 
 import java.util.List;
 
-/**
- * Created by Seppe on 4/06/2017.
- */
 public class SimpleCell implements Cell {
 
     private final Site site;

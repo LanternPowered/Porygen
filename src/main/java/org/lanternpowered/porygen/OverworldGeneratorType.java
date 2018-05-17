@@ -29,8 +29,8 @@ import org.spongepowered.api.world.gen.WorldGenerator;
 
 public class OverworldGeneratorType extends PorygenGeneratorType {
 
-    OverworldGeneratorType(String pluginId, String id, String name) {
-        super(pluginId, id, name);
+    OverworldGeneratorType(String id, String name) {
+        super(id, name);
     }
 
     @Override

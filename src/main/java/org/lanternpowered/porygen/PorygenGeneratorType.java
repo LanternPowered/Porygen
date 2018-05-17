@@ -37,8 +37,8 @@ public abstract class PorygenGeneratorType extends AbstractCatalogType implement
     protected static final DataQuery MINIMAL_SPAWN_HEIGHT = DataQuery.of('.', "Lantern.MinimalSpawnHeight");
     protected static final DataQuery GENERATOR_HEIGHT = DataQuery.of('.', "Lantern.GeneratorHeight");
 
-    protected PorygenGeneratorType(String pluginId, String id, String name) {
-        super(pluginId, id, name);
+    protected PorygenGeneratorType(String id, String name) {
+        super(id, name);
     }
 
     @Override
