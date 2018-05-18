@@ -22,32 +22,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.map.impl.square;
+package org.lanternpowered.porygen.util;
 
-import com.flowpowered.math.vector.Vector2d;
-import org.lanternpowered.porygen.map.Cell;
-import org.lanternpowered.porygen.map.Site;
-import org.lanternpowered.porygen.util.Rectangled;
+public final class Ranged {
 
-import java.util.List;
+    private final double min;
+    private final double max;
 
-public class SquareCell extends Rectangled implements Cell {
-
-    public SquareCell(Vector2d min, Vector2d max) {
-        super(min, max);
+    public Ranged(double min, double max) {
+        this.min = min;
+        this.max = max;
     }
 
-    @Override public Site getSite() {
-        return null;
+    public double getMin() {
+        return this.min;
     }
 
-    @Override
-    public List<Cell> getNeighbors() {
-        return null;
-    }
-
-    @Override
-    public List<Vector2d> getVertices() {
-        return null;
+    public double getMax() {
+        return this.max;
     }
 }

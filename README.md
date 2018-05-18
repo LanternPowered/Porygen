@@ -12,7 +12,7 @@ A polygonal world generator. This is the official world generator that will be u
 ## Clone
 The following steps will ensure your project is cloned properly.
 
-1. `git clone --recursive https://github.com/LanternPowered/Porygen.git`
+1. `git clone https://github.com/LanternPowered/Porygen.git`
 2. `cd Porygen`
 
 ## Building

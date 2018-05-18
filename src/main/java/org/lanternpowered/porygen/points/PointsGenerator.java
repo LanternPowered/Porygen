@@ -25,7 +25,7 @@
 package org.lanternpowered.porygen.points;
 
 import com.flowpowered.math.vector.Vector2d;
-import org.lanternpowered.porygen.cell.CellGenerator;
+import org.lanternpowered.porygen.map.CellGenerator;
 import org.lanternpowered.porygen.map.Cell;
 import org.lanternpowered.porygen.util.Rectangled;
 import org.spongepowered.api.world.World;
@@ -42,7 +42,7 @@ public interface PointsGenerator {
      * @param world The world that will be generated
      * @param random The random that should be used
      * @param rectangle The rectangle that represents the area
-     * @param points The result points
+     * @return The result points
      */
-    void generatePoints(World world, Random random, Rectangled rectangle, List<Vector2d> points);
+    List<Vector2d> generatePoints(World world, Random random, Rectangled rectangle);
 }

@@ -24,9 +24,22 @@
  */
 package org.lanternpowered.porygen.map;
 
-/**
- * Represents the complete map.
- */
-public interface Map extends MapView {
+import com.flowpowered.math.vector.Vector2d;
+import org.lanternpowered.porygen.util.Rectangled;
+import org.spongepowered.api.world.World;
 
+import java.util.List;
+
+/**
+ * A generator that will create {@link Cell}s.
+ */
+public interface CellGenerator {
+
+    /**
+     * Generates {@link Cell}s for the given input point {@link Vector2d}s.
+     *
+     * @param points The points
+     * @return The output cells
+     */
+    List<Cell> generate(World world, Rectangled rectangle, List<Vector2d> points);
 }

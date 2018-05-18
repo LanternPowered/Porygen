@@ -22,23 +22,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.util;
+package org.lanternpowered.porygen.biome;
 
-public final class Range2i {
+import com.flowpowered.math.vector.Vector2i;
+import org.lanternpowered.porygen.map.Cell;
+import org.lanternpowered.porygen.map.CellMap;
+import org.lanternpowered.porygen.map.CellMapView;
+import org.spongepowered.api.world.extent.MutableBiomeVolume;
+import org.spongepowered.api.world.gen.BiomeGenerator;
 
-    private final int min;
-    private final int max;
+public class PorygenBiomeGenerator implements BiomeGenerator {
 
-    public Range2i(int min, int max) {
-        this.min = min;
-        this.max = max;
+    private final CellMap map;
+
+    public PorygenBiomeGenerator(CellMap map) {
+        this.map = map;
     }
 
-    public int getMin() {
-        return this.min;
-    }
+    @Override
+    public void generateBiomes(MutableBiomeVolume buffer) {
+        final Vector2i min = buffer.getBiomeMin().toVector2(true);
+        final Vector2i max = buffer.getBiomeMax().toVector2(true);
 
-    public int getMax() {
-        return this.max;
+        final CellMapView mapView = this.map.getSubView(min, max);
+
+        for (int x = min.getX(); x <= max.getX(); x++) {
+            for (int y = min.getY(); y <= max.getY(); y++) {
+                final Cell cell = mapView.getCell(x, y);
+                // TODO
+            }
+        }
     }
 }

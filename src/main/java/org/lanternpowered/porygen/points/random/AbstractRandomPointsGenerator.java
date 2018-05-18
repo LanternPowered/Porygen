@@ -25,30 +25,30 @@
 package org.lanternpowered.porygen.points.random;
 
 import org.lanternpowered.porygen.points.PointsGenerator;
-import org.lanternpowered.porygen.util.Range2i;
+import org.lanternpowered.porygen.util.Rangei;
 
 @SuppressWarnings("unchecked")
 public abstract class AbstractRandomPointsGenerator<T extends AbstractRandomPointsGenerator> implements PointsGenerator {
 
-    private Range2i points = new Range2i(1, 10);
+    private Rangei points = new Rangei(1, 10);
 
     /**
-     * Gets the {@link Range2i} of points
+     * Gets the {@link Rangei} of points
      * that will be generated.
      *
      * @return The points range
      */
-    public Range2i getPoints() {
+    public Rangei getPoints() {
         return this.points;
     }
 
     /**
-     * Sets the {@link Range2i} of points
+     * Sets the {@link Rangei} of points
      * that will be generated.
      *
      * @param points The points range
      */
-    public T setPoints(Range2i points) {
+    public T setPoints(Rangei points) {
         this.points = points;
         return (T) this;
     }

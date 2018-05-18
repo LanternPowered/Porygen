@@ -48,11 +48,14 @@ public class ChunkBasedPointsGenerator implements PointsGenerator {
     }
 
     @Override
-    public void generatePoints(World world, Random random, Rectangled rectangle, List<Vector2d> points) {
+    public List<Vector2d> generatePoints(World world, Random random, Rectangled rectangle) {
+        final List<Vector2d> points = new ArrayList<>();
+
         final int minX = rectangle.getMin().getFloorX() >> 4;
         final int minZ = rectangle.getMin().getFloorY() >> 4;
         final int maxX = rectangle.getMax().getFloorX() >> 4;
         final int maxZ = rectangle.getMax().getFloorY() >> 4;
+
         final long worldSeed = world.getProperties().getSeed();
         for (int x = minX; x <= maxX; x++) {
             for (int z = minZ; z <= maxZ; z++) {
@@ -64,13 +67,14 @@ public class ChunkBasedPointsGenerator implements PointsGenerator {
                 // When generating points for the edge chunks, points may fall
                 // outside the scope of the original rectangle, filter out those
                 if (x == minX || z == minZ || x == maxX || z == maxZ) {
-                    final List<Vector2d> chunkPoints = new ArrayList<>();
-                    this.parent.generatePoints(world, random, chunkArea, chunkPoints);
-                    chunkPoints.stream().filter(rectangle::contains).forEach(points::add);
+                    this.parent.generatePoints(world, random, chunkArea).stream()
+                            .filter(rectangle::contains).forEach(points::add);
                 } else {
-                    this.parent.generatePoints(world, random, chunkArea, points);
+                    points.addAll(this.parent.generatePoints(world, random, chunkArea));
                 }
             }
         }
+
+        return points;
     }
 }

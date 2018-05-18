@@ -29,6 +29,7 @@ import org.lanternpowered.porygen.points.PointsGenerator;
 import org.lanternpowered.porygen.util.Rectangled;
 import org.spongepowered.api.world.World;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -39,7 +40,9 @@ import java.util.Random;
 public class WhiteNoiseRandomPointsGenerator extends AbstractRandomPointsGenerator<WhiteNoiseRandomPointsGenerator> {
 
     @Override
-    public void generatePoints(World world, Random random, Rectangled rectangle, List<Vector2d> points) {
+    public List<Vector2d> generatePoints(World world, Random random, Rectangled rectangle) {
+        final List<Vector2d> points = new ArrayList<>();
+
         final int min = getPoints().getMin();
         final int max = getPoints().getMax();
 
@@ -59,5 +62,7 @@ public class WhiteNoiseRandomPointsGenerator extends AbstractRandomPointsGenerat
             final double y = minY + random.nextDouble() * dY;
             points.add(new Vector2d(x, y));
         }
+
+        return points;
     }
 }

@@ -22,23 +22,5 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.util;
-
-public final class Range2d {
-
-    private final double min;
-    private final double max;
-
-    public Range2d(double min, double max) {
-        this.min = min;
-        this.max = max;
-    }
-
-    public double getMin() {
-        return this.min;
-    }
-
-    public double getMax() {
-        return this.max;
-    }
-}
+@org.spongepowered.api.util.annotation.NonnullByDefault
+package org.lanternpowered.porygen.biome;

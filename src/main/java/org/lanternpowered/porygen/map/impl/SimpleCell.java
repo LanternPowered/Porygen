@@ -28,14 +28,17 @@ import com.flowpowered.math.vector.Vector2d;
 import org.lanternpowered.porygen.map.Cell;
 import org.lanternpowered.porygen.map.Site;
 
+import java.util.Collections;
 import java.util.List;
 
 public class SimpleCell implements Cell {
 
     private final Site site;
+    private final List<Vector2d> vertices;
 
-    public SimpleCell(Vector2d center) {
+    public SimpleCell(Vector2d center, List<Vector2d> vertices) {
         this.site = new SimpleSite(center, this);
+        this.vertices = Collections.unmodifiableList(vertices);
     }
 
     @Override
@@ -55,6 +58,6 @@ public class SimpleCell implements Cell {
 
     @Override
     public List<Vector2d> getVertices() {
-        return null;
+        return this.vertices;
     }
 }

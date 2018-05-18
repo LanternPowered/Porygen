@@ -28,6 +28,7 @@ import com.flowpowered.math.vector.Vector2d;
 import org.lanternpowered.porygen.util.Rectangled;
 import org.spongepowered.api.world.World;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -93,7 +94,9 @@ public final class BlueNoiseRandomPointsGenerator extends AbstractRandomPointsGe
     }
 
     @Override
-    public void generatePoints(World world, Random random, Rectangled rectangle, List<Vector2d> points) {
+    public List<Vector2d> generatePoints(World world, Random random, Rectangled rectangle) {
+        final List<Vector2d> points = new ArrayList<>();
+
         final int min = getPoints().getMin();
         final int max = getPoints().getMax();
 
@@ -147,5 +150,7 @@ public final class BlueNoiseRandomPointsGenerator extends AbstractRandomPointsGe
             // Add the point
             points.add(new Vector2d(x, y));
         }
+
+        return points;
     }
 }

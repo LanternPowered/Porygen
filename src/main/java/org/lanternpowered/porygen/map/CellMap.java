@@ -22,44 +22,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.map.impl.square;
+package org.lanternpowered.porygen.map;
 
-import com.flowpowered.math.vector.Vector2d;
-import org.lanternpowered.porygen.map.Cell;
-import org.lanternpowered.porygen.map.Map;
-import org.lanternpowered.porygen.map.MapView;
-import org.lanternpowered.porygen.map.Site;
-import org.lanternpowered.porygen.util.Rectangled;
+/**
+ * Represents the complete map.
+ */
+public interface CellMap extends CellMapView {
 
-import java.util.List;
-
-public class SquareMapView implements MapView {
-
-    private final Map parent;
-
-    public SquareMapView(Map parent) {
-        this.parent = parent;
-    }
-
-    @Override
-    public Map getParent() {
-        return this.parent;
-    }
-
-    @Override
-    public MapView getSubView(Rectangled rectangle) {
-        return null;
-    }
-
-    @Override public Cell getCell(Vector2d point) {
-        return null;
-    }
-
-    @Override public List<Cell> getCells() {
-        return null;
-    }
-
-    @Override public List<Site> getSites() {
-        return null;
-    }
 }

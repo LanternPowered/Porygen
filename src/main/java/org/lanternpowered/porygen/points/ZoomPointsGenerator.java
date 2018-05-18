@@ -22,13 +22,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.cell;
+package org.lanternpowered.porygen.points;
 
-import org.lanternpowered.porygen.map.Cell;
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import com.flowpowered.math.vector.Vector2d;
+import org.lanternpowered.porygen.util.Rectangled;
+import org.spongepowered.api.world.World;
+
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
- * A generator that will create {@link Cell}s.
+ * Zooms to a specific area on points from the
+ * underlying {@link PointsGenerator}.
  */
-public interface CellGenerator {
+public class ZoomPointsGenerator implements PointsGenerator {
 
+    private final PointsGenerator parent;
+    private final Vector2d zoomFactor;
+
+    public ZoomPointsGenerator(PointsGenerator parent, Vector2d zoomFactor) {
+        this.parent = checkNotNull(parent, "parent");
+        this.zoomFactor = checkNotNull(zoomFactor, "zoomFactor");
+    }
+
+    @Override
+    public List<Vector2d> generatePoints(World world, Random random, Rectangled rectangle) {
+        return this.parent.generatePoints(world, random, rectangle).stream()
+                .map(point -> point.mul(this.zoomFactor))
+                .filter(rectangle::contains)
+                .collect(Collectors.toList());
+    }
 }

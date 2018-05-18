@@ -25,43 +25,66 @@
 package org.lanternpowered.porygen.map;
 
 import com.flowpowered.math.vector.Vector2d;
+import com.flowpowered.math.vector.Vector2i;
 import org.lanternpowered.porygen.util.Rectangled;
+import org.lanternpowered.porygen.util.Rectanglei;
 
 import java.util.List;
 
 /**
- * Represents a piece of a voronoi {@link Map}. It allows access to all the
- * {@link Cell}s, etc. that are visible in this {@link MapView}.
+ * Represents a piece of a voronoi {@link CellMap}. It allows access to all the
+ * {@link Cell}s, etc. that are visible in this {@link CellMapView}.
  */
-public interface MapView {
+public interface CellMapView {
 
     /**
-     * Gets the parent {@link Map} of this map view.
+     * Gets the parent {@link CellMap} of this map view.
      *
      * @return The parent
      */
-    Map getParent();
+    CellMap getParent();
 
     /**
-     * Gets a sub {@link MapView} of this map view. The minimum and maximum
+     * Gets a sub {@link CellMapView} of this map view. The minimum and maximum
      * coordinates will be clamped to the bounds of this view.
      *
      * @param min The area minimum coordinate
      * @param max The area maximum coordinate
      * @return The new map view
      */
-    default MapView getSubView(Vector2d min, Vector2d max) {
+    default CellMapView getSubView(Vector2d min, Vector2d max) {
         return getSubView(new Rectangled(min, max));
     }
 
     /**
-     * Gets a sub {@link MapView} of this map view. The minimum and maximum
+     * Gets a sub {@link CellMapView} of this map view. The minimum and maximum
+     * coordinates will be clamped to the bounds of this view.
+     *
+     * @param min The area minimum coordinate
+     * @param max The area maximum coordinate
+     * @return The new map view
+     */
+    default CellMapView getSubView(Vector2i min, Vector2i max) {
+        return getSubView(new Rectanglei(min, max));
+    }
+
+    /**
+     * Gets a sub {@link CellMapView} of this map view. The minimum and maximum
      * coordinates will be clamped to the bounds of this view.
      *
      * @param rectangle The area
      * @return The new map view
      */
-    MapView getSubView(Rectangled rectangle);
+    CellMapView getSubView(Rectangled rectangle);
+
+    /**
+     * Gets a sub {@link CellMapView} of this map view. The minimum and maximum
+     * coordinates will be clamped to the bounds of this view.
+     *
+     * @param rectangle The area
+     * @return The new map view
+     */
+    CellMapView getSubView(Rectanglei rectangle);
 
     /**
      * Gets the {@link Cell} the specified point is located in.
@@ -69,11 +92,41 @@ public interface MapView {
      * @param point The point
      * @return The cell
      */
-    Cell getCell(Vector2d point);
+    default Cell getCell(Vector2d point) {
+        return getCell(point.getX(), point.getY());
+    }
+
+    /**
+     * Gets the {@link Cell} the specified point is located in.
+     *
+     * @param point The point
+     * @return The cell
+     */
+    default Cell getCell(Vector2i point) {
+        return getCell(point.getX(), point.getY());
+    }
+
+    /**
+     * Gets the {@link Cell} the specified point is located in.
+     *
+     * @param x The x coordinate
+     * @param y The y coordinate
+     * @return The cell
+     */
+    Cell getCell(double x, double y);
+
+    /**
+     * Gets the {@link Cell} the specified point is located in.
+     *
+     * @param x The x coordinate
+     * @param y The y coordinate
+     * @return The cell
+     */
+    Cell getCell(int x, int y);
 
     /**
      * Gets all the {@link Cell}s that are visible
-     * in this {@link MapView}.
+     * in this {@link CellMapView}.
      *
      * @return The cells
      */
@@ -81,7 +134,7 @@ public interface MapView {
 
     /**
      * Gets all the {@link Site}s that are visible
-     * in this {@link MapView}.
+     * in this {@link CellMapView}.
      *
      * @return The sites
      */
