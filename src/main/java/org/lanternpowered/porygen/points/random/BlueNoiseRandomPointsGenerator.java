@@ -142,8 +142,8 @@ public final class BlueNoiseRandomPointsGenerator extends AbstractRandomPointsGe
             final double cx = cell % this.xCells;
             final double cy = cell / this.xCells;
             // Calculate point coordinates within the cell
-            final double x = minX + cx * xCellSize + cx * xGapSize + xGapSize / 2.0;
-            final double y = minY + cy * yCellSize + cy * yGapSize + yGapSize / 2.0;
+            final double x = minX + cx * xCellSize + cx * xGapSize + xGapSize / 2.0 + random.nextDouble() * xCellSize;
+            final double y = minY + cy * yCellSize + cy * yGapSize + yGapSize / 2.0 + random.nextDouble() * yCellSize;
             // Add the point
             points.add(new Vector2d(x, y));
         }
