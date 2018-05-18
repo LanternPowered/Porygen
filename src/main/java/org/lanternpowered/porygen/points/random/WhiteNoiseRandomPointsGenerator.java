@@ -22,39 +22,42 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.map.impl;
+package org.lanternpowered.porygen.points.random;
 
 import com.flowpowered.math.vector.Vector2d;
-import org.lanternpowered.porygen.map.Cell;
-import org.lanternpowered.porygen.map.Site;
+import org.lanternpowered.porygen.points.PointsGenerator;
+import org.lanternpowered.porygen.util.Rectangled;
+import org.spongepowered.api.world.World;
 
 import java.util.List;
+import java.util.Random;
 
-public class SimpleCell implements Cell {
-
-    private final Site site;
-
-    public SimpleCell(Vector2d center) {
-        this.site = new SimpleSite(center, this);
-    }
-
-    @Override
-    public Site getSite() {
-        return this.site;
-    }
+/**
+ * A simple {@link PointsGenerator} that generates random
+ * points within the {@link Rectangled}.
+ */
+public class WhiteNoiseRandomPointsGenerator extends AbstractRandomPointsGenerator<WhiteNoiseRandomPointsGenerator> {
 
     @Override
-    public boolean contains(Vector2d point) {
-        return false;
-    }
+    public void generatePoints(World world, Random random, Rectangled rectangle, List<Vector2d> points) {
+        final int min = getPoints().getMin();
+        final int max = getPoints().getMax();
 
-    @Override
-    public List<Cell> getNeighbors() {
-        return null;
-    }
+        // Randomize the amount of points that will be generated
+        final int amount = min + random.nextInt(max - min + 1);
 
-    @Override
-    public List<Vector2d> getVertices() {
-        return null;
+        final double minX = rectangle.getMin().getX();
+        final double minY = rectangle.getMin().getY();
+        final double maxX = rectangle.getMax().getX();
+        final double maxY = rectangle.getMax().getY();
+
+        final double dX = maxX - minX;
+        final double dY = maxY - minY;
+
+        for (int i = 0; i < amount; i++) {
+            final double x = minX + random.nextDouble() * dX;
+            final double y = minY + random.nextDouble() * dY;
+            points.add(new Vector2d(x, y));
+        }
     }
 }

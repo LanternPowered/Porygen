@@ -22,39 +22,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.map.impl;
+package org.lanternpowered.porygen.cell;
 
-import com.flowpowered.math.vector.Vector2d;
 import org.lanternpowered.porygen.map.Cell;
-import org.lanternpowered.porygen.map.Site;
 
-import java.util.List;
+/**
+ * A generator that will create {@link Cell}s.
+ */
+public interface CellGenerator {
 
-public class SimpleCell implements Cell {
-
-    private final Site site;
-
-    public SimpleCell(Vector2d center) {
-        this.site = new SimpleSite(center, this);
-    }
-
-    @Override
-    public Site getSite() {
-        return this.site;
-    }
-
-    @Override
-    public boolean contains(Vector2d point) {
-        return false;
-    }
-
-    @Override
-    public List<Cell> getNeighbors() {
-        return null;
-    }
-
-    @Override
-    public List<Vector2d> getVertices() {
-        return null;
-    }
 }

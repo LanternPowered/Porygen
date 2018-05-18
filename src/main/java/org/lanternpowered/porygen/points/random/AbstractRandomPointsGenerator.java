@@ -22,39 +22,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.map.impl;
+package org.lanternpowered.porygen.points.random;
 
-import com.flowpowered.math.vector.Vector2d;
-import org.lanternpowered.porygen.map.Cell;
-import org.lanternpowered.porygen.map.Site;
+import org.lanternpowered.porygen.points.PointsGenerator;
+import org.lanternpowered.porygen.util.Range2i;
 
-import java.util.List;
+@SuppressWarnings("unchecked")
+public abstract class AbstractRandomPointsGenerator<T extends AbstractRandomPointsGenerator> implements PointsGenerator {
 
-public class SimpleCell implements Cell {
+    private Range2i points = new Range2i(1, 10);
 
-    private final Site site;
-
-    public SimpleCell(Vector2d center) {
-        this.site = new SimpleSite(center, this);
+    /**
+     * Gets the {@link Range2i} of points
+     * that will be generated.
+     *
+     * @return The points range
+     */
+    public Range2i getPoints() {
+        return this.points;
     }
 
-    @Override
-    public Site getSite() {
-        return this.site;
-    }
-
-    @Override
-    public boolean contains(Vector2d point) {
-        return false;
-    }
-
-    @Override
-    public List<Cell> getNeighbors() {
-        return null;
-    }
-
-    @Override
-    public List<Vector2d> getVertices() {
-        return null;
+    /**
+     * Sets the {@link Range2i} of points
+     * that will be generated.
+     *
+     * @param points The points range
+     */
+    public T setPoints(Range2i points) {
+        this.points = points;
+        return (T) this;
     }
 }

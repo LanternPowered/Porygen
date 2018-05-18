@@ -42,8 +42,8 @@ public abstract class AbstractCatalogType implements CatalogType {
     private final String pluginId;
     private final String name;
 
-    protected AbstractCatalogType(String name) {
-        this(name, name);
+    protected AbstractCatalogType(String id) {
+        this(id, id);
     }
 
     protected AbstractCatalogType(String id, String name) {

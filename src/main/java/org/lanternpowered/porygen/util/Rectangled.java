@@ -35,6 +35,11 @@ public class Rectangled {
     private final Vector2d min;
     private final Vector2d max;
 
+    public Rectangled(double minX, double minY, double maxX, double maxY) {
+        this.min = new Vector2d(Math.min(minX, maxX), Math.min(minY, maxY));
+        this.max = new Vector2d(Math.max(minX, maxX), Math.max(minY, maxY));
+    }
+
     public Rectangled(Vector2d min, Vector2d max) {
         checkNotNull(min, "min");
         checkNotNull(max, "max");

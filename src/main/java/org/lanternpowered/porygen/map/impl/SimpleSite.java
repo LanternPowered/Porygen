@@ -29,6 +29,9 @@ import com.google.common.base.MoreObjects;
 import org.lanternpowered.porygen.map.Cell;
 import org.lanternpowered.porygen.map.Site;
 
+/**
+ * A simple implementation of {@link Site}.
+ */
 public class SimpleSite implements Site {
 
     private final Vector2d point;
@@ -40,7 +43,7 @@ public class SimpleSite implements Site {
     }
 
     @Override
-    public Vector2d get() {
+    public Vector2d getCoordinates() {
         return this.point;
     }
 

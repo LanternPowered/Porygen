@@ -25,6 +25,8 @@
 package org.lanternpowered.porygen.points;
 
 import com.flowpowered.math.vector.Vector2d;
+import org.lanternpowered.porygen.cell.CellGenerator;
+import org.lanternpowered.porygen.map.Cell;
 import org.lanternpowered.porygen.util.Rectangled;
 import org.spongepowered.api.world.World;
 
@@ -34,8 +36,8 @@ import java.util.Random;
 public interface PointsGenerator {
 
     /**
-     * Populates the the {@code points} List with coordinates that will be used
-     * to generate a map diagram.
+     * Populates the {@link List} with point coordinates that will be
+     * used by the {@link CellGenerator} to generate {@link Cell}s.
      *
      * @param world The world that will be generated
      * @param random The random that should be used

@@ -27,9 +27,8 @@ package org.lanternpowered.porygen.map;
 import com.flowpowered.math.vector.Vector2d;
 
 /**
- * A site represents a point in a generated voronoi
- * diagram. A {@link Cell} will be generated around
- * the {@link Site}.
+ * A site represents the center point
+ * within a {@link Cell}.
  */
 public interface Site {
 
@@ -38,7 +37,7 @@ public interface Site {
      *
      * @return The coordinates
      */
-    Vector2d get();
+    Vector2d getCoordinates();
 
     /**
      * Gets the {@link Cell} this {@link Site} is located in.

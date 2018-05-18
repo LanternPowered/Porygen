@@ -22,49 +22,5 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.points;
-
-import com.flowpowered.math.vector.Vector2d;
-import org.lanternpowered.porygen.util.Rectangled;
-import org.spongepowered.api.world.World;
-
-import java.util.List;
-import java.util.Random;
-
-public class RectanglePointsGenerator implements PointsGenerator {
-
-    private Vector2d step = Vector2d.ONE;
-    private int maxScale = 5;
-
-    /**
-     * Sets the "step" size, this is the smallest size that each
-     * rectangle can have. Bigger squares may be built from 2, 4, 6, etc.
-     * rectangles. Some examples:
-     *
-     * xxyy  xxxz
-     * xxyy  xxxz
-     * xxzz  xxxz
-     * xxzz  yyyy
-     *
-     * @param step The size of each step
-     * @return This generator for chaining
-     */
-    public RectanglePointsGenerator stepSize(Vector2d step) {
-        this.step = step;
-        return this;
-    }
-
-    /**
-     * Sets the maximum scale
-     * @param scale
-     * @return
-     */
-    public RectanglePointsGenerator maxScale(int scale) {
-        return this;
-    }
-
-    @Override
-    public void generatePoints(World world, Random random, Rectangled rectangle, List<Vector2d> points) {
-
-    }
-}
+@org.spongepowered.api.util.annotation.NonnullByDefault
+package org.lanternpowered.porygen.points.random;

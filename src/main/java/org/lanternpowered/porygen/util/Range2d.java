@@ -22,39 +22,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.map.impl;
+package org.lanternpowered.porygen.util;
 
-import com.flowpowered.math.vector.Vector2d;
-import org.lanternpowered.porygen.map.Cell;
-import org.lanternpowered.porygen.map.Site;
+public final class Range2d {
 
-import java.util.List;
+    private final double min;
+    private final double max;
 
-public class SimpleCell implements Cell {
-
-    private final Site site;
-
-    public SimpleCell(Vector2d center) {
-        this.site = new SimpleSite(center, this);
+    public Range2d(double min, double max) {
+        this.min = min;
+        this.max = max;
     }
 
-    @Override
-    public Site getSite() {
-        return this.site;
+    public double getMin() {
+        return this.min;
     }
 
-    @Override
-    public boolean contains(Vector2d point) {
-        return false;
-    }
-
-    @Override
-    public List<Cell> getNeighbors() {
-        return null;
-    }
-
-    @Override
-    public List<Vector2d> getVertices() {
-        return null;
+    public double getMax() {
+        return this.max;
     }
 }

@@ -30,6 +30,7 @@ import com.flowpowered.math.vector.Vector2d;
 import org.lanternpowered.porygen.util.Rectangled;
 import org.spongepowered.api.world.World;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -58,8 +59,17 @@ public class ChunkBasedPointsGenerator implements PointsGenerator {
                 random.setSeed(((long) x * 341873128712L + (long) z * 132897987541L) ^ worldSeed);
                 final int xPos = x << 4;
                 final int zPos = z << 4;
-                this.parent.generatePoints(world, random, new Rectangled(new Vector2d(xPos, zPos),
-                        new Vector2d(xPos & 0xf, zPos & 0xf)), points);
+                final Rectangled chunkArea = new Rectangled(xPos, zPos, xPos & 0xf, zPos & 0xf);
+
+                // When generating points for the edge chunks, points may fall
+                // outside the scope of the original rectangle, filter out those
+                if (x == minX || z == minZ || x == maxX || z == maxZ) {
+                    final List<Vector2d> chunkPoints = new ArrayList<>();
+                    this.parent.generatePoints(world, random, chunkArea, chunkPoints);
+                    chunkPoints.stream().filter(rectangle::contains).forEach(points::add);
+                } else {
+                    this.parent.generatePoints(world, random, chunkArea, points);
+                }
             }
         }
     }
