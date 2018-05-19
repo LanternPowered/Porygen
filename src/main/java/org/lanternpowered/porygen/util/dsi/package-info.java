@@ -24,9 +24,9 @@
  */
 
 /**
- * A few classes that are originally from the DSI Utils project. The main reason
+ * A few classes that are originally from the DSI utilities project. The main reason
  * to include the {@link org.lanternpowered.porygen.util.dsi.XoRoShiRo128PlusRandom}
  * into Porygen without the need to depend on the Apache Math and Fastutil libraries
- * or the rest of the DSI Utils project.
+ * or the rest of the DSI utilities project.
  */
 package org.lanternpowered.porygen.util.dsi;

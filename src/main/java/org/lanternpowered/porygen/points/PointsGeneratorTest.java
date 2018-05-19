@@ -25,7 +25,11 @@
 package org.lanternpowered.porygen.points;
 
 import com.flowpowered.math.vector.Vector2d;
+import com.flowpowered.noise.module.modifier.ScalePoint;
+import com.flowpowered.noise.module.source.Perlin;
 import org.lanternpowered.porygen.GeneratorContext;
+import org.lanternpowered.porygen.map.Cell;
+import org.lanternpowered.porygen.map.impl.VoronoiCellGenerator;
 import org.lanternpowered.porygen.points.random.BlueNoiseRandomPointsGenerator;
 import org.lanternpowered.porygen.util.Rangei;
 import org.lanternpowered.porygen.util.Rectangled;
@@ -53,15 +57,20 @@ public class PointsGeneratorTest {
 
         generator = new BlueNoiseRandomPointsGenerator()
                 .setCellCoverage(0.8, 0.8)
-                .setCells(10, 10)
-                .setPoints(new Rangei(100, 200));
+                .setCells(30, 30)
+                .setPoints(new Rangei(1000, 2000));
 
         /*
         generator = new WhiteNoiseRandomPointsGenerator()
-                .setPoints(new Rangei(200, 500));
-        */
+                .setPoints(new Rangei(100, 200));
 
-        generator = new ZoomPointsGenerator(generator, new Vector2d(3.0, 3.0));
+        /*
+        generator = new GridBasedRandomPointsGenerator()
+                .setGrid(10, 10)
+                .setPoints(new Rangei(20, 100));*/
+
+
+        generator = new ZoomPointsGenerator(generator, new Vector2d(2.0, 2.0));
         generator = new ChunkBasedPointsGenerator(generator)
                 .setChunksPerSection(16, 16);
 
@@ -71,8 +80,38 @@ public class PointsGeneratorTest {
         final BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         final Graphics graphics = image.getGraphics();
         final DummyContext context = new DummyContext(graphics);
+
+        final Perlin perlin = new Perlin();
+        perlin.setFrequency(0.05);
+        perlin.setPersistence(0.5);
+        perlin.setSeed(random.nextInt());
+        perlin.setOctaveCount(6);
+
+        final ScalePoint scalePoint = new ScalePoint();
+        scalePoint.setSourceModule(0, perlin);
+        scalePoint.setXScale(0.2);
+        scalePoint.setYScale(1);
+        scalePoint.setZScale(0.2);
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                final double value = scalePoint.getValue(x, 1, y);
+                // System.out.println(value);
+                if (value < 1.0) {
+                    graphics.setColor(new Color(0, (int) (255.0 - 255.0 * (1.4 - value * 1.3)), (int) (255.0 - 255.0 * (1.4 - value * 1.3))));
+                    // graphics.setColor(Color.CYAN);
+                } else {
+                    graphics.setColor(new Color((int) (255.0 - (255.0 * ((value - 1.0) * 5))), (int) (255.0 - (255.0 * ((value - 1.0) * 5))), 0));
+                    // graphics.setColor(Color.ORANGE);
+                }
+                graphics.drawRect(x, y, 1, 1);
+            }
+        }
+
+        /*
         graphics.setColor(Color.WHITE);
         graphics.fillRect(0, 0, width, height);
+        */
         final List<Vector2d> points = generator.generatePoints(
                 context, random, new Rectangled(0, 0, width, height));
         graphics.setColor(Color.BLACK);
@@ -84,6 +123,29 @@ public class PointsGeneratorTest {
             final int x = point.getFloorX();
             final int y = point.getFloorY();
             graphics.fillRect(x, y, 3, 3);
+        }
+
+        // final DelaunayTriangleCellGenerator cellGenerator = new DelaunayTriangleCellGenerator();
+        final VoronoiCellGenerator cellGenerator = new VoronoiCellGenerator();
+        final List<Cell> cells = cellGenerator.generate(context, new Rectangled(0, 0, width, height), points);
+
+        for (Cell cell : cells) {
+            final Vector2d center = cell.getSite().getCoordinates();
+            final double value = scalePoint.getValue(center.getX(), 1, center.getY());
+            if (value < 1.0) {
+                graphics.setColor(new Color(0, (int) (255.0 - 255.0 * (1.4 - value * 1.3)), (int) (255.0 - 255.0 * (1.4 - value * 1.3))));
+            } else {
+                graphics.setColor(new Color((int) (255.0 - (255.0 * ((value - 1.0) * 5))), (int) (255.0 - (255.0 * ((value - 1.0) * 5))), 0));
+            }
+            /*
+            if (scalePoint.getValue(center.getX(), 1, center.getY()) < 1) {
+                graphics.setColor(Color.CYAN);
+            } else {
+                graphics.setColor(Color.ORANGE);
+            }*/
+            graphics.fillPolygon(cell.getPolygon().toDrawable());
+            graphics.setColor(Color.BLACK);
+            graphics.drawPolygon(cell.getPolygon().toDrawable());
         }
 
         final JPanel canvas = new JPanel() {

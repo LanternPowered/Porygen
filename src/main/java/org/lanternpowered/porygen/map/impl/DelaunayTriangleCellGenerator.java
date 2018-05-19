@@ -25,19 +25,22 @@
 package org.lanternpowered.porygen.map.impl;
 
 import com.flowpowered.math.vector.Vector2d;
-import com.google.common.collect.Lists;
 import io.github.jdiemke.triangulation.DelaunayTriangulator;
 import io.github.jdiemke.triangulation.NotEnoughPointsException;
 import io.github.jdiemke.triangulation.Triangle2D;
 import io.github.jdiemke.triangulation.Vector2D;
+import org.lanternpowered.porygen.GeneratorContext;
 import org.lanternpowered.porygen.map.Cell;
 import org.lanternpowered.porygen.map.CellGenerator;
+import org.lanternpowered.porygen.util.Polygond;
 import org.lanternpowered.porygen.util.Rectangled;
 import org.lanternpowered.porygen.util.TriangleHelper;
-import org.spongepowered.api.world.World;
+import org.lanternpowered.porygen.util.dsi.XoRoShiRo128PlusRandom;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 /**
@@ -46,7 +49,7 @@ import java.util.stream.Collectors;
 public class DelaunayTriangleCellGenerator implements CellGenerator {
 
     @Override
-    public List<Cell> generate(World world, Rectangled rectangle, List<Vector2d> points) {
+    public List<Cell> generate(GeneratorContext context, Rectangled rectangle, List<Vector2d> points) {
         final List<Cell> cells = new ArrayList<>();
         final List<Vector2D> pointSet = points.stream()
                 .map(v -> new Vector2D(v.getX(), v.getY()))
@@ -59,12 +62,23 @@ public class DelaunayTriangleCellGenerator implements CellGenerator {
             final List<Triangle2D> triangles = delaunayTriangulator.getTriangles();
             for (Triangle2D triangle : triangles) {
                 final Vector2d center = TriangleHelper.getCircumcenter(triangle);
-                final List<Vector2d> vertices = Lists.newArrayList(
+                final Polygond polygon = new Polygond(
                         new Vector2d(triangle.a.x, triangle.a.y),
                         new Vector2d(triangle.b.x, triangle.b.y),
                         new Vector2d(triangle.c.x, triangle.c.y));
-                final Cell cell = new SimpleCell(center, vertices);
+                final Cell cell = new SimpleCell(center, polygon);
                 cells.add(cell);
+
+                context.getDebugGraphics().ifPresent(graphics -> {
+                    final Color color = graphics.getColor();
+                    final Random random = new XoRoShiRo128PlusRandom();
+                    graphics.setColor(new Color(
+                            random.nextInt(256),
+                            random.nextInt(256),
+                            random.nextInt(256)));
+                    graphics.fillPolygon(polygon.toDrawable());
+                    graphics.setColor(color);
+                });
             }
         } catch (NotEnoughPointsException e) {
             throw new RuntimeException(e);

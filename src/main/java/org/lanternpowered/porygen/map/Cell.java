@@ -25,6 +25,8 @@
 package org.lanternpowered.porygen.map;
 
 import com.flowpowered.math.vector.Vector2d;
+import com.flowpowered.math.vector.Vector2i;
+import org.lanternpowered.porygen.util.Polygond;
 
 import java.util.List;
 
@@ -38,13 +40,43 @@ public interface Cell {
     Site getSite();
 
     /**
-     * Gets whether the specified point is located
-     * inside this {@link Cell}.
+     * Gets whether the specified point {@link Vector2d}
+     * is located inside this {@link Cell}.
      *
      * @param point The point
      * @return Whether the point is located in this cell
      */
-    boolean contains(Vector2d point);
+    default boolean contains(Vector2d point) {
+        return contains(point.getX(), point.getY());
+    }
+
+    /**
+     * Gets whether the specified point {@link Vector2i}
+     * is located inside this {@link Cell}.
+     *
+     * @param point The point
+     * @return Whether the point is located in this cell
+     */
+    default boolean contains(Vector2i point) {
+        return contains(point.getX(), point.getY());
+    }
+
+    /**
+     * Gets whether the specified point is located
+     * inside this {@link Cell}.
+     *
+     * @param x The x coordinate
+     * @param y The y coordinate
+     * @return Whether the point is located in this cell
+     */
+    boolean contains(double x, double y);
+
+    /**
+     * Gets the {@link Polygond} of this cell.
+     *
+     * @return The polygon
+     */
+    Polygond getPolygon();
 
     /**
      * Gets the neighbor {@link Cell}s of this cell.
@@ -52,12 +84,4 @@ public interface Cell {
      * @return The neighbor cells
      */
     List<Cell> getNeighbors();
-
-    /**
-     * Gets the vertices of this {@link Cell}. These vertices
-     * are sorted to form a polygon.
-     *
-     * @return The vertices
-     */
-    List<Vector2d> getVertices();
 }

@@ -27,18 +27,18 @@ package org.lanternpowered.porygen.map.impl;
 import com.flowpowered.math.vector.Vector2d;
 import org.lanternpowered.porygen.map.Cell;
 import org.lanternpowered.porygen.map.Site;
+import org.lanternpowered.porygen.util.Polygond;
 
-import java.util.Collections;
 import java.util.List;
 
 public class SimpleCell implements Cell {
 
     private final Site site;
-    private final List<Vector2d> vertices;
+    private final Polygond polygon;
 
-    public SimpleCell(Vector2d center, List<Vector2d> vertices) {
+    public SimpleCell(Vector2d center, Polygond polygon) {
         this.site = new SimpleSite(center, this);
-        this.vertices = Collections.unmodifiableList(vertices);
+        this.polygon = polygon;
     }
 
     @Override
@@ -47,17 +47,17 @@ public class SimpleCell implements Cell {
     }
 
     @Override
-    public boolean contains(Vector2d point) {
-        return false;
+    public boolean contains(double x, double y) {
+        return this.polygon.contains(x, y);
+    }
+
+    @Override
+    public Polygond getPolygon() {
+        return this.polygon;
     }
 
     @Override
     public List<Cell> getNeighbors() {
         return null;
-    }
-
-    @Override
-    public List<Vector2d> getVertices() {
-        return this.vertices;
     }
 }

@@ -25,8 +25,8 @@
 package org.lanternpowered.porygen.map;
 
 import com.flowpowered.math.vector.Vector2d;
+import org.lanternpowered.porygen.GeneratorContext;
 import org.lanternpowered.porygen.util.Rectangled;
-import org.spongepowered.api.world.World;
 
 import java.util.List;
 
@@ -38,8 +38,9 @@ public interface CellGenerator {
     /**
      * Generates {@link Cell}s for the given input point {@link Vector2d}s.
      *
+     * @param context The context
      * @param points The points
      * @return The output cells
      */
-    List<Cell> generate(World world, Rectangled rectangle, List<Vector2d> points);
+    List<Cell> generate(GeneratorContext context, Rectangled rectangle, List<Vector2d> points);
 }

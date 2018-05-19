@@ -61,6 +61,12 @@ public final class GridBasedRandomPointsGenerator extends AbstractRandomPointsGe
         return this;
     }
 
+    public GridBasedRandomPointsGenerator setGrid(int columns, int rows) {
+        this.columns = columns;
+        this.rows = rows;
+        return this;
+    }
+
     @Override
     public List<Vector2d> generatePoints(GeneratorContext context, Random random, Rectangled rectangle) {
         final List<Vector2d> points = new ArrayList<>();

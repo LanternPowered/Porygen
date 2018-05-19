@@ -29,20 +29,24 @@ import io.github.jdiemke.triangulation.DelaunayTriangulator;
 import io.github.jdiemke.triangulation.NotEnoughPointsException;
 import io.github.jdiemke.triangulation.Triangle2D;
 import io.github.jdiemke.triangulation.Vector2D;
+import org.lanternpowered.porygen.GeneratorContext;
 import org.lanternpowered.porygen.map.Cell;
 import org.lanternpowered.porygen.map.CellGenerator;
+import org.lanternpowered.porygen.util.Polygond;
 import org.lanternpowered.porygen.util.Rectangled;
 import org.lanternpowered.porygen.util.TriangleHelper;
-import org.spongepowered.api.world.World;
+import org.lanternpowered.porygen.util.dsi.XoRoShiRo128PlusRandom;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 public class VoronoiCellGenerator implements CellGenerator {
 
     @Override
-    public List<Cell> generate(World world, Rectangled rectangle, List<Vector2d> points) {
+    public List<Cell> generate(GeneratorContext context, Rectangled rectangle, List<Vector2d> points) {
         final List<Cell> cells = new ArrayList<>();
         final List<Vector2D> pointSet = points.stream()
                 .map(v -> new Vector2D(v.getX(), v.getY()))
@@ -57,19 +61,58 @@ public class VoronoiCellGenerator implements CellGenerator {
             // Go through all the vertices, to find all the touching triangles,
             // for this triangles is each circumcenter a point of the polygon shape
             for (Vector2D vertex : delaunayTriangulator.getPointSet()) {
-                final List<Vector2d> polygonVertices = new ArrayList<>();
+                final List<VertexEntry> polygonVertices = new ArrayList<>();
                 for (Triangle2D triangle : triangles) {
                     if (triangle.hasVertex(vertex)) {
-                        polygonVertices.add(TriangleHelper.getCircumcenter(triangle));
+                        final Vector2d point = TriangleHelper.getCircumcenter(triangle);
+                        final double angle = Math.atan2(point.getX() - vertex.x, point.getY() - vertex.y);
+                        polygonVertices.add(new VertexEntry(point, angle));
                     }
                 }
-                final Cell cell = new SimpleCell(new Vector2d(vertex.x, vertex.y), polygonVertices);
+                if (polygonVertices.size() <= 2) { // Not enough vertices
+                    continue;
+                }
+                // Create a polygon from vertices that are sorted clockwise
+                final Polygond polygon = new Polygond(polygonVertices.stream()
+                        .sorted().map(e -> e.point).collect(Collectors.toList()));
+                final Cell cell = new SimpleCell(new Vector2d(vertex.x, vertex.y), polygon);
                 cells.add(cell);
+                context.getDebugGraphics().ifPresent(graphics -> {
+                    final Color color = graphics.getColor();
+                    graphics.setColor(Color.RED);
+                    final Random random = new XoRoShiRo128PlusRandom();
+                    graphics.setColor(new Color(
+                            random.nextInt(256),
+                            random.nextInt(256),
+                            random.nextInt(256)));
+                    // graphics.fillPolygon(polygon.toDrawable());
+                    graphics.drawPolygon(polygon.toDrawable());
+                    graphics.setColor(color);
+                });
             }
         } catch (NotEnoughPointsException e) {
             throw new RuntimeException(e);
         }
 
         return cells;
+    }
+
+    private static final class VertexEntry implements Comparable<VertexEntry> {
+
+        private final Vector2d point;
+        private final double angle;
+
+        private VertexEntry(Vector2d point, double angle) {
+            this.point = point;
+            this.angle = angle;
+        }
+
+        @Override
+        public int compareTo(VertexEntry o) {
+            if (this.angle > o.angle) {
+                return 1;
+            }
+            return -1;
+        }
     }
 }
