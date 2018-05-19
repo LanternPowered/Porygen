@@ -24,14 +24,16 @@
  */
 package org.lanternpowered.porygen.util;
 
+import com.google.common.base.MoreObjects;
+
 public final class Rangei {
 
     private final int min;
     private final int max;
 
     public Rangei(int min, int max) {
-        this.min = min;
-        this.max = max;
+        this.min = Math.min(min, max);
+        this.max = Math.max(min, max);
     }
 
     public int getMin() {
@@ -40,5 +42,22 @@ public final class Rangei {
 
     public int getMax() {
         return this.max;
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("min", this.min)
+                .add("max", this.max)
+                .toString();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || obj.getClass() != getClass()) {
+            return false;
+        }
+        final Rangei that = (Rangei) obj;
+        return that.min == this.min && that.max == this.max;
     }
 }

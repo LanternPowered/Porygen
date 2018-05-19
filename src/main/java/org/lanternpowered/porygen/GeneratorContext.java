@@ -22,42 +22,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.util;
+package org.lanternpowered.porygen;
 
-import com.google.common.base.MoreObjects;
+import java.awt.Graphics;
+import java.util.Optional;
 
-public final class Ranged {
+public interface GeneratorContext {
 
-    private final double min;
-    private final double max;
+    /**
+     * Gets the seed that should be used for generation.
+     *
+     * @return The seed
+     */
+    long getSeed();
 
-    public Ranged(double min, double max) {
-        this.min = Math.min(min, max);
-        this.max = Math.max(min, max);
-    }
-
-    public double getMin() {
-        return this.min;
-    }
-
-    public double getMax() {
-        return this.max;
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("min", this.min)
-                .add("max", this.max)
-                .toString();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null || obj.getClass() != getClass()) {
-            return false;
-        }
-        final Ranged that = (Ranged) obj;
-        return that.min == this.min && that.max == this.max;
-    }
+    /**
+     * Gets the debug graphics.
+     *
+     * @return The debug graphics
+     */
+    Optional<Graphics> getDebugGraphics();
 }

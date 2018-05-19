@@ -25,8 +25,8 @@
 package org.lanternpowered.porygen.points.random;
 
 import com.flowpowered.math.vector.Vector2d;
+import org.lanternpowered.porygen.GeneratorContext;
 import org.lanternpowered.porygen.util.Rectangled;
-import org.spongepowered.api.world.World;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,7 +62,7 @@ public final class GridBasedRandomPointsGenerator extends AbstractRandomPointsGe
     }
 
     @Override
-    public List<Vector2d> generatePoints(World world, Random random, Rectangled rectangle) {
+    public List<Vector2d> generatePoints(GeneratorContext context, Random random, Rectangled rectangle) {
         final List<Vector2d> points = new ArrayList<>();
 
         final int min = getPoints().getMin();

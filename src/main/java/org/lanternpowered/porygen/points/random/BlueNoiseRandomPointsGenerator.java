@@ -25,9 +25,10 @@
 package org.lanternpowered.porygen.points.random;
 
 import com.flowpowered.math.vector.Vector2d;
+import org.lanternpowered.porygen.GeneratorContext;
 import org.lanternpowered.porygen.util.Rectangled;
-import org.spongepowered.api.world.World;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -54,6 +55,8 @@ public final class BlueNoiseRandomPointsGenerator extends AbstractRandomPointsGe
     // Cell coverage in the y direction
     private double yCellCoverage = 0.8;
 
+    private boolean debug = false;
+
     // A array that is reused
     private final ThreadLocal<boolean[]> usedCells = new ThreadLocal<>();
 
@@ -71,6 +74,12 @@ public final class BlueNoiseRandomPointsGenerator extends AbstractRandomPointsGe
     }
 
     public BlueNoiseRandomPointsGenerator setYCells(int yCells) {
+        this.yCells = yCells;
+        return this;
+    }
+
+    public BlueNoiseRandomPointsGenerator setCells(int xCells, int yCells) {
+        this.xCells = xCells;
         this.yCells = yCells;
         return this;
     }
@@ -93,8 +102,23 @@ public final class BlueNoiseRandomPointsGenerator extends AbstractRandomPointsGe
         return this;
     }
 
+    public BlueNoiseRandomPointsGenerator setCellCoverage(double xCellCoverage, double yCellCoverage) {
+        this.xCellCoverage = xCellCoverage;
+        this.yCellCoverage = yCellCoverage;
+        return this;
+    }
+
+    public boolean isDebug() {
+        return this.debug;
+    }
+
+    public BlueNoiseRandomPointsGenerator setDebug(boolean debug) {
+        this.debug = debug;
+        return this;
+    }
+
     @Override
-    public List<Vector2d> generatePoints(World world, Random random, Rectangled rectangle) {
+    public List<Vector2d> generatePoints(GeneratorContext context, Random random, Rectangled rectangle) {
         final List<Vector2d> points = new ArrayList<>();
 
         final int min = getPoints().getMin();
@@ -118,6 +142,21 @@ public final class BlueNoiseRandomPointsGenerator extends AbstractRandomPointsGe
         // Calculate the size of each cell
         final double xCellSize = (dX * this.xCellCoverage) / this.xCells;
         final double yCellSize = (dY * this.yCellCoverage) / this.yCells;
+
+        if (this.debug) {
+            context.getDebugGraphics().ifPresent(graphics -> {
+                final Color color = graphics.getColor();
+                graphics.setColor(Color.RED);
+                for (int x = 0; x < this.xCells; x++) {
+                    for (int y = 0; y < this.yCells; y++) {
+                        final int startX = (int) (minX + x * xCellSize + x * xGapSize + xGapSize / 2.0);
+                        final int startY = (int) (minY + y * yCellSize + y * yGapSize + yGapSize / 2.0);
+                        graphics.drawRect(startX, startY, (int) xCellSize, (int) yCellSize);
+                    }
+                }
+                graphics.setColor(color);
+            });
+        }
 
         final int cellAmount = this.xCells * this.yCells;
         amount = Math.min(amount, cellAmount); // There cannot be more points than the amount of cells

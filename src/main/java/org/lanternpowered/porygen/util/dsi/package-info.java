@@ -22,42 +22,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.util;
 
-import com.google.common.base.MoreObjects;
-
-public final class Ranged {
-
-    private final double min;
-    private final double max;
-
-    public Ranged(double min, double max) {
-        this.min = Math.min(min, max);
-        this.max = Math.max(min, max);
-    }
-
-    public double getMin() {
-        return this.min;
-    }
-
-    public double getMax() {
-        return this.max;
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("min", this.min)
-                .add("max", this.max)
-                .toString();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null || obj.getClass() != getClass()) {
-            return false;
-        }
-        final Ranged that = (Ranged) obj;
-        return that.min == this.min && that.max == this.max;
-    }
-}
+/**
+ * A few classes that are originally from the DSI Utils project. The main reason
+ * to include the {@link org.lanternpowered.porygen.util.dsi.XoRoShiRo128PlusRandom}
+ * into Porygen without the need to depend on the Apache Math and Fastutil libraries
+ * or the rest of the DSI Utils project.
+ */
+package org.lanternpowered.porygen.util.dsi;

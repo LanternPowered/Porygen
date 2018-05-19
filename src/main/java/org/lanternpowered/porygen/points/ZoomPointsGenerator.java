@@ -27,8 +27,8 @@ package org.lanternpowered.porygen.points;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.flowpowered.math.vector.Vector2d;
+import org.lanternpowered.porygen.GeneratorContext;
 import org.lanternpowered.porygen.util.Rectangled;
-import org.spongepowered.api.world.World;
 
 import java.util.List;
 import java.util.Random;
@@ -49,9 +49,11 @@ public class ZoomPointsGenerator implements PointsGenerator {
     }
 
     @Override
-    public List<Vector2d> generatePoints(World world, Random random, Rectangled rectangle) {
-        return this.parent.generatePoints(world, random, rectangle).stream()
-                .map(point -> point.mul(this.zoomFactor))
+    public List<Vector2d> generatePoints(GeneratorContext context, Random random, Rectangled rectangle) {
+        final Vector2d min = rectangle.getMin();
+        final Vector2d max = rectangle.getMax();
+        final Rectangled zoomOutRectangle = new Rectangled(min, max.sub(min).mul(this.zoomFactor).add(min));
+        return this.parent.generatePoints(context, random, zoomOutRectangle).stream()
                 .filter(rectangle::contains)
                 .collect(Collectors.toList());
     }

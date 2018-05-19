@@ -25,10 +25,10 @@
 package org.lanternpowered.porygen.points;
 
 import com.flowpowered.math.vector.Vector2d;
+import org.lanternpowered.porygen.GeneratorContext;
 import org.lanternpowered.porygen.map.CellGenerator;
 import org.lanternpowered.porygen.map.Cell;
 import org.lanternpowered.porygen.util.Rectangled;
-import org.spongepowered.api.world.World;
 
 import java.util.List;
 import java.util.Random;
@@ -39,10 +39,10 @@ public interface PointsGenerator {
      * Populates the {@link List} with point coordinates that will be
      * used by the {@link CellGenerator} to generate {@link Cell}s.
      *
-     * @param world The world that will be generated
+     * @param context The world that will be generated
      * @param random The random that should be used
      * @param rectangle The rectangle that represents the area
      * @return The result points
      */
-    List<Vector2d> generatePoints(World world, Random random, Rectangled rectangle);
+    List<Vector2d> generatePoints(GeneratorContext context, Random random, Rectangled rectangle);
 }

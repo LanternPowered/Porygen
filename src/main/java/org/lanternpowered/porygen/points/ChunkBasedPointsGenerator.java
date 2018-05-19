@@ -27,9 +27,10 @@ package org.lanternpowered.porygen.points;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.flowpowered.math.vector.Vector2d;
+import org.lanternpowered.porygen.GeneratorContext;
 import org.lanternpowered.porygen.util.Rectangled;
-import org.spongepowered.api.world.World;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -38,39 +39,83 @@ import java.util.Random;
  * This generator generates points for a specified world, the points are generated
  * based of the chunk coordinates and the world seed resulting in always the same
  * results when the points generator is re-run.
+ * <p>When generating underlying points, chunks are grouped into sections
+ * and for this section will the underlying algorithm be executed, if the point
+ * lies outside of the original rectangle, it will be filtered out.
  */
 public class ChunkBasedPointsGenerator implements PointsGenerator {
 
     private final PointsGenerator parent;
 
+    private int chunksPerXSection = 1;
+    private int chunksPerYSection = 1;
+
     public ChunkBasedPointsGenerator(PointsGenerator parent) {
         this.parent = checkNotNull(parent, "parent");
     }
 
+    public int getChunksPerXSection() {
+        return this.chunksPerXSection;
+    }
+
+    public ChunkBasedPointsGenerator setChunksPerXSection(int chunksPerXSection) {
+        this.chunksPerXSection = chunksPerXSection;
+        return this;
+    }
+
+    public int getChunksPerYSection() {
+        return this.chunksPerYSection;
+    }
+
+    public ChunkBasedPointsGenerator setChunksPerYSection(int chunksPerYSection) {
+        this.chunksPerYSection = chunksPerYSection;
+        return this;
+    }
+
+    public ChunkBasedPointsGenerator setChunksPerSection(int chunksPerXSection, int chunksPerYSection) {
+        this.chunksPerXSection = chunksPerXSection;
+        this.chunksPerYSection = chunksPerYSection;
+        return this;
+    }
+
     @Override
-    public List<Vector2d> generatePoints(World world, Random random, Rectangled rectangle) {
+    public List<Vector2d> generatePoints(GeneratorContext context, Random random, Rectangled rectangle) {
         final List<Vector2d> points = new ArrayList<>();
 
-        final int minX = rectangle.getMin().getFloorX() >> 4;
-        final int minZ = rectangle.getMin().getFloorY() >> 4;
-        final int maxX = rectangle.getMax().getFloorX() >> 4;
-        final int maxZ = rectangle.getMax().getFloorY() >> 4;
+        int minX = rectangle.getMin().getFloorX() >> 4;
+        minX -= minX % this.chunksPerXSection;
+        int minY = rectangle.getMin().getFloorY() >> 4;
+        minY -= minY % this.chunksPerYSection;
+        int maxX = rectangle.getMax().getFloorX() >> 4;
+        maxX -= maxX % this.chunksPerXSection;
+        int maxY = rectangle.getMax().getFloorY() >> 4;
+        maxY -= maxY % this.chunksPerYSection;
 
-        final long worldSeed = world.getProperties().getSeed();
-        for (int x = minX; x <= maxX; x++) {
-            for (int z = minZ; z <= maxZ; z++) {
-                random.setSeed(((long) x * 341873128712L + (long) z * 132897987541L) ^ worldSeed);
-                final int xPos = x << 4;
-                final int zPos = z << 4;
-                final Rectangled chunkArea = new Rectangled(xPos, zPos, xPos & 0xf, zPos & 0xf);
+        final long worldSeed = context.getSeed();
+        for (int x = minX; x <= maxX; x += this.chunksPerXSection) {
+            for (int y = minY; y <= maxY; y += this.chunksPerYSection) {
+                final int xStart = x << 4;
+                final int yStart = y << 4;
+                final int xEnd = ((x + this.chunksPerXSection - 1) << 4) | 0xf;
+                final int yEnd = ((y + this.chunksPerYSection - 1) << 4) | 0xf;
+
+                context.getDebugGraphics().ifPresent(graphics -> {
+                    final Color color = graphics.getColor();
+                    graphics.setColor(Color.RED);
+                    graphics.drawRect(xStart, yStart, xEnd - xStart, yEnd - yStart);
+                    graphics.setColor(color);
+                });
+
+                final Rectangled chunkArea = new Rectangled(xStart, yStart, xEnd, yEnd);
+                random.setSeed(((long) x * 341873128712L + (long) y * 132897987541L) ^ worldSeed);
 
                 // When generating points for the edge chunks, points may fall
                 // outside the scope of the original rectangle, filter out those
-                if (x == minX || z == minZ || x == maxX || z == maxZ) {
-                    this.parent.generatePoints(world, random, chunkArea).stream()
+                if (x == minX || y == minY || x == maxX || y == maxY) {
+                    this.parent.generatePoints(context, random, chunkArea).stream()
                             .filter(rectangle::contains).forEach(points::add);
                 } else {
-                    points.addAll(this.parent.generatePoints(world, random, chunkArea));
+                    points.addAll(this.parent.generatePoints(context, random, chunkArea));
                 }
             }
         }
