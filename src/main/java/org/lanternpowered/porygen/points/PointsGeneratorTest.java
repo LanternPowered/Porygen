@@ -28,8 +28,8 @@ import com.flowpowered.math.vector.Vector2d;
 import com.flowpowered.noise.module.modifier.ScalePoint;
 import com.flowpowered.noise.module.source.Perlin;
 import org.lanternpowered.porygen.GeneratorContext;
-import org.lanternpowered.porygen.map.Cell;
-import org.lanternpowered.porygen.map.impl.VoronoiCellGenerator;
+import org.lanternpowered.porygen.map.gen.CenteredPolygon;
+import org.lanternpowered.porygen.map.gen.VoronoiPolygonGenerator;
 import org.lanternpowered.porygen.points.random.BlueNoiseRandomPointsGenerator;
 import org.lanternpowered.porygen.util.Rangei;
 import org.lanternpowered.porygen.util.Rectangled;
@@ -62,7 +62,7 @@ public class PointsGeneratorTest {
 
         /*
         generator = new WhiteNoiseRandomPointsGenerator()
-                .setPoints(new Rangei(100, 200));
+                .setPoints(new Rangei(500, 1000));
 
         /*
         generator = new GridBasedRandomPointsGenerator()
@@ -89,9 +89,9 @@ public class PointsGeneratorTest {
 
         final ScalePoint scalePoint = new ScalePoint();
         scalePoint.setSourceModule(0, perlin);
-        scalePoint.setXScale(0.2);
+        scalePoint.setXScale(0.1);
         scalePoint.setYScale(1);
-        scalePoint.setZScale(0.2);
+        scalePoint.setZScale(0.1);
 
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
@@ -126,11 +126,11 @@ public class PointsGeneratorTest {
         }
 
         // final DelaunayTriangleCellGenerator cellGenerator = new DelaunayTriangleCellGenerator();
-        final VoronoiCellGenerator cellGenerator = new VoronoiCellGenerator();
-        final List<Cell> cells = cellGenerator.generate(context, new Rectangled(0, 0, width, height), points);
+        final VoronoiPolygonGenerator cellGenerator = new VoronoiPolygonGenerator();
+        final List<CenteredPolygon> polygons = cellGenerator.generate(context, new Rectangled(0, 0, width, height), points);
 
-        for (Cell cell : cells) {
-            final Vector2d center = cell.getSite().getCoordinates();
+        for (CenteredPolygon polygon : polygons) {
+            final Vector2d center = polygon.getCenter();
             final double value = scalePoint.getValue(center.getX(), 1, center.getY());
             if (value < 1.0) {
                 graphics.setColor(new Color(0, (int) (255.0 - 255.0 * (1.4 - value * 1.3)), (int) (255.0 - 255.0 * (1.4 - value * 1.3))));
@@ -143,9 +143,9 @@ public class PointsGeneratorTest {
             } else {
                 graphics.setColor(Color.ORANGE);
             }*/
-            graphics.fillPolygon(cell.getPolygon().toDrawable());
+            graphics.fillPolygon(polygon.getPolygon().toDrawable());
             graphics.setColor(Color.BLACK);
-            graphics.drawPolygon(cell.getPolygon().toDrawable());
+            graphics.drawPolygon(polygon.getPolygon().toDrawable());
         }
 
         final JPanel canvas = new JPanel() {

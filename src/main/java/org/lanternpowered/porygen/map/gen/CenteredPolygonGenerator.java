@@ -22,40 +22,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.map.impl;
+package org.lanternpowered.porygen.map.gen;
 
 import com.flowpowered.math.vector.Vector2d;
-import com.google.common.base.MoreObjects;
+import org.lanternpowered.porygen.GeneratorContext;
 import org.lanternpowered.porygen.map.Cell;
-import org.lanternpowered.porygen.map.Site;
+import org.lanternpowered.porygen.util.Rectangled;
+
+import java.util.List;
 
 /**
- * A simple implementation of {@link Site}.
+ * This generator provides {@link CenteredPolygon}s which
+ * will be used to construct {@link Cell}s.
  */
-public class SimpleSite implements Site {
+public interface CenteredPolygonGenerator {
 
-    private final Vector2d point;
-    private final Cell cell;
-
-    SimpleSite(Vector2d point, Cell cell) {
-        this.point = point;
-        this.cell = cell;
-    }
-
-    @Override
-    public Vector2d getCoordinates() {
-        return this.point;
-    }
-
-    @Override
-    public Cell getCell() {
-        return this.cell;
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("point", this.point)
-                .toString();
-    }
+    /**
+     * Generates {@link CenteredPolygon}s for the given input point {@link Vector2d}s.
+     *
+     * @param context The context
+     * @param points The points
+     * @return The output centered polygons
+     */
+    List<CenteredPolygon> generate(GeneratorContext context, Rectangled rectangle, List<Vector2d> points);
 }

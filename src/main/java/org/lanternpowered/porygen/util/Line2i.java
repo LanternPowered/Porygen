@@ -22,40 +22,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.map.impl;
+package org.lanternpowered.porygen.util;
 
-import com.flowpowered.math.vector.Vector2d;
-import com.google.common.base.MoreObjects;
-import org.lanternpowered.porygen.map.Cell;
-import org.lanternpowered.porygen.map.Site;
+import com.flowpowered.math.vector.Vector2i;
 
-/**
- * A simple implementation of {@link Site}.
- */
-public class SimpleSite implements Site {
+import java.awt.geom.Line2D;
 
-    private final Vector2d point;
-    private final Cell cell;
+public final class Line2i extends AbstractLine2<Vector2i> {
 
-    SimpleSite(Vector2d point, Cell cell) {
-        this.point = point;
-        this.cell = cell;
+    public Line2i(int startX, int startY, int endX, int endY) {
+        this(new Vector2i(startX, startY), new Vector2i(endX, endY));
+    }
+
+    public Line2i(Vector2i start, Vector2i end) {
+        super(start, end);
     }
 
     @Override
-    public Vector2d getCoordinates() {
-        return this.point;
-    }
-
-    @Override
-    public Cell getCell() {
-        return this.cell;
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("point", this.point)
-                .toString();
+    public boolean intersects(double startX, double startY, double endX, double endY) {
+        return Line2D.linesIntersect(this.start.getX(), this.start.getY(),
+                this.end.getX(), this.end.getY(), startX, startY, endX, endY);
     }
 }

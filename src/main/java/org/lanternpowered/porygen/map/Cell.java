@@ -29,8 +29,27 @@ import com.flowpowered.math.vector.Vector2i;
 import org.lanternpowered.porygen.util.Polygond;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface Cell {
+
+    /**
+     * Gets the data attached for the given key.
+     *
+     * @param key The key
+     * @param <T> The object type
+     * @return The object if present, otherwise {@link Optional#empty()}
+     */
+    <T> Optional<T> get(DataKey<T> key);
+
+    /**
+     * Sets the data attached for the given key.
+     *
+     * @param key The key
+     * @param object The object
+     * @param <T> The object type
+     */
+    <T> void set(DataKey<T> key, T object);
 
     /**
      * Gets the {@link Site} of this {@link Cell}.
@@ -84,4 +103,11 @@ public interface Cell {
      * @return The neighbor cells
      */
     List<Cell> getNeighbors();
+
+    /**
+     * Gets the {@link Edge}s of this cell.
+     *
+     * @return The edges
+     */
+    List<Edge> getEdges();
 }

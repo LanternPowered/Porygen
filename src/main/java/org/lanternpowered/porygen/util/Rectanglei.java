@@ -24,80 +24,54 @@
  */
 package org.lanternpowered.porygen.util;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.flowpowered.math.vector.Vector2i;
-import com.google.common.base.MoreObjects;
 
-import java.util.Objects;
+import java.awt.Polygon;
 
 /**
  * Represents a rectangle.
  */
-public class Rectanglei {
+public final class Rectanglei extends AbstractRectangle<Vector2i> {
 
-    private final Vector2i min;
-    private final Vector2i max;
+    public Rectanglei(int minX, int minY, int maxX, int maxY) {
+        super(new Vector2i(Math.min(minX, maxX), Math.min(minY, maxY)),
+                new Vector2i(Math.max(minX, maxX), Math.max(minY, maxY)));
+    }
 
     public Rectanglei(Vector2i min, Vector2i max) {
-        checkNotNull(min, "min");
-        checkNotNull(max, "max");
-        this.min = new Vector2i(Math.min(min.getX(), max.getX()), Math.min(min.getY(), max.getY()));
-        this.max = new Vector2i(Math.max(min.getX(), max.getX()), Math.max(min.getY(), max.getY()));
+        super(new Vector2i(Math.min(min.getX(), max.getX()), Math.min(min.getY(), max.getY())),
+                new Vector2i(Math.max(min.getX(), max.getX()), Math.max(min.getY(), max.getY())));
     }
 
-    public Vector2i getMin() {
-        return this.min;
-    }
-
-    public Vector2i getMax() {
-        return this.max;
-    }
-
-    /**
-     * Gets whether this rectangle contains the
-     * specified coordinates.
-     *
-     * @param point The point coordinates
-     * @return Whether this rectangle contains the coordinates
-     */
-    public boolean contains(Vector2i point) {
-        checkNotNull(point, "points");
-        return contains(point.getX(), point.getY());
-    }
-
-    /**
-     * Gets whether this rectangle contains the
-     * specified coordinates.
-     *
-     * @param x The x coordinate
-     * @param y The y coordinate
-     * @return Whether this rectangle contains the coordinates
-     */
-    public boolean contains(int x, int y) {
+    @Override
+    public boolean contains(double x, double y) {
         return x <= this.max.getX() && x >= this.min.getX() &&
                 y <= this.max.getY() && y >= this.min.getY();
     }
 
     @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("min", this.min)
-                .add("max", this.max)
-                .toString();
+    public boolean contains(int x, int y) {
+        return x <= this.max.getX() && x >= this.min.getX() &&
+                y <= this.max.getY() && y >= this.min.getY();
     }
 
-    @Override
-    public boolean equals(Object object) {
-        if (!(object instanceof Rectanglei)) {
-            return false;
-        }
-        final Rectanglei other = (Rectanglei) object;
-        return other.min.equals(this.min) && other.max.equals(this.max);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(this.min, this.max);
+    /**
+     * Converts this {@link Rectangled} into
+     * a drawable {@link Polygon}.
+     *
+     * @return The drawable polygon
+     */
+    public Polygon toDrawable() {
+        final int[] pointsX = new int[4];
+        final int[] pointsY = new int[4];
+        pointsX[0] = this.min.getX();
+        pointsY[0] = this.min.getY();
+        pointsX[1] = this.max.getX();
+        pointsY[1] = this.min.getY();
+        pointsX[2] = this.max.getX();
+        pointsY[2] = this.max.getY();
+        pointsX[3] = this.min.getX();
+        pointsY[3] = this.max.getY();
+        return new Polygon(pointsX, pointsY, 4);
     }
 }

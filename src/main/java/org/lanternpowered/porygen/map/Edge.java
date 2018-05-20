@@ -22,40 +22,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.map.impl;
+package org.lanternpowered.porygen.map;
 
-import com.flowpowered.math.vector.Vector2d;
-import com.google.common.base.MoreObjects;
-import org.lanternpowered.porygen.map.Cell;
-import org.lanternpowered.porygen.map.Site;
+import org.lanternpowered.porygen.util.Line2d;
+
+import java.util.List;
 
 /**
- * A simple implementation of {@link Site}.
+ * Represents the edge of one
+ * or multiple {@link Cell}s.
  */
-public class SimpleSite implements Site {
+public interface Edge {
 
-    private final Vector2d point;
-    private final Cell cell;
+    /**
+     * Gets the {@link Line2d}.
+     *
+     * @return The line
+     */
+    Line2d getLine();
 
-    SimpleSite(Vector2d point, Cell cell) {
-        this.point = point;
-        this.cell = cell;
-    }
-
-    @Override
-    public Vector2d getCoordinates() {
-        return this.point;
-    }
-
-    @Override
-    public Cell getCell() {
-        return this.cell;
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("point", this.point)
-                .toString();
-    }
+    /**
+     * Gets a list with all the {@link Cell}s.
+     *
+     * @return The cells
+     */
+    List<Cell> getCells();
 }

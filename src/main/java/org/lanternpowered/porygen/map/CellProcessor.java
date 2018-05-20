@@ -22,40 +22,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.map.impl;
+package org.lanternpowered.porygen.map;
 
-import com.flowpowered.math.vector.Vector2d;
-import com.google.common.base.MoreObjects;
-import org.lanternpowered.porygen.map.Cell;
-import org.lanternpowered.porygen.map.Site;
+import org.lanternpowered.porygen.GeneratorContext;
 
-/**
- * A simple implementation of {@link Site}.
- */
-public class SimpleSite implements Site {
+import java.util.List;
 
-    private final Vector2d point;
-    private final Cell cell;
+public interface CellProcessor {
 
-    SimpleSite(Vector2d point, Cell cell) {
-        this.point = point;
-        this.cell = cell;
-    }
-
-    @Override
-    public Vector2d getCoordinates() {
-        return this.point;
-    }
-
-    @Override
-    public Cell getCell() {
-        return this.cell;
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("point", this.point)
-                .toString();
-    }
+    /**
+     * Processes all the given {@link Cell}s.
+     *
+     * @param context The context
+     * @param cells The cells to process
+     */
+    void process(GeneratorContext context, List<Cell> cells);
 }

@@ -22,40 +22,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.map.impl;
+package org.lanternpowered.porygen.util;
 
-import com.flowpowered.math.vector.Vector2d;
-import com.google.common.base.MoreObjects;
-import org.lanternpowered.porygen.map.Cell;
-import org.lanternpowered.porygen.map.Site;
+public interface Rectangle<P> extends Shape {
 
-/**
- * A simple implementation of {@link Site}.
- */
-public class SimpleSite implements Site {
+    /**
+     * Gets the minimum coordinates of this rectangle.
+     *
+     * @return The minimum
+     */
+    P getMin();
 
-    private final Vector2d point;
-    private final Cell cell;
-
-    SimpleSite(Vector2d point, Cell cell) {
-        this.point = point;
-        this.cell = cell;
-    }
-
-    @Override
-    public Vector2d getCoordinates() {
-        return this.point;
-    }
-
-    @Override
-    public Cell getCell() {
-        return this.cell;
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("point", this.point)
-                .toString();
-    }
+    /**
+     * Gets the maximum coordinates of this rectangle.
+     *
+     * @return The maximum
+     */
+    P getMax();
 }

@@ -24,38 +24,51 @@
  */
 package org.lanternpowered.porygen.map.impl;
 
-import com.flowpowered.math.vector.Vector2d;
-import com.google.common.base.MoreObjects;
 import org.lanternpowered.porygen.map.Cell;
+import org.lanternpowered.porygen.map.CellMap;
+import org.lanternpowered.porygen.map.CellMapView;
 import org.lanternpowered.porygen.map.Site;
+import org.lanternpowered.porygen.util.Rectangled;
+import org.lanternpowered.porygen.util.Rectanglei;
 
-/**
- * A simple implementation of {@link Site}.
- */
-public class SimpleSite implements Site {
+import java.util.Collections;
+import java.util.List;
 
-    private final Vector2d point;
-    private final Cell cell;
+public class PorygenMapView implements CellMapView {
 
-    SimpleSite(Vector2d point, Cell cell) {
-        this.point = point;
-        this.cell = cell;
+    // The current size of the view
+    private Rectangled view;
+
+    // All the cells
+    private List<Cell> cells;
+
+    @Override
+    public CellMap getParent() {
+        return null;
     }
 
     @Override
-    public Vector2d getCoordinates() {
-        return this.point;
+    public CellMapView getSubView(Rectangled rectangle) {
+        return null;
     }
 
     @Override
-    public Cell getCell() {
-        return this.cell;
+    public CellMapView getSubView(Rectanglei rectangle) {
+        return null;
     }
 
     @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("point", this.point)
-                .toString();
+    public Cell getCell(double x, double y) {
+        return null;
+    }
+
+    @Override
+    public List<Cell> getCells() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<Site> getSites() {
+        return null;
     }
 }

@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.map.impl;
+package org.lanternpowered.porygen.map.gen;
 
 import com.flowpowered.math.vector.Vector2d;
 import io.github.jdiemke.triangulation.DelaunayTriangulator;
@@ -30,27 +30,19 @@ import io.github.jdiemke.triangulation.NotEnoughPointsException;
 import io.github.jdiemke.triangulation.Triangle2D;
 import io.github.jdiemke.triangulation.Vector2D;
 import org.lanternpowered.porygen.GeneratorContext;
-import org.lanternpowered.porygen.map.Cell;
-import org.lanternpowered.porygen.map.CellGenerator;
 import org.lanternpowered.porygen.util.Polygond;
 import org.lanternpowered.porygen.util.Rectangled;
 import org.lanternpowered.porygen.util.TriangleHelper;
-import org.lanternpowered.porygen.util.dsi.XoRoShiRo128PlusRandom;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 
-/**
- * Generates {@link Cell}s that are delaunay triangles.
- */
-public class DelaunayTriangleCellGenerator implements CellGenerator {
+public class VoronoiPolygonGenerator implements CenteredPolygonGenerator {
 
     @Override
-    public List<Cell> generate(GeneratorContext context, Rectangled rectangle, List<Vector2d> points) {
-        final List<Cell> cells = new ArrayList<>();
+    public List<CenteredPolygon> generate(GeneratorContext context, Rectangled rectangle, List<Vector2d> points) {
+        final List<CenteredPolygon> centeredPolygons = new ArrayList<>();
         final List<Vector2D> pointSet = points.stream()
                 .map(v -> new Vector2D(v.getX(), v.getY()))
                 .collect(Collectors.toList());
@@ -60,30 +52,49 @@ public class DelaunayTriangleCellGenerator implements CellGenerator {
             delaunayTriangulator.triangulate();
 
             final List<Triangle2D> triangles = delaunayTriangulator.getTriangles();
-            for (Triangle2D triangle : triangles) {
-                final Vector2d center = TriangleHelper.getCircumcenter(triangle);
-                final Polygond polygon = new Polygond(
-                        new Vector2d(triangle.a.x, triangle.a.y),
-                        new Vector2d(triangle.b.x, triangle.b.y),
-                        new Vector2d(triangle.c.x, triangle.c.y));
-                final Cell cell = new SimpleCell(center, polygon);
-                cells.add(cell);
 
-                context.getDebugGraphics().ifPresent(graphics -> {
-                    final Color color = graphics.getColor();
-                    final Random random = new XoRoShiRo128PlusRandom();
-                    graphics.setColor(new Color(
-                            random.nextInt(256),
-                            random.nextInt(256),
-                            random.nextInt(256)));
-                    graphics.fillPolygon(polygon.toDrawable());
-                    graphics.setColor(color);
-                });
+            // Go through all the vertices, to find all the touching triangles,
+            // for this triangles is each circumcenter a point of the polygon shape
+            for (Vector2D vertex : delaunayTriangulator.getPointSet()) {
+                final List<VertexEntry> polygonVertices = new ArrayList<>();
+                for (Triangle2D triangle : triangles) {
+                    if (triangle.hasVertex(vertex)) {
+                        final Vector2d point = TriangleHelper.getCircumcenter(triangle);
+                        final double angle = Math.atan2(point.getX() - vertex.x, point.getY() - vertex.y);
+                        polygonVertices.add(new VertexEntry(point, angle));
+                    }
+                }
+                if (polygonVertices.size() <= 2) { // Not enough vertices
+                    continue;
+                }
+                // Create a polygon from vertices that are sorted clockwise
+                final Polygond polygon = new Polygond(polygonVertices.stream()
+                        .sorted().map(e -> e.point).collect(Collectors.toList()));
+                centeredPolygons.add(new CenteredPolygon(new Vector2d(vertex.x, vertex.y), polygon));
             }
         } catch (NotEnoughPointsException e) {
             throw new RuntimeException(e);
         }
 
-        return cells;
+        return centeredPolygons;
+    }
+
+    private static final class VertexEntry implements Comparable<VertexEntry> {
+
+        private final Vector2d point;
+        private final double angle;
+
+        private VertexEntry(Vector2d point, double angle) {
+            this.point = point;
+            this.angle = angle;
+        }
+
+        @Override
+        public int compareTo(VertexEntry o) {
+            if (this.angle > o.angle) {
+                return 1;
+            }
+            return -1;
+        }
     }
 }

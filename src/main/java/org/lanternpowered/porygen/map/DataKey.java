@@ -22,5 +22,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-@org.spongepowered.api.util.annotation.NonnullByDefault
-package org.lanternpowered.porygen.map.impl;
+package org.lanternpowered.porygen.map;
+
+/**
+ * Represents a key that can be used
+ * to attach data to a {@link Cell}.
+ *
+ * @param <T> The data objec type
+ */
+public final class DataKey<T> {
+
+}

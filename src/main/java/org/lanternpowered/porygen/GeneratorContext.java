@@ -42,4 +42,5 @@ public interface GeneratorContext {
      * @return The debug graphics
      */
     Optional<Graphics> getDebugGraphics();
+
 }

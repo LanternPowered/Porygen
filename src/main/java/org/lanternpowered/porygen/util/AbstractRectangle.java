@@ -24,48 +24,64 @@
  */
 package org.lanternpowered.porygen.util;
 
-import com.flowpowered.math.vector.Vector2d;
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 
-import java.awt.Polygon;
+import java.util.Objects;
 
-public final class Rectangled extends AbstractRectangle<Vector2d> {
+@SuppressWarnings({"RedundantIfStatement", "SimplifiableIfStatement"})
+abstract class AbstractRectangle<T extends Comparable<T>> extends AbstractShape implements Rectangle<T> {
 
-    public Rectangled(double minX, double minY, double maxX, double maxY) {
-        super(new Vector2d(Math.min(minX, maxX), Math.min(minY, maxY)),
-                new Vector2d(Math.max(minX, maxX), Math.max(minY, maxY)));
-    }
+    final T min;
+    final T max;
 
-    public Rectangled(Vector2d min, Vector2d max) {
-        super(new Vector2d(Math.min(min.getX(), max.getX()), Math.min(min.getY(), max.getY())),
-                new Vector2d(Math.max(min.getX(), max.getX()), Math.max(min.getY(), max.getY())));
+    AbstractRectangle(T min, T max) {
+        this.min = min;
+        this.max = max;
     }
 
     @Override
-    public boolean contains(double x, double y) {
-        return x <= this.max.getX() && x >= this.min.getX() &&
-                y <= this.max.getY() && y >= this.min.getY();
+    public T getMin() {
+        return this.min;
     }
 
-    /**
-     * Converts this {@link Rectangled} into
-     * a drawable {@link Polygon}.
-     *
-     * @return The drawable polygon
-     */
-    public Polygon toDrawable() {
-        final int[] pointsX = new int[4];
-        final int[] pointsY = new int[4];
-        pointsX[0] = (int) this.min.getX();
-        pointsY[0] = (int) this.min.getY();
-        pointsX[1] = (int) this.max.getX();
-        pointsY[1] = (int) this.min.getY();
-        pointsX[2] = (int) this.max.getX();
-        pointsY[2] = (int) this.max.getY();
-        pointsX[3] = (int) this.min.getX();
-        pointsY[3] = (int) this.max.getY();
-        return new Polygon(pointsX, pointsY, 4);
+    @Override
+    public T getMax() {
+        return this.max;
+    }
+
+    @Override
+    public boolean intersects(double minX, double minY, double maxX, double maxY) {
+        int inside = 0;
+        // If more than 0, but less than 3 points
+        // are inside, then there is an intersection
+        if (contains(minX, minY)) {
+            inside++;
+        }
+        if (contains(maxX, minY)) {
+            inside++;
+        }
+        if (contains(maxX, maxY) && ++inside == 3) {
+            return false;
+        }
+        if (contains(minX, maxY) && ++inside == 3) {
+            return false;
+        }
+        return inside > 0;
+    }
+
+    @Override
+    public boolean contains(double minX, double minY, double maxX, double maxY) {
+        return contains(minX, minY) && contains(maxX, maxY);
+    }
+
+    @Override
+    public boolean contains(int minX, int minY, int maxX, int maxY) {
+        return contains(minX, minY) && contains(maxX, maxY);
+    }
+
+    @Override
+    public boolean intersects(Polygond polygon) {
+        return polygon.intersects(this);
     }
 
     @Override
@@ -78,15 +94,15 @@ public final class Rectangled extends AbstractRectangle<Vector2d> {
 
     @Override
     public boolean equals(Object object) {
-        if (!(object instanceof Rectangled)) {
+        if (object == null || object.getClass() != getClass()) {
             return false;
         }
-        final Rectangled other = (Rectangled) object;
+        final AbstractRectangle other = (AbstractRectangle) object;
         return other.min.equals(this.min) && other.max.equals(this.max);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(this.min, this.max);
+        return Objects.hash(this.min, this.max);
     }
-}
+ }

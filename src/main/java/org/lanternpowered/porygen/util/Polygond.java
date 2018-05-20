@@ -27,18 +27,17 @@ package org.lanternpowered.porygen.util;
 import static com.google.common.base.Preconditions.checkState;
 
 import com.flowpowered.math.vector.Vector2d;
-import com.flowpowered.math.vector.Vector2i;
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
 
 import java.awt.Polygon;
+import java.awt.geom.Line2D;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
  * Represents a polygon.
  */
-public final class Polygond {
+public final class Polygond extends AbstractShape {
 
     private final List<Vector2d> vertices;
 
@@ -50,7 +49,7 @@ public final class Polygond {
      */
     public Polygond(Vector2d... vertices) {
         checkState(vertices.length >= 3, "There must be at least 3 vertices.");
-        this.vertices = Collections.unmodifiableList(Arrays.asList(vertices));
+        this.vertices = ImmutableList.copyOf(vertices);
     }
 
     /**
@@ -60,7 +59,7 @@ public final class Polygond {
      * @param vertices The vertices
      */
     public Polygond(Iterable<Vector2d> vertices) {
-        this.vertices = Lists.newArrayList(vertices);
+        this.vertices = ImmutableList.copyOf(vertices);
         checkState(this.vertices.size() >= 3, "There must be at least 3 vertices.");
     }
 
@@ -75,36 +74,7 @@ public final class Polygond {
         return this.vertices;
     }
 
-    /**
-     * Gets whether the given point {@link Vector2d}
-     * are located within this {@link Polygond}.
-     *
-     * @param point The point
-     * @return Whether this polygon contains the point
-     */
-    public boolean contains(Vector2i point) {
-        return contains(point.getX(), point.getY());
-    }
-
-    /**
-     * Gets whether the given point {@link Vector2d}
-     * are located within this {@link Polygond}.
-     *
-     * @param point The point
-     * @return Whether this polygon contains the point
-     */
-    public boolean contains(Vector2d point) {
-        return contains(point.getX(), point.getY());
-    }
-
-    /**
-     * Gets whether the given point coordinates
-     * are located within this {@link Polygond}.
-     *
-     * @param x The x coordinate
-     * @param y The y coordinate
-     * @return Whether this polygon contains the point
-     */
+    @Override
     public boolean contains(double x, double y) {
         // https://stackoverflow.com/questions/8721406/how-to-determine-if-a-point-is-inside-a-2d-convex-polygon
         int i;
@@ -119,6 +89,67 @@ public final class Polygond {
             }
         }
         return result;
+    }
+
+    @Override
+    public boolean contains(double minX, double minY, double maxX, double maxY) {
+        // Just check if the 4 corners are inside this polygon
+        return contains(minX, minY) &&
+                contains(minX, maxY) &&
+                contains(maxX, minY) &&
+                contains(maxX, maxY);
+    }
+
+    @Override
+    public boolean contains(int minX, int minY, int maxX, int maxY) {
+        // Just check if the 4 corners are inside this polygon
+        return contains(minX, minY) &&
+                contains(minX, maxY) &&
+                contains(maxX, minY) &&
+                contains(maxX, maxY);
+    }
+
+    @Override
+    public boolean intersects(double minX, double minY, double maxX, double maxY) {
+        int i;
+        int j;
+        for (i = 0, j = this.vertices.size() - 1; i < this.vertices.size(); j = i++) {
+            final Vector2d vi = this.vertices.get(i);
+            final Vector2d vj = this.vertices.get(j);
+            if (Line2D.linesIntersect(minX, minY, maxX, minY, vi.getX(), vi.getY(), vj.getX(), vj.getY())) {
+                return true;
+            }
+            if (Line2D.linesIntersect(maxX, minY, maxX, maxY, vi.getX(), vi.getY(), vj.getX(), vj.getY())) {
+                return true;
+            }
+            if (Line2D.linesIntersect(minX, minY, minX, maxY, vi.getX(), vi.getY(), vj.getX(), vj.getY())) {
+                return true;
+            }
+            if (Line2D.linesIntersect(minX, maxY, maxX, maxY, vi.getX(), vi.getY(), vj.getX(), vj.getY())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean intersects(Polygond polygon) {
+        int i;
+        int j;
+        for (i = 0, j = this.vertices.size() - 1; i < this.vertices.size(); j = i++) {
+            final Vector2d vi = this.vertices.get(i);
+            final Vector2d vj = this.vertices.get(j);
+            int k;
+            int l;
+            for (k = 0, l = this.vertices.size() - 1; k < this.vertices.size(); l = k++) {
+                final Vector2d vk = polygon.vertices.get(k);
+                final Vector2d vl = polygon.vertices.get(l);
+                if (Line2D.linesIntersect(vk.getX(), vk.getY(), vl.getX(), vl.getY(), vi.getX(), vi.getY(), vj.getX(), vj.getY())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -140,7 +171,6 @@ public final class Polygond {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + Arrays.toString(
-                this.vertices.stream().map(p -> p.getX() + ", " + p.getY()).toArray());
+        return getClass().getSimpleName() + Arrays.toString(this.vertices.toArray());
     }
 }

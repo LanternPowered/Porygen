@@ -22,40 +22,59 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.map.impl;
+package org.lanternpowered.porygen.util;
 
-import com.flowpowered.math.vector.Vector2d;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.common.base.MoreObjects;
-import org.lanternpowered.porygen.map.Cell;
-import org.lanternpowered.porygen.map.Site;
+import com.google.common.base.Objects;
 
-/**
- * A simple implementation of {@link Site}.
- */
-public class SimpleSite implements Site {
+abstract class AbstractLine2<P extends Comparable<P>> implements Line2<P> {
 
-    private final Vector2d point;
-    private final Cell cell;
+    final P start;
+    final P end;
 
-    SimpleSite(Vector2d point, Cell cell) {
-        this.point = point;
-        this.cell = cell;
+    AbstractLine2(P start, P end) {
+        checkNotNull(start, "start");
+        checkNotNull(end, "end");
+        if (start.compareTo(end) < 0) {
+            this.start = start;
+            this.end = end;
+        } else {
+            this.start = end;
+            this.end = start;
+        }
     }
 
     @Override
-    public Vector2d getCoordinates() {
-        return this.point;
+    public P getStart() {
+        return this.start;
     }
 
     @Override
-    public Cell getCell() {
-        return this.cell;
+    public P getEnd() {
+        return this.end;
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("point", this.point)
+                .add("start", this.start)
+                .add("end", this.end)
                 .toString();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (object == null || object.getClass() != getClass()) {
+            return false;
+        }
+        final AbstractLine2 other = (AbstractLine2) object;
+        return other.start.equals(this.start) && other.end.equals(this.end);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(this.start, this.end);
     }
 }

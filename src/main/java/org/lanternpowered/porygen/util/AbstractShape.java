@@ -22,42 +22,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.map.impl;
+package org.lanternpowered.porygen.util;
 
 import com.flowpowered.math.vector.Vector2d;
-import org.lanternpowered.porygen.map.Cell;
-import org.lanternpowered.porygen.map.Site;
-import org.lanternpowered.porygen.util.Polygond;
 
-import java.util.List;
-
-public class SimpleCell implements Cell {
-
-    private final Site site;
-    private final Polygond polygon;
-
-    public SimpleCell(Vector2d center, Polygond polygon) {
-        this.site = new SimpleSite(center, this);
-        this.polygon = polygon;
-    }
+abstract class AbstractShape implements Shape {
 
     @Override
-    public Site getSite() {
-        return this.site;
+    public boolean contains(Polygond polygon) {
+        for (Vector2d vertex : polygon.getVertices()) {
+            if (!contains(vertex)) {
+                return false;
+            }
+        }
+        return true;
     }
 
-    @Override
-    public boolean contains(double x, double y) {
-        return this.polygon.contains(x, y);
-    }
-
-    @Override
-    public Polygond getPolygon() {
-        return this.polygon;
-    }
-
-    @Override
-    public List<Cell> getNeighbors() {
-        return null;
-    }
 }

@@ -116,15 +116,6 @@ public interface CellMapView {
     Cell getCell(double x, double y);
 
     /**
-     * Gets the {@link Cell} the specified point is located in.
-     *
-     * @param x The x coordinate
-     * @param y The y coordinate
-     * @return The cell
-     */
-    Cell getCell(int x, int y);
-
-    /**
      * Gets all the {@link Cell}s that are visible
      * in this {@link CellMapView}.
      *
