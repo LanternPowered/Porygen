@@ -22,36 +22,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.map;
+package org.lanternpowered.porygen.map.impl;
 
-import org.lanternpowered.porygen.util.geom.Line2d;
+import com.flowpowered.math.vector.Vector2d;
+import org.lanternpowered.porygen.map.Cell;
+import org.lanternpowered.porygen.map.Corner;
+import org.lanternpowered.porygen.map.Edge;
 
 import java.util.Collection;
 
-/**
- * Represents the edge of one
- * or multiple {@link Cell}s.
- */
-public interface Edge {
+public class PorygenCorner implements Corner {
 
-    /**
-     * Gets the {@link Line2d}.
-     *
-     * @return The line
-     */
-    Line2d getLine();
+    @Override public Vector2d getPoint() {
+        return null;
+    }
 
-    /**
-     * Gets a collection with all the {@link Cell}s.
-     *
-     * @return The cells
-     */
-    Collection<Cell> getCells();
+    @Override public Collection<Cell> getCells() {
+        return null;
+    }
 
-    /**
-     * Gets a collection with all the {@link Corner}s.
-     *
-     * @return The corner
-     */
-    Collection<Corner> getCorners();
+    @Override public Collection<Edge> getEdges() {
+        return null;
+    }
 }

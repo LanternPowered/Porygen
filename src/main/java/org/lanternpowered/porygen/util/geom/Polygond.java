@@ -97,6 +97,23 @@ public final class Polygond extends AbstractShape {
     }
 
     /**
+     * Gets the centroid of this polygon.
+     *
+     * @return The centroid
+     */
+    public Vector2d getCentroid() {
+        double x = 0;
+        double y = 0;
+        for (Vector2d vertex : this.vertices) {
+            x += vertex.getX();
+            y += vertex.getY();
+        }
+        return new Vector2d(
+                x / (double) this.vertices.size(),
+                y / (double) this.vertices.size());
+    }
+
+    /**
      * Gets a {@link List} with all the vertices
      * in this {@link Polygond}.
      * <p>The vertices should be sorted clockwise.

@@ -57,7 +57,9 @@ public class DelaunayTrianglePolygonGenerator implements CenteredPolygonGenerato
 
             final List<Triangle2D> triangles = delaunayTriangulator.getTriangles();
             for (Triangle2D triangle : triangles) {
-                final Vector2d center = TriangleHelper.getCircumcenter(triangle);
+                // Use the centroid as center point to make sure
+                // that it falls inside the constructed triangle
+                final Vector2d center = TriangleHelper.getCentroid(triangle);
                 final Polygond polygon = Polygond.newConvexPolygon(
                         new Vector2d(triangle.a.x, triangle.a.y),
                         new Vector2d(triangle.b.x, triangle.b.y),

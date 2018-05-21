@@ -22,27 +22,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.map;
+package org.lanternpowered.porygen.map.impl;
 
-import com.flowpowered.math.vector.Vector2d;
+import org.lanternpowered.porygen.map.Cell;
+import org.lanternpowered.porygen.map.Corner;
+import org.lanternpowered.porygen.map.Edge;
+import org.lanternpowered.porygen.util.geom.Line2d;
 
-/**
- * A site represents the center point
- * within a {@link Cell}.
- */
-public interface Site {
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
-    /**
-     * Gets the coordinates of this {@link Site}.
-     *
-     * @return The coordinates
-     */
-    Vector2d getCoordinates();
+final class PorygenEdge implements Edge {
 
-    /**
-     * Gets the {@link Cell} this {@link Site} is located in.
-     *
-     * @return The cell
-     */
-    Cell getCell();
+    private final Line2d line;
+    final Set<PorygenCell> cells = new HashSet<>();
+    final Set<PorygenCorner> corners = new HashSet<>();
+
+    PorygenEdge(Line2d line) {
+        this.line = line;
+    }
+
+    @Override
+    public Line2d getLine() {
+        return this.line;
+    }
+
+    @Override
+    public Collection<Cell> getCells() {
+        return Collections.unmodifiableSet(this.cells);
+    }
+
+    @Override
+    public Collection<Corner> getCorners() {
+        return Collections.unmodifiableSet(this.corners);
+    }
 }

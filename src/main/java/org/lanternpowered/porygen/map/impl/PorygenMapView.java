@@ -27,7 +27,6 @@ package org.lanternpowered.porygen.map.impl;
 import org.lanternpowered.porygen.map.Cell;
 import org.lanternpowered.porygen.map.CellMap;
 import org.lanternpowered.porygen.map.CellMapView;
-import org.lanternpowered.porygen.map.Site;
 import org.lanternpowered.porygen.util.geom.Rectangled;
 import org.lanternpowered.porygen.util.geom.Rectanglei;
 
@@ -65,10 +64,5 @@ public class PorygenMapView implements CellMapView {
     @Override
     public List<Cell> getCells() {
         return Collections.emptyList();
-    }
-
-    @Override
-    public List<Site> getSites() {
-        return null;
     }
 }

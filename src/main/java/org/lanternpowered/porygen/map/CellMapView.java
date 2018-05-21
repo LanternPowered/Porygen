@@ -122,12 +122,4 @@ public interface CellMapView {
      * @return The cells
      */
     List<Cell> getCells();
-
-    /**
-     * Gets all the {@link Site}s that are visible
-     * in this {@link CellMapView}.
-     *
-     * @return The sites
-     */
-    List<Site> getSites();
 }

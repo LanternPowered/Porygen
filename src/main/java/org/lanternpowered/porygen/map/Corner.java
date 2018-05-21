@@ -24,34 +24,32 @@
  */
 package org.lanternpowered.porygen.map;
 
-import org.lanternpowered.porygen.util.geom.Line2d;
+import com.flowpowered.math.vector.Vector2d;
 
 import java.util.Collection;
 
-/**
- * Represents the edge of one
- * or multiple {@link Cell}s.
- */
-public interface Edge {
+public interface Corner {
 
     /**
-     * Gets the {@link Line2d}.
+     * Gets the corner point {@link Vector2d}.
      *
-     * @return The line
+     * @return The corner point
      */
-    Line2d getLine();
+    Vector2d getPoint();
 
     /**
-     * Gets a collection with all the {@link Cell}s.
+     * Gets all the {@link Cell}s that connect
+     * to this {@link Corner}.
      *
      * @return The cells
      */
     Collection<Cell> getCells();
 
     /**
-     * Gets a collection with all the {@link Corner}s.
+     * Gets all the {@link Edge}s that connect
+     * to this {@link Corner}.
      *
-     * @return The corner
+     * @return The edges
      */
-    Collection<Corner> getCorners();
+    Collection<Edge> getEdges();
 }

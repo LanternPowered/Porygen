@@ -52,11 +52,11 @@ public interface Cell {
     <T> void set(DataKey<T> key, T object);
 
     /**
-     * Gets the {@link Site} of this {@link Cell}.
+     * Gets the center point {@link Vector2d} of this {@link Cell}.
      *
-     * @return The site
+     * @return The center point
      */
-    Site getSite();
+    Vector2d getCenterPoint();
 
     /**
      * Gets whether the specified point {@link Vector2d}
@@ -110,4 +110,11 @@ public interface Cell {
      * @return The edges
      */
     List<Edge> getEdges();
+
+    /**
+     * Gets the {@link Corner}s of this cell.
+     *
+     * @return The corners
+     */
+    List<Corner> getCorners();
 }

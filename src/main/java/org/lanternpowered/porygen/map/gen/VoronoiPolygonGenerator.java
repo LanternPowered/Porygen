@@ -24,6 +24,8 @@
  */
 package org.lanternpowered.porygen.map.gen;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.flowpowered.math.vector.Vector2d;
 import io.github.jdiemke.triangulation.DelaunayTriangulator;
 import io.github.jdiemke.triangulation.NotEnoughPointsException;
@@ -36,9 +38,51 @@ import org.lanternpowered.porygen.util.geom.TriangleHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class VoronoiPolygonGenerator implements CenteredPolygonGenerator {
+
+    // The function to use to generate the center point of a triangle,
+    // by default is a circumcenter used, this is center that should be
+    // used in a real voronoi diagram
+    private Function<Triangle2D, Vector2d> triangleCenterProvider = TriangleHelper::getCircumcenter;
+    // Whether the usage of the triangle center provider will result in convex polygons
+    private boolean isConvex = true;
+
+    /**
+     * Gets the triangle center provider.
+     *
+     * @return The triangle center provider
+     */
+    public Function<Triangle2D, Vector2d> getTriangleCenterProvider() {
+        return this.triangleCenterProvider;
+    }
+
+    /**
+     * Sets the triangle center provider.
+     *
+     * @param provider The triangle center provider
+     */
+    public VoronoiPolygonGenerator setTriangleCenterProvider(
+            Function<Triangle2D, Vector2d> provider) {
+        return setTriangleCenterProvider(provider, false);
+    }
+
+    /**
+     * Sets the triangle center provider.
+     *
+     * @param provider The triangle center provider
+     * @param convexPolygons Whether convex polygons will always be
+     *                       generated when using the provided center provider
+     */
+    public VoronoiPolygonGenerator setTriangleCenterProvider(
+            Function<Triangle2D, Vector2d> provider, boolean convexPolygons) {
+        checkNotNull(provider, "provider");
+        this.triangleCenterProvider = provider;
+        this.isConvex = convexPolygons;
+        return this;
+    }
 
     @Override
     public List<CenteredPolygon> generate(GeneratorContext context, Rectangled rectangle, List<Vector2d> points) {
@@ -59,7 +103,7 @@ public class VoronoiPolygonGenerator implements CenteredPolygonGenerator {
                 final List<VertexEntry> polygonVertices = new ArrayList<>();
                 for (Triangle2D triangle : triangles) {
                     if (triangle.hasVertex(vertex)) {
-                        final Vector2d point = TriangleHelper.getCircumcenter(triangle);
+                        final Vector2d point = this.triangleCenterProvider.apply(triangle);
                         final double angle = Math.atan2(point.getX() - vertex.x, point.getY() - vertex.y);
                         polygonVertices.add(new VertexEntry(point, angle));
                     }
@@ -67,10 +111,16 @@ public class VoronoiPolygonGenerator implements CenteredPolygonGenerator {
                 if (polygonVertices.size() <= 2) { // Not enough vertices
                     continue;
                 }
-                // Create a polygon from vertices that are sorted clockwise
-                final Polygond polygon = Polygond.newConvexPolygon(polygonVertices.stream()
-                        .sorted().map(e -> e.point).collect(Collectors.toList()));
-                centeredPolygons.add(new CenteredPolygon(new Vector2d(vertex.x, vertex.y), polygon));
+                // Create a polygon from vertices that are sorted clockwise+
+                final List<Vector2d> orderedVertices = polygonVertices.stream()
+                        .sorted().map(e -> e.point).collect(Collectors.toList());
+                final Polygond polygon;
+                if (this.isConvex) {
+                    polygon = Polygond.newConvexPolygon(orderedVertices);
+                } else {
+                    polygon = new Polygond(orderedVertices);
+                }
+                centeredPolygons.add(new CenteredPolygon(polygon.getCentroid(), polygon));
             }
         } catch (NotEnoughPointsException e) {
             throw new RuntimeException(e);

@@ -63,6 +63,8 @@ task sourceJar(type: Jar) {
 
     // Include all the source code
     from sourceSets.main.allSource
+    from 'LICENSE.txt'
+    from 'NOTICE'
 }
 assemble.dependsOn sourceJar
 

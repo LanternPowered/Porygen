@@ -28,9 +28,10 @@ import com.flowpowered.math.GenericMath;
 import com.flowpowered.math.vector.Vector2d;
 import com.flowpowered.math.vector.Vector2i;
 import org.lanternpowered.porygen.map.Cell;
+import org.lanternpowered.porygen.map.Corner;
 import org.lanternpowered.porygen.map.DataKey;
 import org.lanternpowered.porygen.map.Edge;
-import org.lanternpowered.porygen.map.Site;
+import org.lanternpowered.porygen.map.gen.CenteredPolygon;
 import org.lanternpowered.porygen.util.geom.Polygond;
 import org.lanternpowered.porygen.util.geom.Rectangled;
 
@@ -41,7 +42,7 @@ import java.util.Set;
 
 public class PorygenCell implements Cell {
 
-    private final Site site;
+    private final Vector2d center;
     private final Polygond polygon;
 
     // A set with all the referenced views
@@ -50,9 +51,9 @@ public class PorygenCell implements Cell {
     // A set with all the chunk coordinates this cell is located in
     final Set<Vector2i> chunks = new HashSet<>();
 
-    PorygenCell(Vector2d center, Polygond polygon) {
-        this.site = new SimpleSite(center, this);
-        this.polygon = polygon;
+    PorygenCell(CenteredPolygon centeredPolygon) {
+        this.center = centeredPolygon.getCenter();
+        this.polygon = centeredPolygon.getPolygon();
 
         double minX = Double.MAX_VALUE;
         double minY = Double.MAX_VALUE;
@@ -86,8 +87,8 @@ public class PorygenCell implements Cell {
     }
 
     @Override
-    public Site getSite() {
-        return this.site;
+    public Vector2d getCenterPoint() {
+        return this.center;
     }
 
     @Override
@@ -106,6 +107,10 @@ public class PorygenCell implements Cell {
     }
 
     @Override public List<Edge> getEdges() {
+        return null;
+    }
+
+    @Override public List<Corner> getCorners() {
         return null;
     }
 }
