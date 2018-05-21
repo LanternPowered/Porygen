@@ -22,23 +22,5 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.util;
-
-import com.flowpowered.math.vector.Vector2d;
-
-abstract class AbstractShape implements Shape {
-
-    @Override
-    public boolean contains(Polygond polygon) {
-        if (!polygon.isConvex() && polygon.trueIntersection(this)) {
-            return false;
-        }
-        for (Vector2d vertex : polygon.getVertices()) {
-            if (!contains(vertex)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-}
+@org.spongepowered.api.util.annotation.NonnullByDefault
+package org.lanternpowered.porygen.util.geom;

@@ -22,35 +22,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.util;
+package org.lanternpowered.porygen.util.geom;
 
-public interface Rectangle<P> extends Shape {
+import com.flowpowered.math.vector.Vector2i;
 
-    /**
-     * Gets the minimum coordinates of this rectangle.
-     *
-     * @return The minimum
-     */
-    P getMin();
+import java.awt.geom.Line2D;
 
-    /**
-     * Gets the maximum coordinates of this rectangle.
-     *
-     * @return The maximum
-     */
-    P getMax();
+public final class Line2i extends AbstractLine2<Vector2i> {
 
-    /**
-     * Converts this {@link Rectangle} into a {@link Rectanglei}.
-     *
-     * @return The int rectangle
-     */
-    Rectanglei toInt();
+    public Line2i(int startX, int startY, int endX, int endY) {
+        this(new Vector2i(startX, startY), new Vector2i(endX, endY));
+    }
 
-    /**
-     * Converts this {@link Rectangle} into a {@link Rectangled}.
-     *
-     * @return The double rectangle
-     */
-    Rectangled toDouble();
+    public Line2i(Vector2i start, Vector2i end) {
+        super(start, end);
+    }
+
+    @Override
+    public boolean intersects(double startX, double startY, double endX, double endY) {
+        return Line2D.linesIntersect(this.start.getX(), this.start.getY(),
+                this.end.getX(), this.end.getY(), startX, startY, endX, endY);
+    }
+
+    @Override
+    public Line2i toInt() {
+        return this;
+    }
+
+    @Override
+    public Line2d toDouble() {
+        return new Line2d(this.start.toDouble(), this.end.toDouble());
+    }
 }

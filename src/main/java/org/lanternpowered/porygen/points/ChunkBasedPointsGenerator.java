@@ -28,9 +28,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.flowpowered.math.vector.Vector2d;
 import org.lanternpowered.porygen.GeneratorContext;
-import org.lanternpowered.porygen.util.Rectangled;
+import org.lanternpowered.porygen.util.geom.Rectangled;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;

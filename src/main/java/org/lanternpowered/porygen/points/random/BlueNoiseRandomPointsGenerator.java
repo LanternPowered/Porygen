@@ -26,13 +26,14 @@ package org.lanternpowered.porygen.points.random;
 
 import com.flowpowered.math.vector.Vector2d;
 import org.lanternpowered.porygen.GeneratorContext;
-import org.lanternpowered.porygen.util.Rectangled;
+import org.lanternpowered.porygen.util.geom.Rectangled;
 
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.function.IntConsumer;
 
 /**
  *
@@ -158,28 +159,7 @@ public final class BlueNoiseRandomPointsGenerator extends AbstractRandomPointsGe
             });
         }
 
-        final int cellAmount = this.xCells * this.yCells;
-        amount = Math.min(amount, cellAmount); // There cannot be more points than the amount of cells
-
-        boolean[] usedCells = this.usedCells.get();
-        // Check if the used cells are initialized, or if the cell amount changed
-        if (usedCells == null || usedCells.length != cellAmount) {
-            this.usedCells.set(usedCells = new boolean[cellAmount]);
-        } else {
-            // Reset the used cells
-            Arrays.fill(usedCells, false);
-        }
-
-        for (int i = 0; i < amount; i++) {
-            int cell;
-            // Keep searching until a empty cell is found
-            while (true) {
-                cell = random.nextInt(cellAmount);
-                if (!usedCells[cell]) {
-                    break;
-                }
-            }
-            usedCells[cell] = true;
+        final IntConsumer pointAdder = cell -> {
             // Get the coordinates from the cell index
             final double cx = cell % this.xCells;
             final double cy = cell / this.xCells;
@@ -188,6 +168,37 @@ public final class BlueNoiseRandomPointsGenerator extends AbstractRandomPointsGe
             final double y = minY + cy * yCellSize + cy * yGapSize + yGapSize / 2.0 + random.nextDouble() * yCellSize;
             // Add the point
             points.add(new Vector2d(x, y));
+        };
+
+        final int cellAmount = this.xCells * this.yCells;
+        if (amount >= cellAmount) {
+            // All cells have to be populated, so don't
+            // go random through all the cells
+            for (int i = 0; i < amount; i++) {
+                pointAdder.accept(i);
+            }
+        } else {
+            boolean[] usedCells = this.usedCells.get();
+            // Check if the used cells are initialized, or if the cell amount changed
+            if (usedCells == null || usedCells.length != cellAmount) {
+                this.usedCells.set(usedCells = new boolean[cellAmount]);
+            } else {
+                // Reset the used cells
+                Arrays.fill(usedCells, false);
+            }
+
+            for (int i = 0; i < amount; i++) {
+                int cell;
+                // Keep searching until a empty cell is found
+                while (true) {
+                    cell = random.nextInt(cellAmount);
+                    if (!usedCells[cell]) {
+                        break;
+                    }
+                }
+                usedCells[cell] = true;
+                pointAdder.accept(cell);
+            }
         }
 
         return points;

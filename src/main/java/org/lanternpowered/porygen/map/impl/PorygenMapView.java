@@ -28,8 +28,8 @@ import org.lanternpowered.porygen.map.Cell;
 import org.lanternpowered.porygen.map.CellMap;
 import org.lanternpowered.porygen.map.CellMapView;
 import org.lanternpowered.porygen.map.Site;
-import org.lanternpowered.porygen.util.Rectangled;
-import org.lanternpowered.porygen.util.Rectanglei;
+import org.lanternpowered.porygen.util.geom.Rectangled;
+import org.lanternpowered.porygen.util.geom.Rectanglei;
 
 import java.util.Collections;
 import java.util.List;

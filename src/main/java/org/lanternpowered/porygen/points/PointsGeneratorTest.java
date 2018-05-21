@@ -31,8 +31,8 @@ import org.lanternpowered.porygen.GeneratorContext;
 import org.lanternpowered.porygen.map.gen.CenteredPolygon;
 import org.lanternpowered.porygen.map.gen.VoronoiPolygonGenerator;
 import org.lanternpowered.porygen.points.random.BlueNoiseRandomPointsGenerator;
-import org.lanternpowered.porygen.util.Rangei;
-import org.lanternpowered.porygen.util.Rectangled;
+import org.lanternpowered.porygen.util.geom.Rangei;
+import org.lanternpowered.porygen.util.geom.Rectangled;
 import org.lanternpowered.porygen.util.dsi.SeedUtil;
 import org.lanternpowered.porygen.util.dsi.XoRoShiRo128PlusRandom;
 

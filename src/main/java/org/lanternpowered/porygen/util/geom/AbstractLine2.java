@@ -22,42 +22,59 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.util;
+package org.lanternpowered.porygen.util.geom;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
 
-public final class Rangei {
+abstract class AbstractLine2<P extends Comparable<P>> implements Line2<P> {
 
-    private final int min;
-    private final int max;
+    final P start;
+    final P end;
 
-    public Rangei(int min, int max) {
-        this.min = Math.min(min, max);
-        this.max = Math.max(min, max);
+    AbstractLine2(P start, P end) {
+        checkNotNull(start, "start");
+        checkNotNull(end, "end");
+        if (start.compareTo(end) < 0) {
+            this.start = start;
+            this.end = end;
+        } else {
+            this.start = end;
+            this.end = start;
+        }
     }
 
-    public int getMin() {
-        return this.min;
+    @Override
+    public P getStart() {
+        return this.start;
     }
 
-    public int getMax() {
-        return this.max;
+    @Override
+    public P getEnd() {
+        return this.end;
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("min", this.min)
-                .add("max", this.max)
+                .add("start", this.start)
+                .add("end", this.end)
                 .toString();
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null || obj.getClass() != getClass()) {
+    public boolean equals(Object object) {
+        if (object == null || object.getClass() != getClass()) {
             return false;
         }
-        final Rangei that = (Rangei) obj;
-        return that.min == this.min && that.max == this.max;
+        final AbstractLine2 other = (AbstractLine2) object;
+        return other.start.equals(this.start) && other.end.equals(this.end);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(this.start, this.end);
     }
 }

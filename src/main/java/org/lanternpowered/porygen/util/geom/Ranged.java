@@ -22,59 +22,42 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.util;
-
-import static com.google.common.base.Preconditions.checkNotNull;
+package org.lanternpowered.porygen.util.geom;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 
-abstract class AbstractLine2<P extends Comparable<P>> implements Line2<P> {
+public final class Ranged {
 
-    final P start;
-    final P end;
+    private final double min;
+    private final double max;
 
-    AbstractLine2(P start, P end) {
-        checkNotNull(start, "start");
-        checkNotNull(end, "end");
-        if (start.compareTo(end) < 0) {
-            this.start = start;
-            this.end = end;
-        } else {
-            this.start = end;
-            this.end = start;
-        }
+    public Ranged(double min, double max) {
+        this.min = Math.min(min, max);
+        this.max = Math.max(min, max);
     }
 
-    @Override
-    public P getStart() {
-        return this.start;
+    public double getMin() {
+        return this.min;
     }
 
-    @Override
-    public P getEnd() {
-        return this.end;
+    public double getMax() {
+        return this.max;
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("start", this.start)
-                .add("end", this.end)
+                .add("min", this.min)
+                .add("max", this.max)
                 .toString();
     }
 
     @Override
-    public boolean equals(Object object) {
-        if (object == null || object.getClass() != getClass()) {
+    public boolean equals(Object obj) {
+        if (obj == null || obj.getClass() != getClass()) {
             return false;
         }
-        final AbstractLine2 other = (AbstractLine2) object;
-        return other.start.equals(this.start) && other.end.equals(this.end);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(this.start, this.end);
+        final Ranged that = (Ranged) obj;
+        return that.min == this.min && that.max == this.max;
     }
 }

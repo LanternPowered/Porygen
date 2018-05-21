@@ -26,8 +26,8 @@ package org.lanternpowered.porygen.map;
 
 import com.flowpowered.math.vector.Vector2d;
 import com.flowpowered.math.vector.Vector2i;
-import org.lanternpowered.porygen.util.Rectangled;
-import org.lanternpowered.porygen.util.Rectanglei;
+import org.lanternpowered.porygen.util.geom.Rectangled;
+import org.lanternpowered.porygen.util.geom.Rectanglei;
 
 import java.util.List;
 

@@ -30,9 +30,9 @@ import io.github.jdiemke.triangulation.NotEnoughPointsException;
 import io.github.jdiemke.triangulation.Triangle2D;
 import io.github.jdiemke.triangulation.Vector2D;
 import org.lanternpowered.porygen.GeneratorContext;
-import org.lanternpowered.porygen.util.Polygond;
-import org.lanternpowered.porygen.util.Rectangled;
-import org.lanternpowered.porygen.util.TriangleHelper;
+import org.lanternpowered.porygen.util.geom.Polygond;
+import org.lanternpowered.porygen.util.geom.Rectangled;
+import org.lanternpowered.porygen.util.geom.TriangleHelper;
 
 import java.util.ArrayList;
 import java.util.List;

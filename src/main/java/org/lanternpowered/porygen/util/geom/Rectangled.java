@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.util;
+package org.lanternpowered.porygen.util.geom;
 
 import com.flowpowered.math.GenericMath;
 import com.flowpowered.math.vector.Vector2d;

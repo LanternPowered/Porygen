@@ -29,7 +29,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.flowpowered.math.vector.Vector2d;
 import com.google.common.base.MoreObjects;
 import org.lanternpowered.porygen.points.PointsGenerator;
-import org.lanternpowered.porygen.util.Polygond;
+import org.lanternpowered.porygen.util.geom.Polygond;
 
 import java.util.Arrays;
 

@@ -31,8 +31,8 @@ import org.lanternpowered.porygen.map.Cell;
 import org.lanternpowered.porygen.map.DataKey;
 import org.lanternpowered.porygen.map.Edge;
 import org.lanternpowered.porygen.map.Site;
-import org.lanternpowered.porygen.util.Polygond;
-import org.lanternpowered.porygen.util.Rectangled;
+import org.lanternpowered.porygen.util.geom.Polygond;
+import org.lanternpowered.porygen.util.geom.Rectangled;
 
 import java.util.HashSet;
 import java.util.List;

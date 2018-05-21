@@ -22,25 +22,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.util;
+package org.lanternpowered.porygen.util.geom;
 
 import com.google.common.base.MoreObjects;
 
-public final class Ranged {
+public final class Rangei {
 
-    private final double min;
-    private final double max;
+    private final int min;
+    private final int max;
 
-    public Ranged(double min, double max) {
+    public Rangei(int min, int max) {
         this.min = Math.min(min, max);
         this.max = Math.max(min, max);
     }
 
-    public double getMin() {
+    public int getMin() {
         return this.min;
     }
 
-    public double getMax() {
+    public int getMax() {
         return this.max;
     }
 
@@ -57,7 +57,7 @@ public final class Ranged {
         if (obj == null || obj.getClass() != getClass()) {
             return false;
         }
-        final Ranged that = (Ranged) obj;
+        final Rangei that = (Rangei) obj;
         return that.min == this.min && that.max == this.max;
     }
 }

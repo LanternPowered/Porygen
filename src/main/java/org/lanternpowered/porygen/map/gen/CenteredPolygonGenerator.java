@@ -27,7 +27,7 @@ package org.lanternpowered.porygen.map.gen;
 import com.flowpowered.math.vector.Vector2d;
 import org.lanternpowered.porygen.GeneratorContext;
 import org.lanternpowered.porygen.map.Cell;
-import org.lanternpowered.porygen.util.Rectangled;
+import org.lanternpowered.porygen.util.geom.Rectangled;
 
 import java.util.List;
 

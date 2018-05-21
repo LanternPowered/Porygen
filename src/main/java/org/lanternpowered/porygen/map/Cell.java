@@ -26,7 +26,7 @@ package org.lanternpowered.porygen.map;
 
 import com.flowpowered.math.vector.Vector2d;
 import com.flowpowered.math.vector.Vector2i;
-import org.lanternpowered.porygen.util.Polygond;
+import org.lanternpowered.porygen.util.geom.Polygond;
 
 import java.util.List;
 import java.util.Optional;

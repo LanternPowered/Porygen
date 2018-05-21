@@ -22,35 +22,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.util;
+package org.lanternpowered.porygen.util.geom;
 
 import com.flowpowered.math.vector.Vector2d;
 
-import java.awt.geom.Line2D;
-
-public final class Line2d extends AbstractLine2<Vector2d> {
-
-    public Line2d(double startX, double startY, double endX, double endY) {
-        this(new Vector2d(startX, startY), new Vector2d(endX, endY));
-    }
-
-    public Line2d(Vector2d start, Vector2d end) {
-        super(start, end);
-    }
+abstract class AbstractShape implements Shape {
 
     @Override
-    public boolean intersects(double startX, double startY, double endX, double endY) {
-        return Line2D.linesIntersect(this.start.getX(), this.start.getY(),
-                this.end.getX(), this.end.getY(), startX, startY, endX, endY);
+    public boolean contains(Polygond polygon) {
+        if (!polygon.isConvex() && polygon.trueIntersection(this)) {
+            return false;
+        }
+        for (Vector2d vertex : polygon.getVertices()) {
+            if (!contains(vertex)) {
+                return false;
+            }
+        }
+        return true;
     }
 
-    @Override
-    public Line2i toInt() {
-        return new Line2i(this.start.toInt(), this.end.toInt());
-    }
-
-    @Override
-    public Line2d toDouble() {
-        return this;
-    }
 }

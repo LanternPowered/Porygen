@@ -24,7 +24,7 @@
  */
 package org.lanternpowered.porygen.map;
 
-import org.lanternpowered.porygen.util.Line2d;
+import org.lanternpowered.porygen.util.geom.Line2d;
 
 import java.util.List;
 

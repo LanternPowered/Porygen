@@ -22,35 +22,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.util;
+package org.lanternpowered.porygen.util.geom;
 
 import com.flowpowered.math.vector.Vector2d;
-import io.github.jdiemke.triangulation.Triangle2D;
-import io.github.jdiemke.triangulation.Vector2D;
 
-public final class TriangleHelper {
+import java.awt.geom.Line2D;
 
-    /**
-     * Gets the circumcenter from the given {@link Triangle2D}.
-     *
-     * @param triangle The triangle
-     * @return The circumcenter
-     */
-    public static Vector2d getCircumcenter(Triangle2D triangle) {
-        final Vector2D a = triangle.a;
-        final Vector2D b = triangle.b;
-        final Vector2D c = triangle.c;
+public final class Line2d extends AbstractLine2<Vector2d> {
 
-        final Vector2D abCenter = a.add(b).mult(0.5);
-        final Vector2D bcCenter = b.add(c).mult(0.5);
+    public Line2d(double startX, double startY, double endX, double endY) {
+        this(new Vector2d(startX, startY), new Vector2d(endX, endY));
+    }
 
-        final double abSlope = -1.0 / ((b.y - a.y) / (b.x - a.x));
-        final double bcSlope = -1.0 / ((c.y - b.y) / (c.x - b.x));
+    public Line2d(Vector2d start, Vector2d end) {
+        super(start, end);
+    }
 
-        final double bAB = abCenter.y - abSlope * abCenter.x;
-        final double bBC = bcCenter.y - bcSlope * bcCenter.x;
+    @Override
+    public boolean intersects(double startX, double startY, double endX, double endY) {
+        return Line2D.linesIntersect(this.start.getX(), this.start.getY(),
+                this.end.getX(), this.end.getY(), startX, startY, endX, endY);
+    }
 
-        final double x = (bAB - bBC) / (bcSlope - abSlope);
-        return new Vector2d(x, abSlope * x + bAB);
+    @Override
+    public Line2i toInt() {
+        return new Line2i(this.start.toInt(), this.end.toInt());
+    }
+
+    @Override
+    public Line2d toDouble() {
+        return this;
     }
 }

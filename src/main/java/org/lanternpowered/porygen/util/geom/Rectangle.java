@@ -22,34 +22,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.points.random;
+package org.lanternpowered.porygen.util.geom;
 
-import org.lanternpowered.porygen.points.PointsGenerator;
-import org.lanternpowered.porygen.util.geom.Rangei;
-
-@SuppressWarnings("unchecked")
-public abstract class AbstractRandomPointsGenerator<T extends AbstractRandomPointsGenerator> implements PointsGenerator {
-
-    private Rangei points = new Rangei(1, 10);
+public interface Rectangle<P> extends Shape {
 
     /**
-     * Gets the {@link Rangei} of points
-     * that will be generated.
+     * Gets the minimum coordinates of this rectangle.
      *
-     * @return The points range
+     * @return The minimum
      */
-    public Rangei getPoints() {
-        return this.points;
-    }
+    P getMin();
 
     /**
-     * Sets the {@link Rangei} of points
-     * that will be generated.
+     * Gets the maximum coordinates of this rectangle.
      *
-     * @param points The points range
+     * @return The maximum
      */
-    public T setPoints(Rangei points) {
-        this.points = points;
-        return (T) this;
-    }
+    P getMax();
+
+    /**
+     * Converts this {@link Rectangle} into a {@link Rectanglei}.
+     *
+     * @return The int rectangle
+     */
+    Rectanglei toInt();
+
+    /**
+     * Converts this {@link Rectangle} into a {@link Rectangled}.
+     *
+     * @return The double rectangle
+     */
+    Rectangled toDouble();
 }
