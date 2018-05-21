@@ -174,7 +174,7 @@ public final class BlueNoiseRandomPointsGenerator extends AbstractRandomPointsGe
         if (amount >= cellAmount) {
             // All cells have to be populated, so don't
             // go random through all the cells
-            for (int i = 0; i < amount; i++) {
+            for (int i = 0; i < cellAmount; i++) {
                 pointAdder.accept(i);
             }
         } else {
