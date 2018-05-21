@@ -103,4 +103,20 @@ public interface Line2<P> {
     default boolean intersects(int startX, int startY, int endX, int endY) {
         return intersects((double) startX, (double) startY, (double) endX, (double) endY);
     }
+
+    /**
+     * Converts this {@link Line2}
+     * into a {@link Line2i}.
+     *
+     * @return The int line
+     */
+    Line2i toInt();
+
+    /**
+     * Converts this {@link Line2}
+     * into a {@link Line2d}.
+     *
+     * @return The double line
+     */
+    Line2d toDouble();
 }

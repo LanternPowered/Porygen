@@ -43,4 +43,14 @@ public final class Line2d extends AbstractLine2<Vector2d> {
         return Line2D.linesIntersect(this.start.getX(), this.start.getY(),
                 this.end.getX(), this.end.getY(), startX, startY, endX, endY);
     }
+
+    @Override
+    public Line2i toInt() {
+        return new Line2i(this.start.toInt(), this.end.toInt());
+    }
+
+    @Override
+    public Line2d toDouble() {
+        return this;
+    }
 }

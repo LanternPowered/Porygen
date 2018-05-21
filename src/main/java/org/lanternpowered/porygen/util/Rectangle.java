@@ -39,4 +39,18 @@ public interface Rectangle<P> extends Shape {
      * @return The maximum
      */
     P getMax();
+
+    /**
+     * Converts this {@link Rectangle} into a {@link Rectanglei}.
+     *
+     * @return The int rectangle
+     */
+    Rectanglei toInt();
+
+    /**
+     * Converts this {@link Rectangle} into a {@link Rectangled}.
+     *
+     * @return The double rectangle
+     */
+    Rectangled toDouble();
 }

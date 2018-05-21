@@ -30,17 +30,19 @@ import com.flowpowered.math.vector.Vector2i;
 public interface Shape {
 
     /**
-     * Gets whether the given {@link Rectangle}
+     * Gets whether the given {@link Shape}
      * is located inside this {@link Shape}.
      *
-     * @param rectangle The rectangle
-     * @return Whether the rectangle is located inside this 2d shape
+     * @param shape The shape
+     * @return Whether the shape is located inside this 2d shape
      */
-    default boolean contains(Rectangle rectangle) {
-        if (rectangle instanceof Rectangled) {
-            return contains((Rectangled) rectangle);
-        } else if (rectangle instanceof Rectanglei) {
-            return contains((Rectanglei) rectangle);
+    default boolean contains(Shape shape) {
+        if (shape instanceof Rectangled) {
+            return contains((Rectangled) shape);
+        } else if (shape instanceof Rectanglei) {
+            return contains((Rectanglei) shape);
+        } else if (shape instanceof Polygond) {
+            return contains((Polygond) shape);
         }
         throw new IllegalStateException();
     }
@@ -107,17 +109,19 @@ public interface Shape {
     boolean contains(Polygond polygon);
 
     /**
-     * Gets whether the given {@link Rectangle}
+     * Gets whether the given {@link Shape}
      * intersects with this {@link Shape}.
      *
-     * @param rectangle The rectangle
-     * @return Whether the rectangle is intersecting with this shape
+     * @param shape The shape
+     * @return Whether the shape is intersecting with this shape
      */
-    default boolean intersects(Rectangle rectangle) {
-        if (rectangle instanceof Rectangled) {
-            return intersects((Rectangled) rectangle);
-        } else if (rectangle instanceof Rectanglei) {
-            return intersects((Rectanglei) rectangle);
+    default boolean intersects(Shape shape) {
+        if (shape instanceof Rectangled) {
+            return intersects((Rectangled) shape);
+        } else if (shape instanceof Rectanglei) {
+            return intersects((Rectanglei) shape);
+        } else if (shape instanceof Polygond) {
+            return intersects((Polygond) shape);
         }
         throw new IllegalStateException();
     }

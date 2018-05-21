@@ -55,6 +55,18 @@ public final class Rectanglei extends AbstractRectangle<Vector2i> {
                 y <= this.max.getY() && y >= this.min.getY();
     }
 
+    @Override
+    public Rectanglei toInt() {
+        return this;
+    }
+
+    @Override
+    public Rectangled toDouble() {
+        final Vector2i min = getMin();
+        final Vector2i max = getMax();
+        return new Rectangled(min.getX(), min.getY(), max.getX(), max.getY());
+    }
+
     /**
      * Converts this {@link Rectangled} into
      * a drawable {@link Polygon}.

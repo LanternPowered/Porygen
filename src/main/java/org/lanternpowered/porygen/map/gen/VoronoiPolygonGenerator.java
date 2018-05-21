@@ -68,7 +68,7 @@ public class VoronoiPolygonGenerator implements CenteredPolygonGenerator {
                     continue;
                 }
                 // Create a polygon from vertices that are sorted clockwise
-                final Polygond polygon = new Polygond(polygonVertices.stream()
+                final Polygond polygon = Polygond.newConvexPolygon(polygonVertices.stream()
                         .sorted().map(e -> e.point).collect(Collectors.toList()));
                 centeredPolygons.add(new CenteredPolygon(new Vector2d(vertex.x, vertex.y), polygon));
             }

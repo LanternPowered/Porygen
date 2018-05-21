@@ -30,6 +30,9 @@ abstract class AbstractShape implements Shape {
 
     @Override
     public boolean contains(Polygond polygon) {
+        if (!polygon.isConvex() && polygon.trueIntersection(this)) {
+            return false;
+        }
         for (Vector2d vertex : polygon.getVertices()) {
             if (!contains(vertex)) {
                 return false;
