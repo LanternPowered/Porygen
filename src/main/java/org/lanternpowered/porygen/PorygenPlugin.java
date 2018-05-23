@@ -35,6 +35,10 @@ import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.world.GeneratorType;
+import org.spongepowered.api.world.gen.WorldGeneratorModifier;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Plugin(id = "porygen")
 public final class PorygenPlugin {
@@ -42,6 +46,11 @@ public final class PorygenPlugin {
     private final Logger logger;
     private final PluginContainer container;
     private final Game game;
+
+    /**
+     * All the {@link PorygenGeneratorType}s that will be registered by the plugin.
+     */
+    private final List<PorygenGeneratorType> generatorTypes = new ArrayList<>();
 
     @Inject
     public PorygenPlugin(Logger logger, PluginContainer container, Game game) {
@@ -52,6 +61,17 @@ public final class PorygenPlugin {
 
     @Listener
     public void onGamePreInit(GamePreInitializationEvent event) {
+        this.logger.info("Registering generator types...");
+
+        // Register the generator types
+        this.generatorTypes.add(new OverworldGeneratorType("overworld", "Porygen Overworld"));
+        this.generatorTypes.add(new NetherGeneratorType("nether", "Porygen Nether"));
+        this.generatorTypes.add(new TheEndGeneratorType("the_end", "Porygen The End"));
+
+        // TODO
+        // These will just be the same as overworld, but with some custom settings
+        this.generatorTypes.add(new OverworldGeneratorType("amplified", "Porygen Amplified Overworld"));
+        this.generatorTypes.add(new OverworldGeneratorType("large_biomes", "Porygen Large Biomes Overworld"));
     }
 
     @Listener
@@ -63,16 +83,30 @@ public final class PorygenPlugin {
     }
 
     @Listener
-    public void onRegisterGeneratorTypes(GameRegistryEvent.Register<GeneratorType> event) {
-        // Register the generator types
-        event.register(new OverworldGeneratorType("overworld", "Porygen Overworld"));
-        event.register(new NetherGeneratorType("nether", "Porygen Nether"));
-        event.register(new TheEndGeneratorType("the_end", "Porygen The End"));
+    public void onRegisterGeneratorModifiers(GameRegistryEvent.Register<WorldGeneratorModifier> event) {
+        this.logger.info("Registering world generator modifiers...");
 
-        // TODO
-        // These will just be the same as overworld, but with some custom settings
-        event.register(new OverworldGeneratorType("amplified", "Porygen Amplified Overworld"));
-        event.register(new OverworldGeneratorType("large_biomes", "Porygen Large Biomes Overworld"));
+        for (PorygenGeneratorType generatorType : this.generatorTypes) {
+            this.logger.info("Registered the generator modifier '{}' with the name '{}'",
+                    generatorType.getId(), generatorType.getName());
+            event.register(generatorType);
+        }
+    }
+
+    /**
+     * Will only be called on platforms that support custom {@link GeneratorType}s.
+     *
+     * @param event The event
+     */
+    @Listener
+    public void onRegisterGeneratorTypes(GameRegistryEvent.Register<GeneratorType> event) {
+        this.logger.info("Registering generator types...");
+
+        for (PorygenGeneratorType generatorType : this.generatorTypes) {
+            this.logger.info("Registered the generator type '{}' with the name '{}'",
+                    generatorType.getId(), generatorType.getName());
+            event.register(new GeneratorModifierToType(generatorType));
+        }
 
         // The default-world-gen.json is lantern related, a way to register the porygen
         // generator types as the default ones. The lantern default ones are flat generator,

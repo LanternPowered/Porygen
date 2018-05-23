@@ -25,7 +25,9 @@
 package org.lanternpowered.porygen;
 
 import org.spongepowered.api.data.DataContainer;
+import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.world.gen.WorldGenerator;
+import org.spongepowered.api.world.storage.WorldProperties;
 
 public class NetherGeneratorType extends PorygenGeneratorType {
 
@@ -37,14 +39,13 @@ public class NetherGeneratorType extends PorygenGeneratorType {
     }
 
     @Override
-    protected void applyToSettings(DataContainer container) {
+    protected void applyToSettings(DataView dataView) {
         // Will be read by lantern, it is used to determine the height of a dimension
         // See Dimension#getHeight()
-        container.set(GENERATOR_HEIGHT, MAX_GENERATOR_HEIGHT);
+        dataView.set(GENERATOR_HEIGHT, MAX_GENERATOR_HEIGHT);
     }
 
     @Override
-    protected void applyToGenerator(WorldGenerator worldGenerator) {
-
+    public void modifyWorldGenerator(WorldProperties world, DataContainer settings, WorldGenerator worldGenerator) {
     }
 }

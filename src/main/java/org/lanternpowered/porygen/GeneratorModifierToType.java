@@ -25,21 +25,46 @@
 package org.lanternpowered.porygen;
 
 import org.spongepowered.api.data.DataContainer;
-import org.spongepowered.api.data.DataView;
+import org.spongepowered.api.world.GeneratorType;
+import org.spongepowered.api.world.GeneratorTypes;
+import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.gen.WorldGenerator;
-import org.spongepowered.api.world.storage.WorldProperties;
+import org.spongepowered.api.world.gen.WorldGeneratorModifier;
 
-public class OverworldGeneratorType extends PorygenGeneratorType {
+/**
+ * Wraps around a {@link PorygenGeneratorType} which implements
+ * a {@link WorldGeneratorModifier} to support {@link GeneratorType}s
+ * on lantern or other platforms that support custom {@link GeneratorType}s.
+ */
+final class GeneratorModifierToType implements GeneratorType {
 
-    OverworldGeneratorType(String id, String name) {
-        super(id, name);
+    private final PorygenGeneratorType generatorType;
+
+    GeneratorModifierToType(PorygenGeneratorType generatorType) {
+        this.generatorType = generatorType;
     }
 
     @Override
-    protected void applyToSettings(DataView dataView) {
+    public DataContainer getGeneratorSettings() {
+        final DataContainer dataContainer = DataContainer.createNew();
+        this.generatorType.applyToSettings(dataContainer);
+        return dataContainer;
     }
 
     @Override
-    public void modifyWorldGenerator(WorldProperties world, DataContainer settings, WorldGenerator worldGenerator) {
+    public WorldGenerator createGenerator(World world) {
+        final WorldGenerator generator = GeneratorTypes.FLAT.createGenerator(world);
+        this.generatorType.modifyWorldGenerator(world.getProperties(), world.getProperties().getGeneratorSettings(), generator);
+        return generator;
+    }
+
+    @Override
+    public String getId() {
+        return this.generatorType.getId();
+    }
+
+    @Override
+    public String getName() {
+        return this.generatorType.getName();
     }
 }

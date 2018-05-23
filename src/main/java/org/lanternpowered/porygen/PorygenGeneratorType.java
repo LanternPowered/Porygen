@@ -25,14 +25,11 @@
 package org.lanternpowered.porygen;
 
 import org.lanternpowered.porygen.catalog.AbstractCatalogType;
-import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
-import org.spongepowered.api.world.GeneratorType;
-import org.spongepowered.api.world.GeneratorTypes;
-import org.spongepowered.api.world.World;
-import org.spongepowered.api.world.gen.WorldGenerator;
+import org.spongepowered.api.data.DataView;
+import org.spongepowered.api.world.gen.WorldGeneratorModifier;
 
-public abstract class PorygenGeneratorType extends AbstractCatalogType implements GeneratorType {
+public abstract class PorygenGeneratorType extends AbstractCatalogType implements WorldGeneratorModifier {
 
     protected static final DataQuery MINIMAL_SPAWN_HEIGHT = DataQuery.of('.', "Lantern.MinimalSpawnHeight");
     protected static final DataQuery GENERATOR_HEIGHT = DataQuery.of('.', "Lantern.GeneratorHeight");
@@ -41,23 +38,10 @@ public abstract class PorygenGeneratorType extends AbstractCatalogType implement
         super(id, name);
     }
 
-    @Override
-    public DataContainer getGeneratorSettings() {
-        final DataContainer dataContainer = DataContainer.createNew();
-        applyToSettings(dataContainer);
-        return dataContainer;
-    }
-
-    @Override
-    public WorldGenerator createGenerator(World world) {
-        // Just generate a base WorldGenerator that we can modify, we want an
-        // actual generator type so no WorldGeneratorModifier
-        final WorldGenerator generator = GeneratorTypes.FLAT.createGenerator(world);
-        applyToGenerator(generator);
-        return generator;
-    }
-
-    protected abstract void applyToSettings(DataContainer container);
-
-    protected abstract void applyToGenerator(WorldGenerator worldGenerator);
+    /**
+     * Applies the default settings to the given {@link DataView}.
+     *
+     * @param dataView The data view
+     */
+    protected abstract void applyToSettings(DataView dataView);
 }

@@ -25,7 +25,9 @@
 package org.lanternpowered.porygen;
 
 import org.spongepowered.api.data.DataContainer;
+import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.world.gen.WorldGenerator;
+import org.spongepowered.api.world.storage.WorldProperties;
 
 public class TheEndGeneratorType extends PorygenGeneratorType {
 
@@ -34,10 +36,10 @@ public class TheEndGeneratorType extends PorygenGeneratorType {
     }
 
     @Override
-    protected void applyToSettings(DataContainer container) {
+    protected void applyToSettings(DataView dataView) {
     }
 
     @Override
-    protected void applyToGenerator(WorldGenerator worldGenerator) {
+    public void modifyWorldGenerator(WorldProperties world, DataContainer settings, WorldGenerator worldGenerator) {
     }
 }
