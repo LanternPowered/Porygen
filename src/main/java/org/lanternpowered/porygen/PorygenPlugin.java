@@ -25,6 +25,7 @@
 package org.lanternpowered.porygen;
 
 import com.google.inject.Inject;
+import org.lanternpowered.porygen.populator.PorygenPopulatorType;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.event.Listener;
@@ -35,10 +36,14 @@ import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.world.GeneratorType;
+import org.spongepowered.api.world.gen.PopulatorType;
 import org.spongepowered.api.world.gen.WorldGeneratorModifier;
+import org.spongepowered.api.world.gen.populator.RandomBlock;
+import org.spongepowered.api.world.gen.populator.RandomObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 @Plugin(id = "porygen")
 public final class PorygenPlugin {
@@ -111,6 +116,26 @@ public final class PorygenPlugin {
         // The default-world-gen.json is lantern related, a way to register the porygen
         // generator types as the default ones. The lantern default ones are flat generator,
         // this plugin is required for awesomeness.
+    }
+
+    /**
+     * Will only be called on platforms that support custom {@link GeneratorType}s.
+     *
+     * @param event The event
+     */
+    @Listener
+    public void onRegisterPopulatorTypes(GameRegistryEvent.Register<PopulatorType> event) {
+        this.logger.info("Registering world populator types...");
+
+        final Consumer<PopulatorType> register = type -> {
+            event.register(type);
+            this.logger.info("Registered the populator type '{}' with the name '{}'",
+                    type.getId(), type.getName());
+        };
+
+        // A few alias populator types, to reflect their class name
+        register.accept(new PorygenPopulatorType<>("random_object", "Random Object", RandomObject.class));
+        register.accept(new PorygenPopulatorType<>("random_block", "Random Block", RandomBlock.class));
     }
 
     /**

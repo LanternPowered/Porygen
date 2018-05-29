@@ -36,6 +36,7 @@ import org.lanternpowered.porygen.util.geom.Rangei;
 import org.lanternpowered.porygen.util.geom.Rectangled;
 import org.lanternpowered.porygen.util.dsi.SeedUtil;
 import org.lanternpowered.porygen.util.dsi.XoRoShiRo128PlusRandom;
+import org.lanternpowered.porygen.util.geom.Rectanglei;
 import org.lanternpowered.porygen.util.geom.TriangleHelper;
 
 import java.awt.BorderLayout;
@@ -117,10 +118,7 @@ public class PointsGeneratorTest {
         final List<Vector2d> points = generator.generatePoints(
                 context, random, new Rectangled(0, 0, width, height));
         graphics.setColor(Color.BLACK);
-        graphics.drawLine(0, 0, width - 1, 0);
-        graphics.drawLine(width - 1, 0, width - 1, height - 1);
-        graphics.drawLine(0, 0, 0, height - 1);
-        graphics.drawLine(0, height - 1, width - 1, height - 1);
+        graphics.drawPolygon(new Rectanglei(0, 0, width - 1, height - 1).toDrawable());
         for (Vector2d point : points) {
             final int x = point.getFloorX();
             final int y = point.getFloorY();
