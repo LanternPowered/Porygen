@@ -22,42 +22,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.util.geom;
+package org.lanternpowered.porygen.settings.json.populator;
 
-import com.google.common.base.MoreObjects;
+import static org.lanternpowered.porygen.settings.json.populator.PopulatorParserConstants.HEIGHT;
+import static org.lanternpowered.porygen.settings.json.populator.PopulatorParserConstants.PER_CHUNK;
 
-public final class Rangei {
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import org.lanternpowered.porygen.settings.json.JsonDeserializationContext;
+import org.lanternpowered.porygen.settings.json.JsonDeserializer;
+import org.spongepowered.api.util.weighted.VariableAmount;
+import org.spongepowered.api.world.gen.populator.Reed;
 
-    private final int min;
-    private final int max;
+import java.lang.reflect.Type;
 
-    public Rangei(int min, int max) {
-        this.min = Math.min(min, max);
-        this.max = Math.max(min, max);
-    }
-
-    public int getMin() {
-        return this.min;
-    }
-
-    public int getMax() {
-        return this.max;
-    }
+public class ReedParser implements JsonDeserializer<Reed> {
 
     @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("min", this.min)
-                .add("max", this.max)
-                .toString();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null || obj.getClass() != getClass()) {
-            return false;
-        }
-        final Rangei that = (Rangei) obj;
-        return that.min == this.min && that.max == this.max;
+    public Reed deserialize(JsonElement element, Type type, JsonDeserializationContext ctx) throws JsonParseException {
+        final Reed.Builder builder = Reed.builder();
+        ctx.ifPresent(PER_CHUNK, VariableAmount.class, builder::perChunk);
+        ctx.ifPresent(HEIGHT, VariableAmount.class, builder::reedHeight);
+        return builder.build();
     }
 }

@@ -26,11 +26,10 @@ package org.lanternpowered.porygen.settings.json.populator;
 
 import static org.lanternpowered.porygen.settings.json.populator.PopulatorParserConstants.EXCLUSION_RADIUS;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import org.lanternpowered.porygen.settings.json.JsonDeserializationContext;
+import org.lanternpowered.porygen.settings.json.JsonDeserializer;
 import org.spongepowered.api.world.gen.populator.ChorusFlower;
 
 import java.lang.reflect.Type;
@@ -39,11 +38,8 @@ public class ChorusFlowerParser implements JsonDeserializer<ChorusFlower> {
 
     @Override
     public ChorusFlower deserialize(JsonElement element, Type type, JsonDeserializationContext ctx) throws JsonParseException {
-        final JsonObject obj = element.getAsJsonObject();
         final ChorusFlower.Builder builder = ChorusFlower.builder();
-        if (obj.has(EXCLUSION_RADIUS)) {
-            builder.exclusionRadius(obj.get(EXCLUSION_RADIUS).getAsInt());
-        }
+        ctx.ifIntPresent(EXCLUSION_RADIUS, builder::exclusionRadius);
         return builder.build();
     }
 }

@@ -25,7 +25,7 @@
 package org.lanternpowered.porygen.points.random;
 
 import org.lanternpowered.porygen.points.PointsGenerator;
-import org.lanternpowered.porygen.util.geom.Rangei;
+import org.lanternpowered.porygen.util.Rangei;
 
 @SuppressWarnings("unchecked")
 public abstract class AbstractRandomPointsGenerator<T extends AbstractRandomPointsGenerator> implements PointsGenerator {

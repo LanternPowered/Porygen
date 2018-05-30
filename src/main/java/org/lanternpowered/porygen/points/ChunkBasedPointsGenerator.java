@@ -98,15 +98,6 @@ public class ChunkBasedPointsGenerator implements PointsGenerator {
                 final int xEnd = ((x + this.chunksPerXSection - 1) << 4) | 0xf;
                 final int yEnd = ((y + this.chunksPerYSection - 1) << 4) | 0xf;
 
-                /*
-                context.getDebugGraphics().ifPresent(graphics -> {
-                    final Color color = graphics.getColor();
-                    graphics.setColor(Color.RED);
-                    graphics.drawRect(xStart, yStart, xEnd - xStart, yEnd - yStart);
-                    graphics.setColor(color);
-                });
-                */
-
                 final Rectangled chunkArea = new Rectangled(xStart, yStart, xEnd, yEnd);
                 random.setSeed(((long) x * 341873128712L + (long) y * 132897987541L) ^ worldSeed);
 

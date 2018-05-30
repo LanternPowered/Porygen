@@ -24,14 +24,14 @@
  */
 package org.lanternpowered.porygen.settings.json.populator;
 
+import static org.lanternpowered.porygen.settings.json.populator.PopulatorParserConstants.CHANCE;
 import static org.lanternpowered.porygen.settings.json.populator.PopulatorParserConstants.OBJECT;
-import static org.lanternpowered.porygen.settings.json.populator.PopulatorParserConstants.PROBABILITY;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import org.lanternpowered.porygen.settings.json.JsonDeserializationContext;
+import org.lanternpowered.porygen.settings.json.JsonDeserializer;
 import org.spongepowered.api.world.gen.PopulatorObject;
 import org.spongepowered.api.world.gen.PopulatorObjects;
 import org.spongepowered.api.world.gen.populator.DesertWell;
@@ -49,9 +49,7 @@ public class DesertWellParser implements JsonDeserializer<DesertWell> {
         } else {
             builder.wellObject(PopulatorObjects.DESERT_WELL);
         }
-        if (obj.has(PROBABILITY)) {
-            builder.probability(obj.get(PROBABILITY).getAsDouble());
-        }
+        ctx.ifDoublePresent(CHANCE, builder::probability);
         return builder.build();
     }
 }

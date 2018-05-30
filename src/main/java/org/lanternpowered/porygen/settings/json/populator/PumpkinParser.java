@@ -22,42 +22,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.util.geom;
+package org.lanternpowered.porygen.settings.json.populator;
 
-import com.google.common.base.MoreObjects;
+import static org.lanternpowered.porygen.settings.json.populator.PopulatorParserConstants.CHANCE;
+import static org.lanternpowered.porygen.settings.json.populator.PopulatorParserConstants.PER_CHUNK;
 
-public final class Ranged {
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import org.lanternpowered.porygen.settings.json.JsonDeserializationContext;
+import org.lanternpowered.porygen.settings.json.JsonDeserializer;
+import org.spongepowered.api.util.weighted.VariableAmount;
+import org.spongepowered.api.world.gen.populator.Pumpkin;
 
-    private final double min;
-    private final double max;
+import java.lang.reflect.Type;
 
-    public Ranged(double min, double max) {
-        this.min = Math.min(min, max);
-        this.max = Math.max(min, max);
-    }
-
-    public double getMin() {
-        return this.min;
-    }
-
-    public double getMax() {
-        return this.max;
-    }
+public class PumpkinParser implements JsonDeserializer<Pumpkin> {
 
     @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("min", this.min)
-                .add("max", this.max)
-                .toString();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null || obj.getClass() != getClass()) {
-            return false;
-        }
-        final Ranged that = (Ranged) obj;
-        return that.min == this.min && that.max == this.max;
+    public Pumpkin deserialize(JsonElement element, Type type, JsonDeserializationContext ctx) throws JsonParseException {
+        final Pumpkin.Builder builder = Pumpkin.builder();
+        ctx.ifPresent(PER_CHUNK, VariableAmount.class, builder::perChunk);
+        ctx.ifDoublePresent(CHANCE, builder::chance);
+        return builder.build();
     }
 }

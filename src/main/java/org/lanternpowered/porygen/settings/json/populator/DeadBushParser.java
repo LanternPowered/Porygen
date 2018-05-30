@@ -24,13 +24,12 @@
  */
 package org.lanternpowered.porygen.settings.json.populator;
 
-import static org.lanternpowered.porygen.settings.json.populator.PopulatorParserConstants.QUANTITY_PER_CHUNK;
+import static org.lanternpowered.porygen.settings.json.populator.PopulatorParserConstants.PER_CHUNK;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import org.lanternpowered.porygen.settings.json.JsonDeserializationContext;
+import org.lanternpowered.porygen.settings.json.JsonDeserializer;
 import org.spongepowered.api.util.weighted.VariableAmount;
 import org.spongepowered.api.world.gen.populator.DeadBush;
 
@@ -40,11 +39,8 @@ public class DeadBushParser implements JsonDeserializer<DeadBush> {
 
     @Override
     public DeadBush deserialize(JsonElement element, Type type, JsonDeserializationContext ctx) throws JsonParseException {
-        final JsonObject obj = element.getAsJsonObject();
         final DeadBush.Builder builder = DeadBush.builder();
-        if (obj.has(QUANTITY_PER_CHUNK)) {
-            builder.perChunk(ctx.deserialize(obj.get(QUANTITY_PER_CHUNK), VariableAmount.class));
-        }
+        ctx.ifPresent(PER_CHUNK, VariableAmount.class, builder::perChunk);
         return builder.build();
     }
 }

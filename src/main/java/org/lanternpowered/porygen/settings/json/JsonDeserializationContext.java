@@ -22,32 +22,39 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.settings.json.populator;
+package org.lanternpowered.porygen.settings.json;
 
-import static org.lanternpowered.porygen.settings.json.populator.PopulatorParserConstants.BLOCK;
-import static org.lanternpowered.porygen.settings.json.populator.PopulatorParserConstants.PER_CHUNK;
-import static org.lanternpowered.porygen.settings.json.populator.PopulatorParserConstants.RADIUS;
-
+import com.google.common.reflect.TypeToken;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import org.lanternpowered.porygen.settings.json.JsonDeserializationContext;
-import org.lanternpowered.porygen.settings.json.JsonDeserializer;
-import org.spongepowered.api.block.BlockState;
-import org.spongepowered.api.util.weighted.VariableAmount;
-import org.spongepowered.api.world.gen.populator.BlockBlob;
 
-import java.lang.reflect.Type;
+import java.util.function.Consumer;
+import java.util.function.DoubleConsumer;
+import java.util.function.IntConsumer;
 
-public class BlockBlobParser implements JsonDeserializer<BlockBlob> {
+public interface JsonDeserializationContext extends com.google.gson.JsonDeserializationContext {
 
-    @Override
-    public BlockBlob deserialize(JsonElement element, Type type, JsonDeserializationContext ctx) throws JsonParseException {
-        final JsonObject obj = element.getAsJsonObject();
-        final BlockBlob.Builder builder = BlockBlob.builder();
-        builder.block(ctx.deserialize(obj.get(BLOCK), BlockState.class));
-        ctx.ifPresent(PER_CHUNK, VariableAmount.class, builder::blobCount);
-        ctx.ifPresent(RADIUS, VariableAmount.class, builder::radius);
-        return builder.build();
+    <T> void ifPresent(JsonObject obj, String key, TypeToken<T> objectType, Consumer<T> consumer);
+
+    default <T> void ifPresent(JsonObject obj, String key, Class<T> objectType, Consumer<T> consumer) {
+        ifPresent(obj, key, TypeToken.of(objectType), consumer);
+    }
+
+    <T> void ifPresent(String key, TypeToken<T> objectType, Consumer<T> consumer);
+
+    default <T> void ifPresent(String key, Class<T> objectType, Consumer<T> consumer) {
+        ifPresent(key, TypeToken.of(objectType), consumer);
+    }
+
+    void ifIntPresent(JsonObject obj, String key, IntConsumer consumer);
+
+    void ifIntPresent(String key, IntConsumer consumer);
+
+    void ifDoublePresent(JsonObject obj, String key, DoubleConsumer consumer);
+
+    void ifDoublePresent(String key, DoubleConsumer consumer);
+
+    default <T> T deserialize(JsonElement element, TypeToken<T> typeToken) {
+        return deserialize(element, typeToken.getType());
     }
 }

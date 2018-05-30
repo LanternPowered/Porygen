@@ -24,15 +24,14 @@
  */
 package org.lanternpowered.porygen.settings.json.populator;
 
-import static org.lanternpowered.porygen.settings.json.populator.PopulatorParserConstants.QUANTITY_PER_CHUNK;
+import static org.lanternpowered.porygen.settings.json.populator.PopulatorParserConstants.PER_CHUNK;
 import static org.lanternpowered.porygen.settings.json.populator.PopulatorParserConstants.WEIGHTED_OBJECT;
 
 import com.google.common.reflect.TypeToken;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import org.lanternpowered.porygen.settings.json.JsonDeserializationContext;
+import org.lanternpowered.porygen.settings.json.JsonDeserializer;
 import org.spongepowered.api.util.weighted.VariableAmount;
 import org.spongepowered.api.util.weighted.WeightedTable;
 import org.spongepowered.api.world.gen.PopulatorObject;
@@ -44,15 +43,9 @@ public class BigMushroomParser implements JsonDeserializer<BigMushroom> {
 
     @Override
     public BigMushroom deserialize(JsonElement element, Type type, JsonDeserializationContext ctx) throws JsonParseException {
-        final JsonObject obj = element.getAsJsonObject();
         final BigMushroom.Builder builder = BigMushroom.builder();
-        if (obj.has(QUANTITY_PER_CHUNK)) {
-            builder.mushroomsPerChunk(ctx.deserialize(obj.get(QUANTITY_PER_CHUNK), VariableAmount.class));
-        }
-        final JsonElement object = obj.get(WEIGHTED_OBJECT);
-        if (object != null) {
-            builder.types(ctx.deserialize(object, new TypeToken<WeightedTable<PopulatorObject>>() {}.getType()));
-        }
+        ctx.ifPresent(PER_CHUNK, VariableAmount.class, builder::mushroomsPerChunk);
+        ctx.ifPresent(WEIGHTED_OBJECT, new TypeToken<WeightedTable<PopulatorObject>>() {}, builder::types);
         return builder.build();
     }
 }

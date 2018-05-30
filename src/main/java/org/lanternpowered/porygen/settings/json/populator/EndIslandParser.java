@@ -29,11 +29,10 @@ import static org.lanternpowered.porygen.settings.json.populator.PopulatorParser
 import static org.lanternpowered.porygen.settings.json.populator.PopulatorParserConstants.RADIUS_DECREMENT;
 import static org.lanternpowered.porygen.settings.json.populator.PopulatorParserConstants.STARTING_RADIUS;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import org.lanternpowered.porygen.settings.json.JsonDeserializationContext;
+import org.lanternpowered.porygen.settings.json.JsonDeserializer;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.util.weighted.VariableAmount;
 import org.spongepowered.api.world.gen.populator.EndIsland;
@@ -44,20 +43,11 @@ public class EndIslandParser implements JsonDeserializer<EndIsland> {
 
     @Override
     public EndIsland deserialize(JsonElement element, Type type, JsonDeserializationContext ctx) throws JsonParseException {
-        final JsonObject obj = element.getAsJsonObject();
         final EndIsland.Builder builder = EndIsland.builder();
-        if (obj.has(BLOCK)) {
-            builder.islandBlock(ctx.deserialize(obj.get(BLOCK), BlockState.class));
-        }
-        if (obj.has(STARTING_RADIUS)) {
-            builder.startingRadius(ctx.deserialize(obj.get(STARTING_RADIUS), VariableAmount.class));
-        }
-        if (obj.has(RADIUS_DECREMENT)) {
-            builder.radiusDecrement(ctx.deserialize(obj.get(RADIUS_DECREMENT), VariableAmount.class));
-        }
-        if (obj.has(EXCLUSION_RADIUS)) {
-            builder.exclusionRadius(obj.get(EXCLUSION_RADIUS).getAsInt());
-        }
+        ctx.ifPresent(BLOCK, BlockState.class, builder::islandBlock);
+        ctx.ifPresent(STARTING_RADIUS, VariableAmount.class, builder::startingRadius);
+        ctx.ifPresent(RADIUS_DECREMENT, VariableAmount.class, builder::radiusDecrement);
+        ctx.ifIntPresent(EXCLUSION_RADIUS, builder::exclusionRadius);
         return builder.build();
     }
 }

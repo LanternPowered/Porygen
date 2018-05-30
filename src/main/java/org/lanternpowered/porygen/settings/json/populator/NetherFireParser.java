@@ -24,30 +24,25 @@
  */
 package org.lanternpowered.porygen.settings.json.populator;
 
-import static org.lanternpowered.porygen.settings.json.populator.PopulatorParserConstants.BLOCK;
 import static org.lanternpowered.porygen.settings.json.populator.PopulatorParserConstants.PER_CHUNK;
-import static org.lanternpowered.porygen.settings.json.populator.PopulatorParserConstants.RADIUS;
+import static org.lanternpowered.porygen.settings.json.populator.PopulatorParserConstants.PER_CLUSTER;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import org.lanternpowered.porygen.settings.json.JsonDeserializationContext;
 import org.lanternpowered.porygen.settings.json.JsonDeserializer;
-import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.util.weighted.VariableAmount;
-import org.spongepowered.api.world.gen.populator.BlockBlob;
+import org.spongepowered.api.world.gen.populator.NetherFire;
 
 import java.lang.reflect.Type;
 
-public class BlockBlobParser implements JsonDeserializer<BlockBlob> {
+public class NetherFireParser implements JsonDeserializer<NetherFire> {
 
     @Override
-    public BlockBlob deserialize(JsonElement element, Type type, JsonDeserializationContext ctx) throws JsonParseException {
-        final JsonObject obj = element.getAsJsonObject();
-        final BlockBlob.Builder builder = BlockBlob.builder();
-        builder.block(ctx.deserialize(obj.get(BLOCK), BlockState.class));
-        ctx.ifPresent(PER_CHUNK, VariableAmount.class, builder::blobCount);
-        ctx.ifPresent(RADIUS, VariableAmount.class, builder::radius);
+    public NetherFire deserialize(JsonElement element, Type type, JsonDeserializationContext ctx) throws JsonParseException {
+        final NetherFire.Builder builder = NetherFire.builder();
+        ctx.ifPresent(PER_CHUNK, VariableAmount.class, builder::perChunk);
+        ctx.ifPresent(PER_CLUSTER, VariableAmount.class, builder::perCluster);
         return builder.build();
     }
 }

@@ -22,46 +22,58 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.settings.json.populator;
+package org.lanternpowered.porygen.settings;
 
-import org.spongepowered.api.world.gen.PopulatorObject;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class PopulatorParserConstants {
+public enum ListOperation {
+    /**
+     * Overrides all the content.
+     */
+    OVERRIDE {
+        @Override
+        public <T> void merge(List<T> a, List<T> b) {
+            a.clear();
+            a.addAll(b);
+        }
+    },
+    /**
+     * Adds new content.
+     */
+    ADD {
+        @Override
+        public <T> void merge(List<T> a, List<T> b) {
+            a.addAll(b);
+        }
+    },
+    ;
 
-    static final String PER_CHUNK = "per-chunk";
-    static final String RADIUS = "radius";
-    static final String WEIGHTED_OBJECT = "weighted-object";
-    static final String BLOCK = "block";
+    public abstract <T> void merge(List<T> a, List<T> b);
 
     /**
-     * The height of the populated object.
+     * Parses the {@link ListOperation} from the given operations collection.
+     *
+     * @param operations The operations
+     * @return The list operation
      */
-    static final String HEIGHT = "height";
+    public static ListOperation parse(Collection<String> operations) {
+        for (String operation : operations) {
+            final ListOperation listOperation = byId.get(operation.toLowerCase());
+            if (listOperation != null) {
+                return listOperation;
+            }
+        }
+        return OVERRIDE;
+    }
 
-    /**
-     * The height that will be added to it's base {@link #HEIGHT} when
-     * a object is placed in it's extreme form.
-     */
-    static final String EXTREME_HEIGHT_INCREASE = "extreme-height";
+    private static final Map<String, ListOperation> byId = new HashMap<>();
 
-    /**
-     * The chance that a object will be placed in it's extreme form.
-     */
-    static final String EXTREME_CHANCE = "extreme-chance";
-
-    /**
-     * The height at which a object will be populated.
-     */
-    static final String SPAWN_HEIGHT = "spawn-height";
-
-    static final String EXCLUSION_RADIUS = "exclusion-radius";
-
-    /**
-     * When a {@link PopulatorObject} will be used.
-     */
-    static final String OBJECT = "object";
-    static final String CHANCE = "chance";
-    static final String STARTING_RADIUS = "starting-radius";
-    static final String RADIUS_DECREMENT = "radius-decrement";
-    static final String PER_CLUSTER = "per-cluster";
+    static {
+        for (ListOperation operation : values()) {
+            byId.put(operation.name().toLowerCase(), operation);
+        }
+    }
 }

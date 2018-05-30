@@ -22,27 +22,42 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.settings.json.populator;
+package org.lanternpowered.porygen.util;
 
-import static org.lanternpowered.porygen.settings.json.populator.PopulatorParserConstants.HEIGHT;
-import static org.lanternpowered.porygen.settings.json.populator.PopulatorParserConstants.PER_CHUNK;
+import com.google.common.base.MoreObjects;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
-import org.lanternpowered.porygen.settings.json.JsonDeserializationContext;
-import org.lanternpowered.porygen.settings.json.JsonDeserializer;
-import org.spongepowered.api.util.weighted.VariableAmount;
-import org.spongepowered.api.world.gen.populator.Cactus;
+public final class Rangei {
 
-import java.lang.reflect.Type;
+    private final int min;
+    private final int max;
 
-public class CactusParser implements JsonDeserializer<Cactus> {
+    public Rangei(int min, int max) {
+        this.min = Math.min(min, max);
+        this.max = Math.max(min, max);
+    }
+
+    public int getMin() {
+        return this.min;
+    }
+
+    public int getMax() {
+        return this.max;
+    }
 
     @Override
-    public Cactus deserialize(JsonElement element, Type type, JsonDeserializationContext ctx) throws JsonParseException {
-        final Cactus.Builder builder = Cactus.builder();
-        ctx.ifPresent(PER_CHUNK, VariableAmount.class, builder::cactiPerChunk);
-        ctx.ifPresent(HEIGHT, VariableAmount.class, builder::height);
-        return builder.build();
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("min", this.min)
+                .add("max", this.max)
+                .toString();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || obj.getClass() != getClass()) {
+            return false;
+        }
+        final Rangei that = (Rangei) obj;
+        return that.min == this.min && that.max == this.max;
     }
 }
