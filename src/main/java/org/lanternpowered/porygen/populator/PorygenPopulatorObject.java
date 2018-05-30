@@ -26,72 +26,55 @@ package org.lanternpowered.porygen.populator;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.google.common.base.MoreObjects;
 import org.lanternpowered.porygen.catalog.AbstractCatalogType;
-import org.spongepowered.api.text.translation.FixedTranslation;
-import org.spongepowered.api.text.translation.Translation;
-import org.spongepowered.api.world.gen.Populator;
+import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.gen.PopulatorObject;
 import org.spongepowered.api.world.gen.PopulatorType;
 
-import javax.annotation.Nullable;
+import java.util.Random;
 
 /**
  * A {@link PopulatorType} implementation that will be
- * used for all Porygen provided populator types.
- *
- * @param <T> The populator class type
+ * used for all Porygen provided populator objects.
  */
-public final class PorygenPopulatorType<T extends Populator> extends AbstractCatalogType implements PopulatorType {
+public final class PorygenPopulatorObject extends AbstractCatalogType implements PopulatorObject {
 
-    private final Class<T> populatorClass;
-    @Nullable private Translation translation;
+    private final PlaceableObject object;
 
     /**
-     * Constructs a new {@link PorygenPopulatorType} with
-     * the given id and populator class.
+     * Constructs a new {@link PorygenPopulatorObject} for
+     * the given id and {@link PlaceableObject}.
      *
      * @param id The id
-     * @param populatorClass The populator class
+     * @param object The placeable object
      */
-    public PorygenPopulatorType(String id, Class<T> populatorClass) {
+    public PorygenPopulatorObject(String id, PlaceableObject object) {
         super(id);
-        checkNotNull(populatorClass, "populatorClass");
-        this.populatorClass = populatorClass;
+        checkNotNull(object, "object");
+        this.object = object;
     }
 
     /**
-     * Constructs a new {@link PorygenPopulatorType} with
-     * the given id, name and populator class.
+     * Constructs a new {@link PorygenPopulatorObject} for
+     * the given id, name and {@link PlaceableObject}.
      *
      * @param id The id
      * @param name The name
-     * @param populatorClass The populator class
+     * @param object The placeable object
      */
-    public PorygenPopulatorType(String id, String name, Class<T> populatorClass) {
+    public PorygenPopulatorObject(String id, String name, PlaceableObject object) {
         super(id, name);
-        this.populatorClass = populatorClass;
+        checkNotNull(object, "object");
+        this.object = object;
     }
 
     @Override
-    public Translation getTranslation() {
-        if (this.translation == null) {
-            this.translation = new FixedTranslation(getName());
-        }
-        return this.translation;
-    }
-
-    /**
-     * Gets the {@link Populator} class of this populator type.
-     *
-     * @return The populator class
-     */
-    public Class<T> getPopulatorClass() {
-        return this.populatorClass;
+    public boolean canPlaceAt(World world, int x, int y, int z) {
+        return this.object.canPlaceAt(world, x, y, z);
     }
 
     @Override
-    protected MoreObjects.ToStringHelper toStringHelper() {
-        return super.toStringHelper()
-                .add("populatorClass", this.populatorClass.getName());
+    public void placeObject(World world, Random random, int x, int y, int z) {
+        this.object.placeAt(world, random, x, y, z);
     }
 }

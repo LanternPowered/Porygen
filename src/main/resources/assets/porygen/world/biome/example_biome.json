@@ -19,7 +19,6 @@
             {
                 "block": "minecraft:dirt",
                 "depth": {
-                    "type": "range",
                     "min": 3,
                     "max": 5
                 }
