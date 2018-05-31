@@ -31,9 +31,13 @@ import org.lanternpowered.porygen.settings.json.CatalogTypeParser;
 import org.lanternpowered.porygen.settings.json.DoublePredicateParser;
 import org.lanternpowered.porygen.settings.json.GroundCoverLayerParser;
 import org.lanternpowered.porygen.settings.json.ParentBasedBiomeGenerationSettingsParser;
-import org.lanternpowered.porygen.settings.json.SeededVariableAmountParser;
-import org.lanternpowered.porygen.settings.json.VariableAmountParser;
-import org.lanternpowered.porygen.settings.json.WeightedTableParser;
+import org.lanternpowered.porygen.settings.json.weighted.ChanceTableParser;
+import org.lanternpowered.porygen.settings.json.weighted.LootTableParser;
+import org.lanternpowered.porygen.settings.json.weighted.RandomObjectTableParser;
+import org.lanternpowered.porygen.settings.json.weighted.SeededVariableAmountParser;
+import org.lanternpowered.porygen.settings.json.weighted.TableEntryParser;
+import org.lanternpowered.porygen.settings.json.weighted.VariableAmountParser;
+import org.lanternpowered.porygen.settings.json.weighted.WeightedTableParser;
 import org.lanternpowered.porygen.settings.json.populator.BigMushroomParser;
 import org.lanternpowered.porygen.settings.json.populator.BlockBlobParser;
 import org.lanternpowered.porygen.settings.json.populator.CactusParser;
@@ -52,7 +56,11 @@ import org.lanternpowered.porygen.settings.json.populator.VineParser;
 import org.lanternpowered.porygen.settings.json.populator.WaterLilyParser;
 import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.block.BlockState;
+import org.spongepowered.api.util.weighted.ChanceTable;
+import org.spongepowered.api.util.weighted.LootTable;
+import org.spongepowered.api.util.weighted.RandomObjectTable;
 import org.spongepowered.api.util.weighted.SeededVariableAmount;
+import org.spongepowered.api.util.weighted.TableEntry;
 import org.spongepowered.api.util.weighted.VariableAmount;
 import org.spongepowered.api.util.weighted.WeightedTable;
 import org.spongepowered.api.world.biome.GroundCoverLayer;
@@ -83,9 +91,16 @@ public final class PorygenGeneratorSettings {
             .registerTypeAdapter(DoublePredicate.class, new DoublePredicateParser())
             .registerTypeAdapter(GroundCoverLayer.class, new GroundCoverLayerParser())
             .registerTypeAdapter(ParentBasedBiomeGenerationSettings.class, new ParentBasedBiomeGenerationSettingsParser())
+            ///////////////////////////////
+            /// Weighted Objects/Values ///
+            ///////////////////////////////
+            .registerTypeAdapter(ChanceTable.class, new ChanceTableParser<>())
+            .registerTypeAdapter(WeightedTable.class, new WeightedTableParser<>())
+            .registerTypeAdapter(LootTable.class, new LootTableParser<>())
+            .registerTypeAdapter(RandomObjectTable.class, new RandomObjectTableParser<>())
+            .registerTypeAdapter(TableEntry.class, new TableEntryParser<>())
             .registerTypeAdapter(SeededVariableAmount.class, new SeededVariableAmountParser<>())
             .registerTypeAdapter(VariableAmount.class, new VariableAmountParser())
-            .registerTypeAdapter(WeightedTable.class, new WeightedTableParser<>())
             /////////////////////////
             /// Populator parsers ///
             /////////////////////////

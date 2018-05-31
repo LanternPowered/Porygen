@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.settings.json;
+package org.lanternpowered.porygen.settings.json.weighted;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
