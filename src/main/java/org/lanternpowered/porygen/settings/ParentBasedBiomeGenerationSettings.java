@@ -24,6 +24,7 @@
  */
 package org.lanternpowered.porygen.settings;
 
+import org.lanternpowered.porygen.util.Ranged;
 import org.spongepowered.api.util.Tuple;
 import org.spongepowered.api.world.biome.BiomeGenerationSettings;
 import org.spongepowered.api.world.biome.GroundCoverLayer;
@@ -42,8 +43,7 @@ public final class ParentBasedBiomeGenerationSettings {
     @Nullable private final Tuple<List<GenerationPopulator>, ListOperation> generationPopulators;
     @Nullable private final Tuple<List<GroundCoverLayer>, ListOperation> groundCoverLayers;
 
-    @Nullable private final Double minHeight;
-    @Nullable private final Double maxHeight;
+    @Nullable private final Ranged height;
 
     /**
      * Constructs a new {@link ParentBasedBiomeGenerationSettings}.
@@ -52,19 +52,17 @@ public final class ParentBasedBiomeGenerationSettings {
      * @param populators The populators to apply
      * @param generationPopulators The generation populators to apply
      * @param groundCoverLayers The ground cover layers to apply
-     * @param minHeight The minimum height
-     * @param maxHeight The maximum height
+     * @param height The height
      */
     public ParentBasedBiomeGenerationSettings(String parent,
             @Nullable Tuple<List<Populator>, ListOperation> populators,
             @Nullable Tuple<List<GenerationPopulator>, ListOperation> generationPopulators,
             @Nullable Tuple<List<GroundCoverLayer>, ListOperation> groundCoverLayers,
-            @Nullable Double minHeight, @Nullable Double maxHeight) {
+            @Nullable Ranged height) {
         this.groundCoverLayers = groundCoverLayers;
         this.generationPopulators = generationPopulators;
         this.populators = populators;
-        this.minHeight = minHeight;
-        this.maxHeight = maxHeight;
+        this.height = height;
         this.parent = parent;
     }
 
@@ -76,11 +74,9 @@ public final class ParentBasedBiomeGenerationSettings {
      */
     public BiomeGenerationSettings construct(@Nullable BiomeGenerationSettings parent) {
         final BiomeGenerationSettings copy = parent == null ? BiomeGenerationSettings.builder().build() : parent.copy();
-        if (this.maxHeight != null) {
-            copy.setMaxHeight(this.maxHeight.floatValue());
-        }
-        if (this.minHeight != null) {
-            copy.setMinHeight(this.minHeight.floatValue());
+        if (this.height != null) {
+            copy.setMaxHeight((float) this.height.getMax());
+            copy.setMinHeight((float) this.height.getMin());
         }
         if (this.populators != null) {
             this.populators.getSecond()
