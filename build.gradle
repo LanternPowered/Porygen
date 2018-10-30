@@ -1,7 +1,8 @@
 plugins {
-    id "com.github.hierynomus.license" version "0.13.1"
-    id 'com.github.johnrengelman.shadow' version '2.0.4'
-    id "org.spongepowered.plugin" version "0.8"
+    id 'net.minecrell.licenser' version '0.4'
+    id 'com.github.johnrengelman.shadow' version '2.0.1'
+    id 'org.spongepowered.plugin' version '0.8.1'
+    id 'org.jetbrains.kotlin.jvm' version '1.2.71'
 }
 
 // Basic project information
@@ -41,7 +42,20 @@ repositories {
 // Project dependencies
 dependencies {
     compile 'org.spongepowered:spongeapi:7.1.0-SNAPSHOT'
+    // Not exposed in the api, but every known impl supports it
+    compile 'it.unimi.dsi:fastutil:8.2.2'
+
+    // Kotlin
+    compile 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+    compile 'org.jetbrains.kotlin:kotlin-reflect'
+
     shadow 'com.github.jdiemke.delaunay-triangulator:DelaunayTriangulator:master-SNAPSHOT'
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile)*.kotlinOptions {
+    jvmTarget = '1.8'
+    languageVersion = '1.3'
+    freeCompilerArgs = [ '-Xjvm-default=enable' ]
 }
 
 processResources {
@@ -74,20 +88,17 @@ assemble.dependsOn sourceJar
 
 license {
     header project.file('HEADER.txt')
-    sourceSets = project.sourceSets
-    include '**/*.java'
 
-    strictCheck true
-    ignoreFailures = false
+    include '**/*.java'
+    include '**/*.kt'
+
+    newLine false
+    ignoreFailures false
 
     ext {
         name = project.name
         url = project.url
         organization = project.organization
-    }
-
-    mapping {
-        java = 'SLASHSTAR_STYLE'
     }
 }
 
@@ -97,7 +108,7 @@ license {
 
 // Gradle version used for generating the Gradle wrapper
 task wrapper(type: Wrapper) {
-    gradleVersion = '4.7'
+    gradleVersion = '4.10.2'
 }
 
 // A custom update wrapper task, using a custom task prevents
@@ -108,4 +119,14 @@ task updateWrapper(dependsOn: wrapper)
 gradle.taskGraph.whenReady { TaskExecutionGraph graph ->
     // Only enable the wrapper task if the updateWrapper task is run
     wrapper.enabled = graph.allTasks.contains(updateWrapper)
+}
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }

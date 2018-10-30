@@ -51,6 +51,7 @@ package org.lanternpowered.porygen.util.dsi;
  *
  */
 
+import it.unimi.dsi.fastutil.HashCommon;
 import java.util.Random;
 import java.util.SplittableRandom;
 

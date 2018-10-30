@@ -51,6 +51,7 @@ package org.lanternpowered.porygen.util.dsi;
  *
  */
 
+import it.unimi.dsi.fastutil.HashCommon;
 import java.util.Random;
 
 /** A fast, high-quality {@linkplain Random pseudorandom number generator} that
