@@ -115,7 +115,7 @@ class Polygond : AbstractShape {
      */
     constructor(vararg vertices: Vector2d) {
         checkState(vertices.size >= 3, "There must be at least 3 vertices.")
-        this.vertices = ImmutableList.copyOf(vertices)
+        this.vertices = ImmutableList.copyOf(vertices.asList())
     }
 
     /**
@@ -316,7 +316,7 @@ class Polygond : AbstractShape {
          * @return The polygon
          */
         fun newConvexPolygon(vararg vertices: Vector2d): Polygond {
-            val polygon = Polygond(*vertices)
+            val polygon = Polygond(vertices.asList())
             polygon.isConvexState = 1
             return polygon
         }

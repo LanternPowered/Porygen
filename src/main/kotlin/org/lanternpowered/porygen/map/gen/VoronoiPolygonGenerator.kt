@@ -32,6 +32,7 @@ import org.lanternpowered.porygen.util.geom.Polygond
 import org.lanternpowered.porygen.util.geom.Rectangled
 import java.util.*
 import java.util.stream.Collectors
+import kotlin.streams.toList
 
 class VoronoiPolygonGenerator : CenteredPolygonGenerator {
 
@@ -43,7 +44,7 @@ class VoronoiPolygonGenerator : CenteredPolygonGenerator {
         val centeredPolygons = ArrayList<CenteredPolygon>()
         val pointSet = points.stream()
                 .map { v -> Vector2D(v.x, v.y) }
-                .collect(Collectors.toList())
+                .toList()
 
         val delaunayTriangulator = DelaunayTriangulator(pointSet)
         delaunayTriangulator.triangulate()
@@ -81,9 +82,7 @@ class VoronoiPolygonGenerator : CenteredPolygonGenerator {
     private class VertexEntry constructor(val point: Vector2d, private val angle: Double) : Comparable<VertexEntry> {
 
         override fun compareTo(other: VertexEntry): Int {
-            return if (this.angle > other.angle) {
-                1
-            } else -1
+            return if (this.angle > other.angle) 1 else -1
         }
     }
 }

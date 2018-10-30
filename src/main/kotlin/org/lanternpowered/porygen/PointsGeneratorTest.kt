@@ -28,7 +28,6 @@ import com.flowpowered.math.vector.Vector2d
 import com.flowpowered.noise.module.modifier.ScalePoint
 import com.flowpowered.noise.module.source.Perlin
 import org.lanternpowered.porygen.map.gen.CenteredPolygonGenerator
-import org.lanternpowered.porygen.map.gen.DelaunayTrianglePolygonGenerator
 import org.lanternpowered.porygen.map.gen.VoronoiPolygonGenerator
 import org.lanternpowered.porygen.points.ChunkBasedPointsGenerator
 import org.lanternpowered.porygen.points.PointsGenerator
