@@ -30,7 +30,7 @@ import org.lanternpowered.porygen.parser.ParseException
 import org.lanternpowered.porygen.parser.PoryObject
 import org.lanternpowered.porygen.parser.PoryObjectParser
 import org.lanternpowered.porygen.parser.PoryParserContext
-import org.lanternpowered.porygen.util.uncheckedCast
+import org.lanternpowered.porygen.api.util.uncheckedCast
 import org.spongepowered.api.util.weighted.RandomObjectTable
 import org.spongepowered.api.util.weighted.TableEntry
 import org.spongepowered.api.util.weighted.VariableAmount
@@ -42,7 +42,7 @@ abstract class AbstractRandomObjectTableParser<T, O : RandomObjectTable<T>> : Po
         if (objectType.rawType == Any::class.java) {
             throw ParseException("Cannot parse as Object")
         }
-        val tableEntries = obj.tryGetAs("entries", object : TypeToken<List<TableEntry<T>>>() {}
+        val tableEntries = obj.tryGetAsObj("entries", object : TypeToken<List<TableEntry<T>>>() {}
                 .where(object : TypeParameter<T>() {}, objectType))
         val table = constructTable()
         table.addAll(tableEntries)

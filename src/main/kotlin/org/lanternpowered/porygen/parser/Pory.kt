@@ -32,7 +32,7 @@ import com.typesafe.config.ConfigList
 import com.typesafe.config.ConfigObject
 import com.typesafe.config.ConfigValue
 import com.typesafe.config.ConfigValueType
-import org.lanternpowered.porygen.util.uncheckedCast
+import org.lanternpowered.porygen.api.util.uncheckedCast
 import java.lang.reflect.Type
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -98,7 +98,7 @@ class Pory internal constructor(builder: PoryBuilder) {
         if (type.isPrimitive) {
             type = TypeToken.of(Primitives.wrap(type.rawType).uncheckedCast<Class<T>>())
         }
-        val parser = this.parsers.computeIfAbsent(type) { _ ->
+        val parser = this.parsers.computeIfAbsent(type) {
             for (factory in this.parserFactories) {
                 val factoryParser = factory.create(this, type)
                 if (factoryParser != null) {

@@ -35,7 +35,7 @@ class BlockBlobParser : PoryObjectParser<BlockBlob> {
 
     override fun parse(obj: PoryObject, type: TypeToken<BlockBlob>, ctx: PoryParserContext): BlockBlob {
         val builder = BlockBlob.builder()
-        builder.block(obj.tryGetAs(PopulatorParserConstants.BLOCK))
+        builder.block(obj.tryGetAsObj(PopulatorParserConstants.BLOCK))
         obj.getAsObj<VariableAmount>(PopulatorParserConstants.PER_CHUNK)?.run(builder::blobCount)
         obj.getAsObj<VariableAmount>(PopulatorParserConstants.RADIUS)?.run(builder::radius)
         return builder.build()

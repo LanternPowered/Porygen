@@ -36,8 +36,8 @@ internal class MapParser : PoryParser<Map<*, *>> {
         if (element.isArray) {
             element.asArray().forEach { e ->
                 val entry = e.asObject()
-                val key = entry.tryGetAs("key", keyType)
-                val value = entry.tryGetAs("value", valueType)
+                val key = entry.tryGetAsObj("key", keyType)
+                val value = entry.tryGetAsObj("value", valueType)
                 map[key] = value
             }
         } else {

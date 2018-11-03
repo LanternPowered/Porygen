@@ -43,7 +43,7 @@ class PoryArray internal constructor(private val elements: MutableList<PoryEleme
      *
      * @param elements The elements
      */
-    constructor(elements: MutableList<PoryElement>) : this(elements, 0)
+    constructor(elements: MutableList<PoryElement>) : this(ArrayList(elements), 0)
 
     override fun iterator() = this.elements.iterator()
 
@@ -79,7 +79,7 @@ class PoryArray internal constructor(private val elements: MutableList<PoryEleme
      * @param <T> The object type
      * @return The objects
      */
-    fun <T> mapTo(objectType: Type): List<T> {
+    fun <T> mapToObj(objectType: Type): List<T> {
         val ctx = PoryParserContext.current()
         return this.elements.stream().map { e -> ctx.parse<T>(e, objectType) }.toList()
     }
@@ -92,7 +92,7 @@ class PoryArray internal constructor(private val elements: MutableList<PoryEleme
      * @param <T> The object type
      * @return The objects
      */
-    fun <T> mapTo(objectType: TypeToken<T>): List<T> {
+    fun <T> mapToObj(objectType: TypeToken<T>): List<T> {
         val ctx = PoryParserContext.current()
         return this.elements.stream().map { e -> ctx.parse(e, objectType) }.toList()
     }
@@ -105,9 +105,20 @@ class PoryArray internal constructor(private val elements: MutableList<PoryEleme
      * @param <T> The object type
      * @return The objects
      */
-    fun <T> mapTo(objectType: Class<T>): List<T> {
+    fun <T> mapToObj(objectType: Class<T>): List<T> {
         val ctx = PoryParserContext.current()
         return this.elements.stream().map { e -> ctx.parse(e, objectType) }.toList()
+    }
+
+    /**
+     * Parses all the elements within this [PoryArray]
+     * to the given object type.
+     *
+     * @param T The object type
+     * @return The objects
+     */
+    inline fun <reified T> mapToObj(): List<T> {
+        return mapToObj(object : TypeToken<T>() {})
     }
 
     /**

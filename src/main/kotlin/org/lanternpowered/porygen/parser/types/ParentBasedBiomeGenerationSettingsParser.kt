@@ -29,7 +29,7 @@ import com.google.common.reflect.TypeToken
 import org.lanternpowered.porygen.parser.*
 import org.lanternpowered.porygen.settings.ListOperation
 import org.lanternpowered.porygen.settings.ParentBasedBiomeGenerationSettings
-import org.lanternpowered.porygen.util.DoubleRange
+import org.lanternpowered.porygen.api.util.DoubleRange
 import org.spongepowered.api.world.biome.GroundCoverLayer
 import org.spongepowered.api.world.gen.GenerationPopulator
 import org.spongepowered.api.world.gen.Populator

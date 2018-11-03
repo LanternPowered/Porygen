@@ -29,7 +29,7 @@ import com.google.common.reflect.TypeToken
 import org.lanternpowered.porygen.parser.PoryElement
 import org.lanternpowered.porygen.parser.PoryParser
 import org.lanternpowered.porygen.parser.PoryParserContext
-import org.lanternpowered.porygen.util.uncheckedCast
+import org.lanternpowered.porygen.api.util.uncheckedCast
 import org.spongepowered.api.util.weighted.LootTable
 import org.spongepowered.api.util.weighted.RandomObjectTable
 
@@ -42,7 +42,7 @@ class LootTableParser<T> : PoryParser<LootTable<T>> {
         val pool = if (element.isArray) {
             element.asObj(poolType)
         } else {
-            element.asObject().tryGetAs("pool", poolType)
+            element.asObject().tryGetAsObj("pool", poolType)
         }
         val lootTable = LootTable<T>()
         pool.forEach(lootTable::addTable)

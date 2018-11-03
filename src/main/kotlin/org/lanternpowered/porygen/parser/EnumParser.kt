@@ -25,7 +25,7 @@
 package org.lanternpowered.porygen.parser
 
 import com.google.common.reflect.TypeToken
-import org.lanternpowered.porygen.util.uncheckedCast
+import org.lanternpowered.porygen.api.util.uncheckedCast
 import java.util.*
 
 internal class EnumParser<T : Enum<*>>(private val enumClass: Class<T>) : PoryParser<T> {

@@ -46,21 +46,14 @@ typealias JoinOperatorProvider = (DoublePredicate, DoublePredicate) -> DoublePre
  *
  * Examples:
  *
- *
- *
  * This example will match any number between 10 and 20 (inclusive)
  * >= 10 and <= 20
- *
- *
  *
  * This example will match any number between 10 and 20 (inclusive), except 15
  * (>= 10 and <= 20) and not = 15
  *
- *
- *
  * This example will match 7 or 9
  * = 9 or = 7
- *
  */
 class DoublePredicateParser : PoryParser<DoublePredicate> {
 

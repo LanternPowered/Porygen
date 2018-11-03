@@ -29,7 +29,7 @@ import com.google.common.reflect.TypeToken
 import org.lanternpowered.porygen.parser.PoryObject
 import org.lanternpowered.porygen.parser.PoryObjectParser
 import org.lanternpowered.porygen.parser.PoryParserContext
-import org.lanternpowered.porygen.util.uncheckedCast
+import org.lanternpowered.porygen.api.util.uncheckedCast
 import org.spongepowered.api.util.weighted.*
 
 class TableEntryParser<T> : PoryObjectParser<TableEntry<T>> {

@@ -25,7 +25,7 @@
 package org.lanternpowered.porygen.parser
 
 import com.google.common.reflect.TypeToken
-import org.lanternpowered.porygen.util.uncheckedCast
+import org.lanternpowered.porygen.api.util.uncheckedCast
 
 internal class ArrayParser<T>(private val componentType: TypeToken<T>) : PoryParser<Array<T>> {
 

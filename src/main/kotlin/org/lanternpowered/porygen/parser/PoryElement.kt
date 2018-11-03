@@ -30,17 +30,13 @@ import java.lang.reflect.Type
 
 abstract class PoryElement {
 
-    val isObject: Boolean
-        get() = this is PoryObject
+    val isObject get() = this is PoryObject
 
-    val isArray: Boolean
-        get() = this is PoryArray
+    val isArray get() = this is PoryArray
 
-    val isPrimitive: Boolean
-        get() = this is PoryPrimitive
+    val isPrimitive get() = this is PoryPrimitive
 
-    val isNull: Boolean
-        get() = this is PoryNull
+    val isNull get() = this is PoryNull
 
     /**
      * Gets this element as a [PoryObject].

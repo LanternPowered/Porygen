@@ -30,14 +30,14 @@ import org.lanternpowered.porygen.parser.PoryObjectParser
 import org.lanternpowered.porygen.parser.PoryParserContext
 import org.lanternpowered.porygen.settings.DataKeyValueMap
 import org.lanternpowered.porygen.settings.DataManipulatorList
-import org.lanternpowered.porygen.util.uncheckedCast
+import org.lanternpowered.porygen.api.util.uncheckedCast
 import org.spongepowered.api.item.inventory.ItemStack
 
 class ItemStackParser : PoryObjectParser<ItemStack> {
 
     override fun parse(obj: PoryObject, type: TypeToken<ItemStack>, ctx: PoryParserContext): ItemStack {
         val builder = ItemStack.builder()
-        builder.itemType(obj.tryGetAs("type"))
+        builder.itemType(obj.tryGetAsObj("type"))
         obj.getAsInt("quantity")?.run(builder::quantity)
         obj.getAsObject("data")?.apply {
             getAsObj<DataKeyValueMap>("values")?.map?.forEach { key, value -> builder.add(key.uncheckedCast(), value) }

@@ -49,6 +49,8 @@ enum class ListOperation {
 
     companion object {
 
+        private val byId = HashMap<String, ListOperation>()
+
         /**
          * Parses the [ListOperation] from the given operations collection.
          *
@@ -57,7 +59,7 @@ enum class ListOperation {
          */
         fun parse(operations: Collection<String>): ListOperation {
             for (operation in operations) {
-                val listOperation = byId[operation.toLowerCase()]
+                val listOperation = this.byId[operation.toLowerCase()]
                 if (listOperation != null) {
                     return listOperation
                 }
@@ -65,11 +67,9 @@ enum class ListOperation {
             return OVERRIDE
         }
 
-        private val byId = HashMap<String, ListOperation>()
-
         init {
             for (operation in values()) {
-                byId[operation.name.toLowerCase()] = operation
+                this.byId[operation.name.toLowerCase()] = operation
             }
         }
     }

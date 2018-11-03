@@ -27,19 +27,23 @@ package org.lanternpowered.porygen
 import com.flowpowered.math.vector.Vector2d
 import com.flowpowered.noise.module.modifier.ScalePoint
 import com.flowpowered.noise.module.source.Perlin
-import org.lanternpowered.porygen.map.gen.CenteredPolygonGenerator
-import org.lanternpowered.porygen.map.gen.VoronoiPolygonGenerator
-import org.lanternpowered.porygen.points.ChunkBasedPointsGenerator
-import org.lanternpowered.porygen.points.PointsGenerator
-import org.lanternpowered.porygen.points.ZoomPointsGenerator
-import org.lanternpowered.porygen.points.random.BlueNoiseRandomPointsGenerator
-import org.lanternpowered.porygen.util.dsi.XoRoShiRo128PlusRandom
-import org.lanternpowered.porygen.util.geom.Rectangled
-import org.lanternpowered.porygen.util.geom.Rectanglei
+import org.lanternpowered.porygen.api.GeneratorContext
+import org.lanternpowered.porygen.api.points.ChunkBasedPointsGenerator
+import org.lanternpowered.porygen.api.points.PointsGenerator
+import org.lanternpowered.porygen.api.points.ZoomPointsGenerator
+import org.lanternpowered.porygen.api.points.random.BlueNoiseRandomPointsGenerator
+import org.lanternpowered.porygen.api.util.dsi.XoRoShiRo128PlusRandom
+import org.lanternpowered.porygen.api.util.geom.Rectangled
+import org.lanternpowered.porygen.api.util.geom.Rectanglei
+import org.lanternpowered.porygen.api.map.gen.polygon.CellPolygonGenerator
+import org.lanternpowered.porygen.api.map.gen.polygon.VoronoiPolygonGenerator
+import org.lanternpowered.porygen.api.map.gen.polygon.VoronoiTriangleCenterProvider
+import org.lanternpowered.porygen.api.points.random.GridBasedRandomPointsGenerator
 import java.awt.BorderLayout
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.image.BufferedImage
+import java.util.*
 import javax.swing.JFrame
 import javax.swing.JPanel
 
@@ -47,8 +51,8 @@ object PointsGeneratorTest {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        val random = XoRoShiRo128PlusRandom()
         val seed = 1452454844896546548L
+        val random = XoRoShiRo128PlusRandom(seed)
 
         // The random points generator
         var generator: PointsGenerator
@@ -64,11 +68,12 @@ object PointsGeneratorTest {
                 .setPoints(new Rangei(500, 1000));*/
 
         /*
-        generator = new GridBasedRandomPointsGenerator()
-                .setGrid(30, 30)
-                .setPoints(new Rangei(100, 100));*/
+        generator = GridBasedRandomPointsGenerator().apply {
+            this.setGrid(30, 30)
+            this.points = 1000 .. 2000
+        }*/
 
-        generator = ZoomPointsGenerator(generator, Vector2d(2.0, 2.0))
+        generator = ZoomPointsGenerator(generator, Vector2d(4.0, 4.0))
         generator = ChunkBasedPointsGenerator(generator)
                 .setChunksPerSection(16, 16)
 
@@ -77,19 +82,19 @@ object PointsGeneratorTest {
 
         val image = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
         val graphics = image.graphics
-        val context = DummyContext(graphics, seed)
+        val context = DummyContext(graphics, seed, random)
 
         val perlin = Perlin()
         perlin.frequency = 0.05
         perlin.persistence = 0.5
         perlin.seed = java.lang.Long.hashCode(seed)
-        perlin.octaveCount = 6
+        perlin.octaveCount =10
 
         val scalePoint = ScalePoint()
         scalePoint.setSourceModule(0, perlin)
-        scalePoint.xScale = 0.1
+        scalePoint.xScale = 0.07
         scalePoint.yScale = 1.0
-        scalePoint.zScale = 0.1
+        scalePoint.zScale = 0.07
         /*
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
@@ -111,7 +116,7 @@ object PointsGeneratorTest {
         graphics.fillRect(0, 0, width, height);
         */
         val points = generator.generatePoints(
-                context, random, Rectangled(0.0, 0.0, width.toDouble(), height.toDouble()))
+                context, Rectangled(0.0, 0.0, width.toDouble(), height.toDouble()))
         graphics.color = Color.BLACK
         graphics.drawPolygon(Rectanglei(0, 0, width - 1, height - 1).toDrawable())
         for (point in points) {
@@ -120,10 +125,9 @@ object PointsGeneratorTest {
             graphics.fillRect(x, y, 3, 3)
         }
 
-        var centeredPolygonGenerator: CenteredPolygonGenerator
-        // centeredPolygonGenerator = DelaunayTrianglePolygonGenerator()
-        centeredPolygonGenerator = VoronoiPolygonGenerator()
-        // centeredPolygonGenerator = new VoronoiPolygonGenerator().setTriangleCenterProvider(TriangleHelper::getIncenter, true);
+        var centeredPolygonGenerator: CellPolygonGenerator
+        //centeredPolygonGenerator = DelaunayTrianglePolygonGenerator()
+        centeredPolygonGenerator = VoronoiPolygonGenerator().apply { this.triangleCenterProvider = VoronoiTriangleCenterProvider.Incenter }
         val centeredPolygons = centeredPolygonGenerator.generate(context,
                 Rectangled(0.0, 0.0, width.toDouble(), height.toDouble()), points)
 
@@ -182,5 +186,5 @@ object PointsGeneratorTest {
         canvas.repaint()
     }
 
-    private class DummyContext constructor(override val debugGraphics: Graphics?, override val seed: Long) : GeneratorContext
+    private class DummyContext constructor(override val debugGraphics: Graphics?, override val seed: Long, override val random: Random) : GeneratorContext
 }

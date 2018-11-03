@@ -30,14 +30,14 @@ import org.lanternpowered.porygen.parser.PoryObjectParser
 import org.lanternpowered.porygen.parser.PoryParserContext
 import org.lanternpowered.porygen.settings.DataKeyValueMap
 import org.lanternpowered.porygen.settings.DataManipulatorList
-import org.lanternpowered.porygen.util.uncheckedCast
+import org.lanternpowered.porygen.api.util.uncheckedCast
 import org.spongepowered.api.entity.EntityArchetype
 
 class EntityArchetypeParser : PoryObjectParser<EntityArchetype> {
 
     override fun parse(obj: PoryObject, type: TypeToken<EntityArchetype>, ctx: PoryParserContext): EntityArchetype {
         val builder = EntityArchetype.builder()
-        builder.type(obj.tryGetAs("type"))
+        builder.type(obj.tryGetAsObj("type"))
         obj.getAsObject("data")?.run {
             getAsObj<DataKeyValueMap>("values")?.let { map -> map.map.forEach { builder.set(it.key.uncheckedCast(), it.value) } }
             getAsObj<DataManipulatorList>("manipulators")?.let { list -> list.list.forEach { builder.setData(it) } }

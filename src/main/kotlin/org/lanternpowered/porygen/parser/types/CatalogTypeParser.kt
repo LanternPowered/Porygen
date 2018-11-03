@@ -29,7 +29,7 @@ import org.lanternpowered.porygen.parser.ParseException
 import org.lanternpowered.porygen.parser.PoryElement
 import org.lanternpowered.porygen.parser.PoryParser
 import org.lanternpowered.porygen.parser.PoryParserContext
-import org.lanternpowered.porygen.util.uncheckedCast
+import org.lanternpowered.porygen.api.util.uncheckedCast
 import org.spongepowered.api.CatalogType
 import org.spongepowered.api.Sponge
 

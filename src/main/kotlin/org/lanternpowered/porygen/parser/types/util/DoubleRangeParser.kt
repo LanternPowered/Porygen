@@ -28,7 +28,7 @@ import com.google.common.reflect.TypeToken
 import org.lanternpowered.porygen.parser.PoryObject
 import org.lanternpowered.porygen.parser.PoryObjectParser
 import org.lanternpowered.porygen.parser.PoryParserContext
-import org.lanternpowered.porygen.util.DoubleRange
+import org.lanternpowered.porygen.api.util.DoubleRange
 
 class DoubleRangeParser : PoryObjectParser<DoubleRange> {
 

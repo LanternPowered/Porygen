@@ -24,10 +24,14 @@
  */
 package org.lanternpowered.porygen
 
+import com.google.inject.AbstractModule
 import com.google.inject.Inject
+import com.google.inject.Injector
+import org.lanternpowered.porygen.api.Porygen
 import org.lanternpowered.porygen.generator.*
 import org.lanternpowered.porygen.populator.PorygenPopulatorType
 import org.slf4j.Logger
+import org.spongepowered.api.config.ConfigDir
 import org.spongepowered.api.event.Listener
 import org.spongepowered.api.event.game.GameRegistryEvent
 import org.spongepowered.api.event.game.state.GameInitializationEvent
@@ -40,6 +44,7 @@ import org.spongepowered.api.world.gen.PopulatorType
 import org.spongepowered.api.world.gen.WorldGeneratorModifier
 import org.spongepowered.api.world.gen.populator.RandomBlock
 import org.spongepowered.api.world.gen.populator.RandomObject
+import java.nio.file.Path
 import java.util.*
 
 /**
@@ -49,7 +54,9 @@ import java.util.*
 @Plugin(id = "porygen")
 class PorygenPlugin @Inject constructor(
         val logger: Logger,
-        val container: PluginContainer
+        val container: PluginContainer,
+        val injector: Injector,
+        @ConfigDir(sharedRoot = false) val configDir: Path
 ) {
 
     /**
@@ -70,6 +77,12 @@ class PorygenPlugin @Inject constructor(
         // These will just be the same as overworld, but with some custom settings
         this.generatorTypes.add(OverworldGeneratorType("amplified", "Porygen Amplified Overworld"))
         this.generatorTypes.add(OverworldGeneratorType("large_biomes", "Porygen Large Biomes Overworld"))
+
+        this.injector.createChildInjector(PorygenModule(), object : AbstractModule() {
+            override fun configure() {
+                requestStaticInjection(Porygen::class.java)
+            }
+        })
     }
 
     @Listener

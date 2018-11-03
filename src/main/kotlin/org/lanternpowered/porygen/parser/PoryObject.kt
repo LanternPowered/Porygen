@@ -104,7 +104,7 @@ class PoryObject private constructor(private val map: MutableMap<String, PoryEle
      * @param key The key
      * @return The object
      */
-    fun <T> tryGetAs(key: String, type: Type): T = getAsObj<T>(key, type) ?: throw IllegalStateException("Missing key: $key")
+    fun <T> tryGetAsObj(key: String, type: Type): T = getAsObj<T>(key, type) ?: throw IllegalStateException("Missing key: $key")
 
     /**
      * Attempts to get the object of type [T] for the given key. A exception
@@ -113,7 +113,7 @@ class PoryObject private constructor(private val map: MutableMap<String, PoryEle
      * @param key The key
      * @return The object
      */
-    fun <T> tryGetAs(key: String, type: TypeToken<T>): T = getAsObj(key, type) ?: throw IllegalStateException("Missing key: $key")
+    fun <T> tryGetAsObj(key: String, type: TypeToken<T>): T = getAsObj(key, type) ?: throw IllegalStateException("Missing key: $key")
 
     /**
      * Attempts to get the object of type [T] for the given key. A exception
@@ -122,7 +122,7 @@ class PoryObject private constructor(private val map: MutableMap<String, PoryEle
      * @param key The key
      * @return The object
      */
-    fun <T> tryGetAs(key: String, type: Class<T>): T = getAsObj(key, type) ?: throw IllegalStateException("Missing key: $key")
+    fun <T> tryGetAsObj(key: String, type: Class<T>): T = getAsObj(key, type) ?: throw IllegalStateException("Missing key: $key")
 
     /**
      * Attempts to get the object of type [T] for the given key. A exception
@@ -131,7 +131,7 @@ class PoryObject private constructor(private val map: MutableMap<String, PoryEle
      * @param key The key
      * @return The object
      */
-    inline fun <reified T> tryGetAs(key: String): T = getAsObj(key, object : TypeToken<T>() {}) ?: throw IllegalStateException("Missing key: $key")
+    inline fun <reified T> tryGetAsObj(key: String): T = tryGetAsObj(key, object : TypeToken<T>() {})
 
     /**
      * Gets the [OperatedPoryElement] for the given key, or [Optional.empty] if missing.

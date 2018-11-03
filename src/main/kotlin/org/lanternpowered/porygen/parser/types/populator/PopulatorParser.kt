@@ -36,7 +36,7 @@ class PopulatorParser : PoryObjectParser<Populator> {
 
     override fun parse(obj: PoryObject, type: TypeToken<Populator>, ctx: PoryParserContext): Populator {
         // Get the populator type
-        val populatorType = obj.tryGetAs<PopulatorType>("type")
+        val populatorType = obj.tryGetAsObj<PopulatorType>("type")
         // Construct the populator based on the type
         return obj.asObj(PopulatorClassLookup.getPopulatorClass(populatorType))
     }

@@ -25,17 +25,11 @@
 package org.lanternpowered.porygen.parser
 
 import com.google.common.reflect.TypeToken
+import org.lanternpowered.porygen.api.util.DoubleRange
+import org.lanternpowered.porygen.parser.types.*
 import org.lanternpowered.porygen.settings.DataKeyValueMap
 import org.lanternpowered.porygen.settings.DataManipulatorList
 import org.lanternpowered.porygen.settings.ParentBasedBiomeGenerationSettings
-import org.lanternpowered.porygen.parser.types.BlockStateParser
-import org.lanternpowered.porygen.parser.types.CatalogTypeParser
-import org.lanternpowered.porygen.parser.types.DoublePredicateParser
-import org.lanternpowered.porygen.parser.types.EntityArchetypeParser
-import org.lanternpowered.porygen.parser.types.GroundCoverLayerParser
-import org.lanternpowered.porygen.parser.types.ItemStackParser
-import org.lanternpowered.porygen.parser.types.ItemStackSnapshotParser
-import org.lanternpowered.porygen.parser.types.ParentBasedBiomeGenerationSettingsParser
 import org.lanternpowered.porygen.parser.types.data.DataKeyValueMapParser
 import org.lanternpowered.porygen.parser.types.data.DataManipulatorListParser
 import org.lanternpowered.porygen.parser.types.populator.BigMushroomParser
@@ -79,6 +73,7 @@ import org.spongepowered.api.util.weighted.TableEntry
 import org.spongepowered.api.util.weighted.VariableAmount
 import org.spongepowered.api.util.weighted.WeightedTable
 import org.spongepowered.api.world.biome.GroundCoverLayer
+import org.spongepowered.api.world.gen.GenerationPopulator
 import org.spongepowered.api.world.gen.Populator
 import org.spongepowered.api.world.gen.populator.BigMushroom
 import org.spongepowered.api.world.gen.populator.BlockBlob
@@ -108,6 +103,7 @@ object GlobalPory {
             .registerParser(CatalogType::class.java, CatalogTypeParser<CatalogType>())
             .registerParser(DoublePredicate::class.java, DoublePredicateParser())
             .registerParser(GroundCoverLayer::class.java, GroundCoverLayerParser())
+            .registerParser(GenerationPopulator::class.java, GenerationPopulatorParser())
             .registerParser(ParentBasedBiomeGenerationSettings::class.java, ParentBasedBiomeGenerationSettingsParser())
             .registerParser(ItemStack::class.java, ItemStackParser())
             .registerParser(ItemStackSnapshot::class.java, ItemStackSnapshotParser())
@@ -149,9 +145,7 @@ object GlobalPory {
             ///////////////////////////////
             /// Utility Objects parsers ///
             ///////////////////////////////
-            .registerParser(object : TypeToken<ClosedFloatingPointRange<Double>>() {
-
-            }, DoubleRangeParser())
+            .registerParser(object : TypeToken<DoubleRange>() {}, DoubleRangeParser())
             .registerParser(IntRange::class.java, IntRangeParser())
             .build()
 }

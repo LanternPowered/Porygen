@@ -31,7 +31,7 @@ import org.lanternpowered.porygen.parser.PoryParserContext
 import org.lanternpowered.porygen.parser.PoryPrimitive
 import org.lanternpowered.porygen.settings.DataKeyValueMap
 import org.lanternpowered.porygen.settings.DataManipulatorList
-import org.lanternpowered.porygen.util.uncheckedCast
+import org.lanternpowered.porygen.api.util.uncheckedCast
 import org.spongepowered.api.data.DataRegistration
 import org.spongepowered.api.data.manipulator.DataManipulator
 import java.util.*

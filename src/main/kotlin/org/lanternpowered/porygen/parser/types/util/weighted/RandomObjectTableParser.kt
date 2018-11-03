@@ -30,7 +30,7 @@ import org.lanternpowered.porygen.parser.ParseException
 import org.lanternpowered.porygen.parser.PoryObject
 import org.lanternpowered.porygen.parser.PoryObjectParser
 import org.lanternpowered.porygen.parser.PoryParserContext
-import org.lanternpowered.porygen.util.uncheckedCast
+import org.lanternpowered.porygen.api.util.uncheckedCast
 import org.spongepowered.api.util.weighted.ChanceTable
 import org.spongepowered.api.util.weighted.RandomObjectTable
 import org.spongepowered.api.util.weighted.WeightedTable

@@ -40,8 +40,8 @@ class DataKeyValueMapParser : PoryParser<DataKeyValueMap> {
         if (element.isArray) {
             for (arrayElement in element.asArray()) {
                 val obj = arrayElement.asObject()
-                val key = obj.tryGetAs<Key<*>>("key")
-                val value = obj.tryGetAs("value", key.elementToken)
+                val key = obj.tryGetAsObj<Key<*>>("key")
+                val value = obj.tryGetAsObj("value", key.elementToken)
                 map[key] = value
             }
         } else {
