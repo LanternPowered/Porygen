@@ -1,9 +1,0 @@
-{
-    "sea-level": 62,
-    "biomes": [
-        {
-            "type": "porygen:world/biome/example_biome.json",
-            "weight": 100
-        }
-    ]
-}

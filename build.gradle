@@ -2,7 +2,7 @@ plugins {
     id 'net.minecrell.licenser' version '0.4'
     id 'com.github.johnrengelman.shadow' version '2.0.1'
     id 'org.spongepowered.plugin' version '0.8.1'
-    id 'org.jetbrains.kotlin.jvm' version '1.2.71'
+    id 'org.jetbrains.kotlin.jvm' version '1.3.0'
 }
 
 // Basic project information
@@ -41,15 +41,15 @@ repositories {
 
 // Project dependencies
 dependencies {
-    compile 'org.spongepowered:spongeapi:7.1.0-SNAPSHOT'
+    // compile 'org.spongepowered:spongeapi:7.1.0-SNAPSHOT'
+    compile 'org.spongepowered:math:2.0.0-SNAPSHOT'
+    compile 'org.spongepowered:noise:2.0.0-SNAPSHOT'
     // Not exposed in the api, but every known impl supports it
     compile 'it.unimi.dsi:fastutil:8.2.2'
 
     // Kotlin
     compile 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
     compile 'org.jetbrains.kotlin:kotlin-reflect'
-
-    shadow 'com.github.jdiemke.delaunay-triangulator:DelaunayTriangulator:master-SNAPSHOT'
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile)*.kotlinOptions {

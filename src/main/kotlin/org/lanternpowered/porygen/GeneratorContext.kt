@@ -1,26 +1,11 @@
 /*
- * This file is part of Porygen, licensed under the MIT License (MIT).
+ * Porygen
  *
  * Copyright (c) LanternPowered <https://www.lanternpowered.org>
  * Copyright (c) contributors
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the Software), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED AS IS, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * This work is licensed under the terms of the MIT License (MIT). For
+ * a copy, see 'LICENSE.txt' or <https://opensource.org/licenses/MIT>.
  */
 package org.lanternpowered.porygen
 
@@ -28,17 +13,15 @@ import java.awt.Graphics
 
 interface GeneratorContext {
 
-    /**
-     * Gets the seed that should be used for generation.
-     *
-     * @return The seed
-     */
-    val seed: Long
+  /**
+   * The seed that should be used for generation.
+   */
+  val seed: Long
 
-    /**
-     * Gets the debug graphics.
-     *
-     * @return The debug graphics
-     */
-    val debugGraphics: Graphics?
+  /**
+   * Gets the debug graphics.
+   *
+   * @return The debug graphics
+   */
+  val debugGraphics: Graphics?
 }

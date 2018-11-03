@@ -1,36 +1,19 @@
 /*
- * This file is part of Porygen, licensed under the MIT License (MIT).
+ * Porygen
  *
  * Copyright (c) LanternPowered <https://www.lanternpowered.org>
  * Copyright (c) contributors
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the Software), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED AS IS, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * This work is licensed under the terms of the MIT License (MIT). For
+ * a copy, see 'LICENSE.txt' or <https://opensource.org/licenses/MIT>.
  */
 package org.lanternpowered.porygen.points.random
 
-import com.flowpowered.math.vector.Vector2d
 import org.lanternpowered.porygen.GeneratorContext
+import org.lanternpowered.porygen.math.geom.Rectangled
 import org.lanternpowered.porygen.points.PointsGenerator
-import org.lanternpowered.porygen.util.geom.Rectangled
-
-import java.util.ArrayList
-import java.util.Random
+import org.spongepowered.math.vector.Vector2d
+import kotlin.random.Random
 
 /**
  * A simple [PointsGenerator] that generates random
@@ -38,29 +21,29 @@ import java.util.Random
  */
 class WhiteNoiseRandomPointsGenerator : AbstractRandomPointsGenerator() {
 
-    override fun generatePoints(context: GeneratorContext, random: Random, rectangle: Rectangled): List<Vector2d> {
-        val points = ArrayList<Vector2d>()
+  override fun generatePoints(context: GeneratorContext, rectangle: Rectangled, random: Random): List<Vector2d> {
+    val points = mutableListOf<Vector2d>()
 
-        val min = this.points.start
-        val max = this.points.endInclusive
+    val min = this.points.first
+    val max = this.points.last
 
-        // Randomize the amount of points that will be generated
-        val amount = min + random.nextInt(max - min + 1)
+    // Randomize the amount of points that will be generated
+    val amount = min + random.nextInt(max - min + 1)
 
-        val minX = rectangle.min.x
-        val minY = rectangle.min.y
-        val maxX = rectangle.max.x
-        val maxY = rectangle.max.y
+    val minX = rectangle.min.x
+    val minY = rectangle.min.y
+    val maxX = rectangle.max.x
+    val maxY = rectangle.max.y
 
-        val dX = maxX - minX
-        val dY = maxY - minY
+    val dX = maxX - minX
+    val dY = maxY - minY
 
-        for (i in 0 until amount) {
-            val x = minX + random.nextDouble() * dX
-            val y = minY + random.nextDouble() * dY
-            points.add(Vector2d(x, y))
-        }
-
-        return points
+    for (i in 0 until amount) {
+      val x = minX + random.nextDouble() * dX
+      val y = minY + random.nextDouble() * dY
+      points.add(Vector2d(x, y))
     }
+
+    return points
+  }
 }
