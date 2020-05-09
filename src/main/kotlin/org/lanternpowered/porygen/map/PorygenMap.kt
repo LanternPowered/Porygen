@@ -28,17 +28,23 @@ import com.flowpowered.math.vector.Vector2i
 import com.github.benmanes.caffeine.cache.CacheLoader
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.benmanes.caffeine.cache.RemovalListener
+import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import org.lanternpowered.porygen.api.GeneratorContext
 import org.lanternpowered.porygen.api.data.SimpleDataHolder
-import org.lanternpowered.porygen.api.map.*
+import org.lanternpowered.porygen.api.map.Cell
+import org.lanternpowered.porygen.api.map.CellMap
+import org.lanternpowered.porygen.api.map.CellMapChunk
+import org.lanternpowered.porygen.api.map.CellMapView
 import org.lanternpowered.porygen.api.map.gen.polygon.CellPolygonGenerator
 import org.lanternpowered.porygen.api.points.PointsGenerator
 import org.lanternpowered.porygen.api.util.dsi.XoRoShiRo128PlusRandom
-import org.lanternpowered.porygen.api.util.geom.Line2i
 import org.lanternpowered.porygen.api.util.geom.Rectangled
 import org.lanternpowered.porygen.api.util.geom.Rectanglei
 import org.lanternpowered.porygen.api.util.tuple.packIntPair
+import org.lanternpowered.porygen.api.util.tuple.unpackIntPairFirst
+import org.lanternpowered.porygen.api.util.tuple.unpackIntPairSecond
 import org.lanternpowered.porygen.api.util.uncheckedCast
 import org.spongepowered.api.world.World
 import org.spongepowered.api.world.storage.WorldProperties
@@ -62,6 +68,17 @@ class PorygenMap(
     private val cornersById = Long2ObjectOpenHashMap<PorygenCorner>()
     private val cellsById = Long2ObjectOpenHashMap<PorygenCell>()
     private val edgesById = Long2ObjectOpenHashMap<PorygenEdge>()
+
+    /**
+     * The coordinates of all the chunks that are loaded in the [World].
+     */
+    // private val loadedChunks = Long2IntOpenHashMap()
+
+    // All the map chunks that should be in memory
+    private val loadedMapChunks = Long2IntOpenHashMap()
+
+    private val loadQueuedMapChunks = LongOpenHashSet()
+    private val unloadQueuedMapChunks = LongOpenHashSet()
 
     // A cache with all the map views that are currently allocated
     private val mapViewCache = (Caffeine.newBuilder().uncheckedCast<Caffeine<Rectanglei, PorygenMapView>>())
@@ -107,7 +124,8 @@ class PorygenMap(
             var porygenCell: PorygenCell? = this.cellsByCenter[center]
             // Construct a new cell if necessary
             if (porygenCell == null) {
-                porygenCell = PorygenCell(this, centeredPolygon)
+                val cellData = buildCellData(centeredPolygon)
+                porygenCell = PorygenCell(this, cellData)
                 this.cellsByCenter[center] = porygenCell
 
                 // Loop through all the edges and construct them if necessary
@@ -139,10 +157,70 @@ class PorygenMap(
         return this.mapViewCache.get(rectangle)!!
     }
 
+    // Keep references to everything that should cause the map pieces
+    // to be loaded or kept in memory.
+
+    private fun addChunkRef(id: Long) {
+        // Increase the references to the chunk and the surrounding chunks
+        val ref = this.loadedMapChunks[id]
+        this.loadedMapChunks[id] = ref + 1
+        // Check if the chunk is newly added,
+        if (ref == 0) {
+            // Queue the chunk to be loaded
+            this.loadQueuedMapChunks.add(id)
+            // Remove a old unload entry
+            this.unloadQueuedMapChunks.remove(id)
+        }
+    }
+
+    private fun removeChunkRef(id: Long) {
+        // Increase the references to the chunk and the surrounding chunks
+        val ref = this.loadedMapChunks[id]
+        this.loadedMapChunks[id] = ref - 1
+        // Check if the chunk is newly added,
+        if (ref == 1) {
+            // Queue the chunk to be unloaded
+            this.loadQueuedMapChunks.remove(id)
+            // Remove a load entry
+            this.unloadQueuedMapChunks.add(id)
+        }
+    }
+
+    internal fun onLoadChunk(chunkX: Int, chunkZ: Int) {
+        // Increase the references to the chunk and the surrounding chunks
+        for (x in chunkX - SURROUNDING_LOADED_CHUNKS .. chunkX + SURROUNDING_LOADED_CHUNKS) {
+            for (z in chunkZ - SURROUNDING_LOADED_CHUNKS .. chunkZ + SURROUNDING_LOADED_CHUNKS) {
+                addChunkRef(packIntPair(chunkX, chunkZ))
+            }
+        }
+    }
+
+    internal fun onUnloadChunk(chunkX: Int, chunkZ: Int) {
+        // Decrease the references to the chunk and the surrounding chunks
+        for (x in chunkX - SURROUNDING_LOADED_CHUNKS .. chunkX + SURROUNDING_LOADED_CHUNKS) {
+            for (z in chunkZ - SURROUNDING_LOADED_CHUNKS .. chunkZ + SURROUNDING_LOADED_CHUNKS) {
+                removeChunkRef(packIntPair(chunkX, chunkZ))
+            }
+        }
+    }
+
     override fun getChunk(chunkX: Int, chunkZ: Int) = getChunk(packIntPair(chunkX, chunkZ))
 
-    fun getChunk(packedChunkPos: Long): CellMapChunk {
-        TODO()
+    fun getChunk(id: Long): CellMapChunk {
+        var chunk = this.chunksById[id]
+        if (chunk != null) {
+            return chunk
+        }
+        this.loadQueuedMapChunks.remove(id)
+        this.unloadQueuedMapChunks.remove(id)
+        val chunkX = unpackIntPairFirst(id)
+        val chunkZ = unpackIntPairSecond(id)
+        val chunkPos = Vector2i(chunkX, chunkZ)
+        chunk = PorygenMapChunk(this, chunkPos, id)
+        val cells = this.cellsByChunk[id]!!
+        chunk.cellBlockData = generateCellBlockData(chunkX, chunkZ, cells.toTypedArray())
+        this.chunksById[id] = chunk
+        return chunk
     }
 
     fun getChunkIfLoaded(packedChunkPos: Long): CellMapChunk? = this.chunksById[packedChunkPos]
@@ -160,4 +238,9 @@ class PorygenMap(
      * @return The cell, if found
      */
     fun getCellByCenter(point: Vector2i) = getCell(packIntPair(point.x, point.y))
+
+    companion object {
+
+        const val SURROUNDING_LOADED_CHUNKS = 5
+    }
 }

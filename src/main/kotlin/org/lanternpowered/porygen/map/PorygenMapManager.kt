@@ -26,6 +26,7 @@ package org.lanternpowered.porygen.map
 
 import org.lanternpowered.porygen.api.map.CellMap
 import org.lanternpowered.porygen.api.map.CellMapManager
+import org.lanternpowered.porygen.generator.GeneratorModifierToType
 import org.lanternpowered.porygen.generator.PorygenGeneratorType
 import org.spongepowered.api.data.DataQuery
 import org.spongepowered.api.event.Listener
@@ -43,17 +44,19 @@ import java.util.concurrent.ConcurrentHashMap
 
 object PorygenMapManager : CellMapManager {
 
-    private val mapsByWorld = ConcurrentHashMap<UUID, CellMap?>()
+    private val mapsByWorld = ConcurrentHashMap<UUID, PorygenMap?>()
 
     override fun getMap(world: World): CellMap? = this.mapsByWorld[world.uniqueId]
 
     @Listener(order = Order.LAST)
     fun onLoadWorld(event: LoadWorldEvent) {
         val world = event.targetWorld
+
         // If the world is at this phase using a PorygenGeneratorType modifier
         // then we can consider this world using the Porygen cell map.
         // Post injected generator modifiers are not supported.
-        val isCellWorld = world.properties.generatorModifiers.find { it is PorygenGeneratorType } != null
+        val isCellWorld = world.properties.generatorType is GeneratorModifierToType ||
+                world.properties.generatorModifiers.find { it is PorygenGeneratorType } != null
         if (isCellWorld) {
             // Get the porygen generator settings from
             val porygenSettings = world.properties.generatorSettings[DataQuery.of("porygen")].orElse(null)
@@ -73,21 +76,31 @@ object PorygenMapManager : CellMapManager {
 
     @Listener
     fun onLoadChunk(event: LoadChunkEvent) {
-        event.targetChunk
+        val chunk = event.targetChunk
+        val map = this.mapsByWorld[chunk.world.uniqueId] ?: return
+        val chunkStartPos = chunk.position
+        map.onLoadChunk(chunkStartPos.x shr 4, chunkStartPos.z shr 4)
     }
 
     @Listener
     fun onUnloadChunk(event: UnloadChunkEvent) {
-
+        val chunk = event.targetChunk
+        val map = this.mapsByWorld[chunk.world.uniqueId] ?: return
+        val chunkStartPos = chunk.position
+        map.onUnloadChunk(chunkStartPos.x shr 4, chunkStartPos.z shr 4)
     }
 
     @Listener
     fun onForcedChunk(event: ForcedChunkEvent) {
-
+        val map = this.mapsByWorld[event.ticket.world.uniqueId] ?: return
+        val chunkPos = event.chunkCoords
+        map.onLoadChunk(chunkPos.x, chunkPos.z)
     }
 
     @Listener
     fun onUnforcedChunk(event: UnforcedChunkEvent) {
-
+        val map = this.mapsByWorld[event.ticket.world.uniqueId] ?: return
+        val chunkPos = event.chunkCoords
+        map.onUnloadChunk(chunkPos.x, chunkPos.z)
     }
 }

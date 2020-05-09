@@ -22,18 +22,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.api.map
+package org.lanternpowered.porygen.api.util
 
-interface CellMapElement {
+import java.util.*
+import java.util.concurrent.ThreadLocalRandom
 
-    /**
-     * The id of this identifiable. This id is unique
-     * within a specific [CellMap].
-     */
-    val id: Long
+object IntArrays {
 
-    /**
-     * The [CellMap] this element is located in.
-     */
-    val map: CellMap
+    fun shuffle(array: IntArray, random: Random = ThreadLocalRandom.current()) {
+        var index: Int
+        for (i in array.size - 1 downTo 1) {
+            index = random.nextInt(i + 1)
+            if (index != i) {
+                array[index] = array[index] xor array[i]
+                array[i] = array[i] xor array[index]
+                array[index] = array[index] xor array[i]
+            }
+        }
+    }
 }

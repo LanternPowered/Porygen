@@ -40,12 +40,12 @@ import org.spongepowered.api.world.Chunk
  */
 class PorygenMapChunk(
         override val map: PorygenMap,
-        override val chunkPos: Vector2i
+        override val chunkPos: Vector2i,
+        override val id: Long
 ) : SimpleDataHolder(), CellMapChunk {
 
     internal var cellBlockData: CellBlockData = NullCellBlockData
 
-    override val id: Long = packIntPair(this.chunkPos.x, this.chunkPos.y)
     override val chunk: Chunk? get() = this.map.world.getChunk(this.chunkPos.x, 0, this.chunkPos.y).orElse(null)
 
     override val cells get() = this.cellBlockData.cells

@@ -26,6 +26,7 @@ package org.lanternpowered.porygen.api.points.random
 
 import com.flowpowered.math.vector.Vector2d
 import org.lanternpowered.porygen.api.GeneratorContext
+import org.lanternpowered.porygen.api.util.IntArrays
 import org.lanternpowered.porygen.api.util.geom.Rectangled
 import java.awt.Color
 import java.util.*
@@ -54,15 +55,12 @@ class BlueNoiseRandomPointsGenerator : AbstractRandomPointsGenerator() {
 
     var debug = false
 
-    // A array that is reused
-    private val usedCells = ThreadLocal<BooleanArray>()
-
-    fun setCells(xCells: Int, yCells: Int) {
+    fun setCells(xCells: Int, yCells: Int) = apply {
         this.xCells = xCells
         this.yCells = yCells
     }
 
-    fun setCellCoverage(xCellCoverage: Double, yCellCoverage: Double) {
+    fun setCellCoverage(xCellCoverage: Double, yCellCoverage: Double) = apply {
         this.xCellCoverage = xCellCoverage
         this.yCellCoverage = yCellCoverage
     }
@@ -108,7 +106,7 @@ class BlueNoiseRandomPointsGenerator : AbstractRandomPointsGenerator() {
             }
         }
 
-        val pointAdder = { cell: Int ->
+        fun addCellPoint(cell: Int) {
             // Get the coordinates from the cell index
             val cx = (cell % this.xCells).toDouble()
             val cy = (cell / this.xCells).toDouble()
@@ -124,27 +122,14 @@ class BlueNoiseRandomPointsGenerator : AbstractRandomPointsGenerator() {
             // All cells have to be populated, so don't
             // go random through all the cells
             for (i in 0 until cellAmount) {
-                pointAdder(i)
+                addCellPoint(i)
             }
         } else {
-            var usedCells: BooleanArray? = this.usedCells.get()
-            // Check if the used cells are initialized, or if the cell amount changed
-            if (usedCells == null || usedCells.size != cellAmount) {
-                usedCells = BooleanArray(cellAmount)
-                this.usedCells.set(usedCells)
-            } else {
-                // Reset the used cells
-                Arrays.fill(usedCells, false)
-            }
+            val cells = IntArray(cellAmount) { it }
+            IntArrays.shuffle(cells, random)
 
             for (i in 0 until amount) {
-                var cell: Int
-                // Keep searching until a empty cell is found
-                do {
-                    cell = random.nextInt(cellAmount)
-                } while (usedCells[cell])
-                usedCells[cell] = true
-                pointAdder(cell)
+                addCellPoint(cells[i])
             }
         }
 

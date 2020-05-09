@@ -24,33 +24,26 @@
  */
 package org.lanternpowered.porygen.map
 
-import com.flowpowered.math.GenericMath
-import com.flowpowered.math.vector.Vector2i
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import org.lanternpowered.porygen.api.data.SimpleDataHolder
 import org.lanternpowered.porygen.api.map.Cell
 import org.lanternpowered.porygen.api.map.Corner
 import org.lanternpowered.porygen.api.map.Edge
-import org.lanternpowered.porygen.api.map.gen.polygon.CellPolygon
-import org.lanternpowered.porygen.api.util.geom.Polygond
 import org.lanternpowered.porygen.api.util.geom.Rectanglei
 import org.lanternpowered.porygen.api.util.tuple.packIntPair
 import java.util.*
 import kotlin.collections.ArrayList
 
-class PorygenCell : SimpleDataHolder, Cell {
+class PorygenCell internal constructor(override val map: PorygenMap, data: CellData) : SimpleDataHolder(), Cell {
 
-    override val map: PorygenMap
-    override val centerPoint: Vector2i
-    override val polygon: Polygond
+    override val centerPoint = data.center
+    override val polygon = data.polygon
+    override val id = data.id
 
-    override val id: Long
+    // A set with all the chunk coordinates this cell is located in
+    val chunks = data.chunks
 
     // A set with all the referenced views
     internal val referencedViews: MutableSet<Rectanglei> = HashSet()
-
-    // A set with all the chunk coordinates this cell is located in
-    val chunks = LongOpenHashSet()
 
     internal val theNeighbors = ArrayList<Cell>()
     internal val theEdges = ArrayList<Edge>()
@@ -59,47 +52,6 @@ class PorygenCell : SimpleDataHolder, Cell {
     override val neighbors: List<Cell> = Collections.unmodifiableList(this.theNeighbors)
     override val edges: List<Edge> = Collections.unmodifiableList(this.theEdges)
     override val corners: List<Corner> = Collections.unmodifiableList(this.theCorners)
-
-    internal constructor(map: PorygenMap, centeredPolygon: CellPolygon) {
-        this.map = map
-        this.centerPoint = centeredPolygon.center.toInt()
-        this.polygon = centeredPolygon.polygon
-        this.id = packIntPair(this.centerPoint.x, this.centerPoint.y)
-
-        // Generate the outer bounds of the cell, to know in
-        // which chunks this cell is located.
-
-        var minX = Double.MAX_VALUE
-        var minZ = Double.MAX_VALUE
-        var maxX = -Double.MAX_VALUE
-        var maxZ = -Double.MAX_VALUE
-
-        for (vertex in this.polygon.vertices) {
-            minX = Math.min(minX, vertex.x)
-            maxX = Math.max(maxX, vertex.x)
-            minZ = Math.min(minZ, vertex.y)
-            maxZ = Math.max(maxZ, vertex.y)
-        }
-
-        // Collect all the chunks the cell is actually located in
-
-        val chunkStartX = GenericMath.floor(minX) shr 4
-        val chunkStartZ = GenericMath.floor(minZ) shr 4
-        val chunkEndX = GenericMath.floor(maxX) shr 4
-        val chunkEndZ = GenericMath.floor(maxZ) shr 4
-
-        for (chunkX in chunkStartX..chunkEndX) {
-            for (chunkZ in chunkStartZ..chunkEndZ) {
-                val chunkArea = Rectanglei(chunkX shl 4, chunkZ shl 4, (chunkX + 1) shl 4, (chunkZ + 1) shl 4)
-                if (this.polygon.contains(chunkArea) || this.polygon.intersects(chunkArea)) {
-                    this.chunks.add(packIntPair(chunkX, chunkZ))
-                }
-            }
-        }
-
-        // Make the set as small as possible
-        this.chunks.trim()
-    }
 
     override fun contains(x: Int, z: Int): Boolean {
         val chunkPos = packIntPair(x shr 4, z shr 4)

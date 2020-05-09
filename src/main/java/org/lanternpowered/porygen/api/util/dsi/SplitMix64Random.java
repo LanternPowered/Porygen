@@ -78,6 +78,8 @@ public class SplitMix64Random extends Random {
         this(SeedUtil.randomSeed());
     }
 
+    public static final double VALUE = 0x1.0p-53;
+
     /** Creates a new generator using a given seed.
      *
      * @param seed a seed for the generator.

@@ -26,6 +26,7 @@ package org.lanternpowered.porygen.api.points.random
 
 import com.flowpowered.math.vector.Vector2d
 import org.lanternpowered.porygen.api.GeneratorContext
+import org.lanternpowered.porygen.api.util.IntArrays
 import org.lanternpowered.porygen.api.util.geom.Rectangled
 import java.util.*
 
@@ -37,9 +38,6 @@ class GridBasedRandomPointsGenerator(
         var columns: Int = 10,
         var rows: Int = 10
 ) : AbstractRandomPointsGenerator() {
-
-    // A array that is reused
-    private val usedPoints = ThreadLocal<BooleanArray>()
 
     fun setGrid(columns: Int, rows: Int) = apply {
         this.columns = columns
@@ -54,7 +52,7 @@ class GridBasedRandomPointsGenerator(
         val max = this.points.endInclusive
 
         // Randomize the amount of points that will be generated
-        var amount = min + random.nextInt(max - min + 1)
+        val amount = min + random.nextInt(max - min + 1)
 
         val minX = rectangle.min.x
         val minY = rectangle.min.y
@@ -68,37 +66,30 @@ class GridBasedRandomPointsGenerator(
         val xLineDiff = dX / this.columns
         val yLineDiff = dY / this.rows
 
-        val gridPointsAmount = this.columns * this.rows
-        amount = Math.min(amount, gridPointsAmount) // There cannot be more points than the amount of points in the grid
-
-        var usedPoints: BooleanArray? = this.usedPoints.get()
-        // Check if the used points are initialized, or if the grid size changed
-        if (usedPoints == null || usedPoints.size != gridPointsAmount) {
-            usedPoints = BooleanArray(gridPointsAmount)
-            this.usedPoints.set(usedPoints)
-        } else {
-            // Reset the used cells
-            Arrays.fill(usedPoints, false)
-        }
-
-        for (i in 0 until amount) {
-            var gridPoint: Int
-            // Keep searching until a empty cell is found
-            while (true) {
-                gridPoint = random.nextInt(gridPointsAmount)
-                if (!usedPoints[gridPoint]) {
-                    break
-                }
-            }
-            usedPoints[gridPoint] = true
+        fun addCellPoint(cell: Int) {
             // Get the coordinates from the point index
-            val px = (gridPoint % this.columns).toDouble()
-            val py = (gridPoint / this.rows).toDouble()
+            val px = (cell % this.columns).toDouble()
+            val py = (cell / this.rows).toDouble()
             // Calculate point coordinates within the cell
             val x = minX + xLineDiff * px + xLineDiff / 2.0
             val y = minY + yLineDiff * py + yLineDiff / 2.0
-            // Add the point
             points.add(Vector2d(x, y))
+        }
+
+        val gridPointsAmount = this.columns * this.rows
+        if (amount >= gridPointsAmount) {
+            // All cells have to be populated, so don't
+            // go random through all the cells
+            for (i in 0 until gridPointsAmount) {
+                addCellPoint(i)
+            }
+        } else {
+            val cells = IntArray(gridPointsAmount) { it }
+            IntArrays.shuffle(cells, random)
+
+            for (i in 0 until amount) {
+                addCellPoint(cells[i])
+            }
         }
 
         return points

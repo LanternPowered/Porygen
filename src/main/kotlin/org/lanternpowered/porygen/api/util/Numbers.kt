@@ -22,18 +22,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.api.map
+@file:Suppress("NOTHING_TO_INLINE")
 
-interface CellMapElement {
+package org.lanternpowered.porygen.api.util
 
-    /**
-     * The id of this identifiable. This id is unique
-     * within a specific [CellMap].
-     */
-    val id: Long
+import com.flowpowered.math.GenericMath
 
-    /**
-     * The [CellMap] this element is located in.
-     */
-    val map: CellMap
-}
+inline fun Float.floorToInt(): Int = GenericMath.floor(this)
+inline fun Double.floorToInt(): Int = GenericMath.floor(this)
+
+inline fun Float.floorToLong(): Long = GenericMath.floorl(this)
+inline fun Double.floorToLong(): Long = GenericMath.floorl(this)
+
+fun Float.ceilToInt(): Int = -GenericMath.floor(-this)
+fun Double.ceilToInt(): Int = -GenericMath.floor(-this)
+
+fun Float.ceilToLong(): Long = -GenericMath.floorl(-this)
+fun Double.ceilToLong(): Long = -GenericMath.floorl(-this)

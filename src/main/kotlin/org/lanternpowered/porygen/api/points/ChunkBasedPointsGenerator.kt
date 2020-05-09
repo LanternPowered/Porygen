@@ -45,10 +45,9 @@ class ChunkBasedPointsGenerator(
     var chunksPerXSection = 16
     var chunksPerYSection = 16
 
-    fun setChunksPerSection(chunksPerXSection: Int, chunksPerYSection: Int): ChunkBasedPointsGenerator {
+    fun setChunksPerSection(chunksPerXSection: Int, chunksPerYSection: Int) = apply {
         this.chunksPerXSection = chunksPerXSection
         this.chunksPerYSection = chunksPerYSection
-        return this
     }
 
     override fun generatePoints(context: GeneratorContext, rectangle: Rectangled): List<Vector2d> {
