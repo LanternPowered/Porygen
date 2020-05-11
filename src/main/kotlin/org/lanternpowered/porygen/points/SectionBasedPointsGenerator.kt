@@ -14,7 +14,6 @@ import org.lanternpowered.porygen.math.geom.Rectangled
 import org.lanternpowered.porygen.util.random.Xor128Random
 import org.spongepowered.math.vector.Vector2d
 import org.spongepowered.math.vector.Vector2i
-import kotlin.random.Random
 
 /**
  * This generator generates points for a specified world, the points are generated
@@ -28,34 +27,34 @@ import kotlin.random.Random
  *
  * @property backing The backing points generator
  * @property sectionSize The size of a single section, should
- *                       be a multiple of the chunk size
+ *   be a multiple of the chunk size
  */
 class SectionBasedPointsGenerator(
     private val backing: PointsGenerator,
     private val sectionSize: Vector2i
-) : PointsGenerator {
+) {
 
-  override fun generatePoints(context: GeneratorContext, rectangle: Rectangled, random: Random): List<Vector2d> {
+  fun generate(context: GeneratorContext, rectangle: Rectangled): List<Vector2d> {
     val points = mutableListOf<Vector2d>()
 
-    val minX = rectangle.min.floorX / this.sectionSize.x
-    val minY = rectangle.min.floorY / this.sectionSize.y
-    val maxX = rectangle.max.floorX / this.sectionSize.x
-    val maxY = rectangle.max.floorY / this.sectionSize.y
+    val minX = rectangle.min.floorX / sectionSize.x
+    val minY = rectangle.min.floorY / sectionSize.y
+    val maxX = rectangle.max.floorX / sectionSize.x
+    val maxY = rectangle.max.floorY / sectionSize.y
 
     val seed = context.seed
+    val dSectionSize = sectionSize.toDouble()
+
     for (x in minX..maxX) {
-      val xStart = this.sectionSize.x * x
-      val xEnd = xStart + this.sectionSize.x
-
+      val xStart = sectionSize.x * x
       for (y in minY..maxY) {
-        val yStart = this.sectionSize.y * y
-        val yEnd = yStart + this.sectionSize.y
+        val yStart = sectionSize.y * y
 
-        val sectionArea = Rectangled(xStart.toDouble(), yStart.toDouble(), xEnd.toDouble(), yEnd.toDouble())
+        val sectionStart = Vector2d(xStart.toDouble(), yStart.toDouble())
         val sectionRandom = Xor128Random(x.toLong() * 341873128712L + y.toLong() * 132897987541L xor seed)
 
-        val generated = this.backing.generatePoints(context, sectionArea, sectionRandom)
+        val generated = backing.generate(sectionRandom)
+            .map { it.mul(dSectionSize).add(sectionStart) }
         if (x == minX || y == minY || x == maxX || y == maxY) {
           points.addAll(generated.filter { rectangle.contains(it) })
         } else {

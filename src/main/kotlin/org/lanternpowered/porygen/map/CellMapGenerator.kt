@@ -9,7 +9,7 @@
  */
 package org.lanternpowered.porygen.map
 
-import org.lanternpowered.porygen.map.gen.polygon.CellPolygonGenerator
+import org.lanternpowered.porygen.map.polygon.CellPolygonGenerator
 
 interface CellMapGenerator {
 

@@ -19,7 +19,8 @@ import org.lanternpowered.porygen.map.CellMap
 import org.lanternpowered.porygen.map.CellMapChunk
 import org.lanternpowered.porygen.map.CellMapElement
 import org.lanternpowered.porygen.map.CellMapView
-import org.lanternpowered.porygen.map.gen.polygon.CellPolygonGenerator
+import org.lanternpowered.porygen.map.polygon.CellPolygon
+import org.lanternpowered.porygen.map.polygon.CellPolygonGenerator
 import org.lanternpowered.porygen.math.geom.Rectangled
 import org.lanternpowered.porygen.math.geom.Rectanglei
 import org.lanternpowered.porygen.points.PointsGenerator
@@ -96,7 +97,7 @@ class PorygenMap(
   private fun constructMapView(viewRectangle: Rectangled): PorygenMapView? {
     val context = Ctx(null, this.seed)
     // Generate CenteredPolygons from the given points
-    val centeredPolygons = this.polygonGenerator.generate(context, viewRectangle)
+    val centeredPolygons: List<CellPolygon> = emptyList() // TODO: this.polygonGenerator.generate()
     // Construct or lookup Cells for the centered polygons
     for (centeredPolygon in centeredPolygons) {
       val center = centeredPolygon.center.toInt()

@@ -9,27 +9,19 @@
  */
 package org.lanternpowered.porygen.points
 
-import org.lanternpowered.porygen.GeneratorContext
-import org.lanternpowered.porygen.math.geom.Rectangled
 import org.spongepowered.math.vector.Vector2d
 import kotlin.random.Random
-import kotlin.streams.toList
 
 /**
- * Zooms to a specific area on points from the
- * underlying [PointsGenerator].
+ * Zooms in on the points of the underlying [PointsGenerator].
  */
 class ZoomPointsGenerator(
-    private val backing: PointsGenerator,
-    private val zoomFactor: Vector2d
+    private val original: PointsGenerator,
+    private val scale: Vector2d
 ) : PointsGenerator {
 
-  override fun generatePoints(context: GeneratorContext, rectangle: Rectangled, random: Random): List<Vector2d> {
-    val min = rectangle.min
-    val max = rectangle.max
-    val zoomOutRectangle = Rectangled(min, max.sub(min).mul(this.zoomFactor).add(min))
-    return this.backing.generatePoints(context, zoomOutRectangle, random).stream()
-        .filter { rectangle.contains(it) }
-        .toList()
-  }
+  override fun generate(random: Random): List<Vector2d> =
+      this.original.generate(random)
+          .map { point -> point.mul(this.scale) }
+          .filter { point -> point.x < 1.0 && point.y < 1.0 }
 }

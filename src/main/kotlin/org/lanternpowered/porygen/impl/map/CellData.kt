@@ -11,7 +11,7 @@ package org.lanternpowered.porygen.impl.map
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.longs.LongSet
-import org.lanternpowered.porygen.map.gen.polygon.CellPolygon
+import org.lanternpowered.porygen.map.polygon.CellPolygon
 import org.lanternpowered.porygen.math.geom.Polygond
 import org.lanternpowered.porygen.math.geom.Rectanglei
 import org.lanternpowered.porygen.util.ceilToInt

@@ -7,11 +7,10 @@
  * This work is licensed under the terms of the MIT License (MIT). For
  * a copy, see 'LICENSE.txt' or <https://opensource.org/licenses/MIT>.
  */
-package org.lanternpowered.porygen.map.gen.polygon
+package org.lanternpowered.porygen.map.polygon
 
-import org.lanternpowered.porygen.GeneratorContext
 import org.lanternpowered.porygen.map.Cell
-import org.lanternpowered.porygen.math.geom.Rectangled
+import org.spongepowered.math.vector.Vector2d
 
 /**
  * This generator provides [CellPolygon]s which will be used to construct [Cell]s.
@@ -21,8 +20,8 @@ interface CellPolygonGenerator {
   /**
    * Generates [CellPolygon]s for the given input point [Vector2d]s.
    *
-   * @param context The context
+   * @param points The points
    * @return The output centered polygons
    */
-  fun generate(context: GeneratorContext, rectangle: Rectangled): Collection<CellPolygon>
+  fun generate(points: Collection<Vector2d>): Collection<CellPolygon>
 }

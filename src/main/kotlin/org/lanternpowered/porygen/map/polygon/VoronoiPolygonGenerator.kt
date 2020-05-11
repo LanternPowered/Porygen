@@ -7,22 +7,25 @@
  * This work is licensed under the terms of the MIT License (MIT). For
  * a copy, see 'LICENSE.txt' or <https://opensource.org/licenses/MIT>.
  */
-package org.lanternpowered.porygen.map.gen.polygon
+package org.lanternpowered.porygen.map.polygon
 
-import org.lanternpowered.porygen.GeneratorContext
 import org.lanternpowered.porygen.delaunay.DelaunayTriangulator
 import org.lanternpowered.porygen.math.geom.Polygond
-import org.lanternpowered.porygen.math.geom.Rectangled
 import org.spongepowered.math.vector.Vector2d
 import kotlin.math.atan2
 
-class VoronoiPolygonGenerator : AbstractCellPolygonGenerator() {
+/**
+ * Generates voronoi polygons.
+ *
+ * @property triangleCenterProvider The provider for the center point of a triangle,
+ *   the center point becomes a vertex of a voronoi polygon, so modifying this
+ *   gives a different output.
+ */
+class VoronoiPolygonGenerator(
+    val triangleCenterProvider: TriangleCenterProvider = TriangleCenterProvider.Circumcenter
+) : CellPolygonGenerator {
 
-  // The function to use to generate the center point of a triangle, the
-  // circumcenter one is the one used for real voronoi diagrams
-  var triangleCenterProvider = VoronoiTriangleCenterProvider.Circumcenter
-
-  override fun generate(context: GeneratorContext, rectangle: Rectangled, points: Collection<Vector2d>): Collection<CellPolygon> {
+  override fun generate(points: Collection<Vector2d>): Collection<CellPolygon> {
     val centeredPolygons = mutableListOf<CellPolygon>()
 
     val delaunayTriangulator = DelaunayTriangulator(points.toList())

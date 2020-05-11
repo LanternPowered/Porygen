@@ -10,17 +10,15 @@
 package org.lanternpowered.porygen.test
 
 import org.lanternpowered.porygen.GeneratorContext
-import org.lanternpowered.porygen.map.gen.polygon.CellPolygonGenerator
-import org.lanternpowered.porygen.map.gen.polygon.VoronoiPolygonGenerator
-import org.lanternpowered.porygen.map.gen.polygon.VoronoiTriangleCenterProvider
+import org.lanternpowered.porygen.map.polygon.CellPolygonGenerator
+import org.lanternpowered.porygen.map.polygon.VoronoiPolygonGenerator
+import org.lanternpowered.porygen.map.polygon.TriangleCenterProvider
 import org.lanternpowered.porygen.math.geom.Rectangled
 import org.lanternpowered.porygen.math.geom.Rectanglei
-import org.lanternpowered.porygen.points.PointsGenerator
 import org.lanternpowered.porygen.points.SectionBasedPointsGenerator
+import org.lanternpowered.porygen.points.BlueNoisePointsGenerator
+import org.lanternpowered.porygen.points.PointsGenerator
 import org.lanternpowered.porygen.points.ZoomPointsGenerator
-import org.lanternpowered.porygen.points.random.BlueNoiseRandomPointsGenerator
-import org.lanternpowered.porygen.points.random.GridBasedRandomPointsGenerator
-import org.lanternpowered.porygen.points.random.WhiteNoiseRandomPointsGenerator
 import org.lanternpowered.porygen.util.random.XorWowRandom
 import org.spongepowered.math.vector.Vector2d
 import org.spongepowered.math.vector.Vector2i
@@ -41,13 +39,12 @@ object PointsGeneratorTest {
     val random = XorWowRandom(seed)
 
     // The random points generator
-    var generator: PointsGenerator
-
-    generator = BlueNoiseRandomPointsGenerator().apply {
-      this.setCellCoverage(0.8, 0.8)
-      this.setCells(30, 30)
-      this.points = 1000..2000
-    }
+    var generator: PointsGenerator =
+        BlueNoisePointsGenerator(
+            amount = 1000..2000,
+            cells = Vector2i(30, 30),
+            cellCoverage = Vector2d(0.8, 0.8)
+        )
 
     /*
     generator = WhiteNoiseRandomPointsGenerator().apply {
@@ -59,9 +56,10 @@ object PointsGeneratorTest {
         this.points = 1000 .. 2000
     }*/
 
-    val chunkSize = Vector2i(16, 16)
     generator = ZoomPointsGenerator(generator, Vector2d(3.0, 3.0))
-    generator = SectionBasedPointsGenerator(generator, chunkSize.mul(16))
+
+    val chunkSize = Vector2i(16, 16)
+    val sectionBasedPointsGenerator = SectionBasedPointsGenerator(generator, chunkSize.mul(16))
 
     val width = 1000
     val height = 1000
@@ -103,7 +101,7 @@ object PointsGeneratorTest {
     graphics.setColor(Color.WHITE);
     graphics.fillRect(0, 0, width, height);
     */
-    val points = generator.generatePoints(
+    val points = sectionBasedPointsGenerator.generate(
         context, Rectangled(0.0, 0.0, width.toDouble(), height.toDouble()))
     graphics.color = Color.BLACK
     graphics.drawPolygon(Rectanglei(Vector2i(0, 0), Vector2i(width - 1, height - 1)).toDrawable())
@@ -115,9 +113,8 @@ object PointsGeneratorTest {
 
     var centeredPolygonGenerator: CellPolygonGenerator
     // centeredPolygonGenerator = DelaunayTrianglePolygonGenerator()
-    centeredPolygonGenerator = VoronoiPolygonGenerator().apply { this.triangleCenterProvider = VoronoiTriangleCenterProvider.Centroid }
-    val centeredPolygons = centeredPolygonGenerator.generate(context,
-        Rectangled(0.0, 0.0, width.toDouble(), height.toDouble()), points)
+    centeredPolygonGenerator = VoronoiPolygonGenerator(TriangleCenterProvider.Centroid)
+    val centeredPolygons = centeredPolygonGenerator.generate(points)
 
     for (polygon in centeredPolygons) {
       val center = polygon.center
