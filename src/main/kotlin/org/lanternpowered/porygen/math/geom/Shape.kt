@@ -93,18 +93,38 @@ interface Shape {
   fun intersects(polygon: Polygond): Boolean
 
   /**
-   * Gets whether the given point [Vector2d] are located within this [Shape].
+   * Gets whether the given point [Vector2d] is located within this [Shape].
    *
    * @param point The point
    * @return Whether this 2d shape contains the point
    */
-  operator fun contains(point: Vector2i): Boolean
+  operator fun contains(point: Vector2i): Boolean =
+      contains(point.x, point.y)
 
   /**
-   * Gets whether the given point [Vector2d] are located within this [Shape].
+   * Gets whether the given is are located within this [Shape].
+   *
+   * @param x The x coordinate
+   * @param y The y coordinate
+   * @return Whether this 2d shape contains the point
+   */
+  fun contains(x: Int, y: Int): Boolean
+
+  /**
+   * Gets whether the given point [Vector2d] is located within this [Shape].
    *
    * @param point The point
    * @return Whether this 2d shape contains the point
    */
-  operator fun contains(point: Vector2d): Boolean
+  operator fun contains(point: Vector2d): Boolean =
+      contains(point.x, point.y)
+
+  /**
+   * Gets whether the given is are located within this [Shape].
+   *
+   * @param x The x coordinate
+   * @param y The y coordinate
+   * @return Whether this 2d shape contains the point
+   */
+  fun contains(x: Double, y: Double): Boolean
 }

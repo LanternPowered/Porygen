@@ -35,8 +35,8 @@ abstract class AbstractRectangle<T : Comparable<T>> internal constructor(
   override fun intersects(polygon: Polygond) = polygon.intersects(this)
 
   override fun toString(): String = ToStringHelper(this)
-      .add("min", this.min)
-      .add("max", this.max)
+      .add("min", min)
+      .add("max", max)
       .toString()
 
   override fun equals(other: Any?): Boolean {

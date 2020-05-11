@@ -9,13 +9,12 @@
  */
 package org.lanternpowered.porygen.map
 
-import org.lanternpowered.porygen.data.DataHolder
 import org.spongepowered.math.vector.Vector2i
 
 /**
  * Represents a chunk on a map.
  */
-interface CellMapChunk : CellMapElement, DataHolder {
+interface CellMapChunk : CellMapElement {
 
   /**
    * The chunk size. This should be the same

@@ -17,6 +17,7 @@ import org.lanternpowered.porygen.data.SimpleDataHolder
 import org.lanternpowered.porygen.map.Cell
 import org.lanternpowered.porygen.map.CellMap
 import org.lanternpowered.porygen.map.CellMapChunk
+import org.lanternpowered.porygen.map.CellMapElement
 import org.lanternpowered.porygen.map.CellMapView
 import org.lanternpowered.porygen.map.gen.polygon.CellPolygonGenerator
 import org.lanternpowered.porygen.math.geom.Rectangled
@@ -208,6 +209,8 @@ class PorygenMap(
   override fun getCorner(id: Long): PorygenCorner? = this.cornersById[id]
   override fun getCell(id: Long): PorygenCell? = this.cellsById[id]
   override fun getEdge(id: Long): PorygenEdge? = this.edgesById[id]
+
+  override fun contains(element: CellMapElement): Boolean = element.map == this
 
   /**
    * Gets the [Cell] using its center point.

@@ -15,8 +15,6 @@ import org.lanternpowered.porygen.map.Corner
 import org.lanternpowered.porygen.map.Edge
 import org.lanternpowered.porygen.util.tuple.packIntPair
 import org.spongepowered.math.vector.Vector2i
-import java.util.ArrayList
-import java.util.Collections
 
 class PorygenCorner(
     override val point: Vector2i,
@@ -25,12 +23,11 @@ class PorygenCorner(
 
   override val id: Long = packIntPair(this.point.x, this.point.y)
 
-  internal val theEdges = ArrayList<PorygenEdge>()
-  internal val theCells = ArrayList<PorygenCell>()
+  internal val mutableEdges = mutableListOf<PorygenEdge>()
+  internal val mutableCells = mutableListOf<PorygenCell>()
+  internal val mutableNeighbors = mutableListOf<PorygenCorner>()
 
-  private val unmodifiableEdges = Collections.unmodifiableList(this.theEdges)
-  private val unmodifiableCells = Collections.unmodifiableList(this.theCells)
-
-  override val edges: Collection<Edge> = this.unmodifiableEdges
-  override val cells: Collection<Cell> = this.unmodifiableCells
+  override val edges: Collection<Edge> get() = this.mutableEdges
+  override val cells: Collection<Cell> get() = this.mutableCells
+  override val neighbors: Collection<Corner> get() = this.mutableNeighbors
 }

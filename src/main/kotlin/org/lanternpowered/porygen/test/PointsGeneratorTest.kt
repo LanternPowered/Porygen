@@ -19,6 +19,8 @@ import org.lanternpowered.porygen.points.PointsGenerator
 import org.lanternpowered.porygen.points.SectionBasedPointsGenerator
 import org.lanternpowered.porygen.points.ZoomPointsGenerator
 import org.lanternpowered.porygen.points.random.BlueNoiseRandomPointsGenerator
+import org.lanternpowered.porygen.points.random.GridBasedRandomPointsGenerator
+import org.lanternpowered.porygen.points.random.WhiteNoiseRandomPointsGenerator
 import org.lanternpowered.porygen.util.random.XorWowRandom
 import org.spongepowered.math.vector.Vector2d
 import org.spongepowered.math.vector.Vector2i
@@ -48,10 +50,10 @@ object PointsGeneratorTest {
     }
 
     /*
-    generator = new WhiteNoiseRandomPointsGenerator()
-            .setPoints(new Rangei(500, 1000));*/
+    generator = WhiteNoiseRandomPointsGenerator().apply {
+      this.points = 1000 .. 2000
+    }
 
-    /*
     generator = GridBasedRandomPointsGenerator().apply {
         this.setGrid(30, 30)
         this.points = 1000 .. 2000

@@ -14,6 +14,7 @@ import org.lanternpowered.porygen.math.geom.Rectangled
 import org.lanternpowered.porygen.util.IntArrays
 import org.spongepowered.math.vector.Vector2d
 import kotlin.random.Random
+import kotlin.random.nextInt
 
 /**
  * @property columns The amount of columns in the grid
@@ -32,11 +33,8 @@ class GridBasedRandomPointsGenerator(
   override fun generatePoints(context: GeneratorContext, rectangle: Rectangled, random: Random): List<Vector2d> {
     val points = mutableListOf<Vector2d>()
 
-    val min = this.points.first
-    val max = this.points.last
-
     // Randomize the amount of points that will be generated
-    val amount = min + random.nextInt(max - min + 1)
+    val amount = random.nextInt(this.points)
 
     val minX = rectangle.min.x
     val minY = rectangle.min.y

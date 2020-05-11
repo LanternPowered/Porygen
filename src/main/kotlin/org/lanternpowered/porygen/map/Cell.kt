@@ -9,14 +9,13 @@
  */
 package org.lanternpowered.porygen.map
 
-import org.lanternpowered.porygen.data.DataHolder
 import org.lanternpowered.porygen.math.geom.Polygond
 import org.spongepowered.math.vector.Vector2i
 
 /**
  * Represents a cell within a [CellMap].
  */
-interface Cell : CellMapElement, DataHolder {
+interface Cell : CellMapElement {
 
   /**
    * Gets the center point [Vector2i] of this [Cell].

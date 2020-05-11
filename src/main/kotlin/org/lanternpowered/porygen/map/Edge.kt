@@ -9,14 +9,13 @@
  */
 package org.lanternpowered.porygen.map
 
-import org.lanternpowered.porygen.data.DataHolder
 import org.lanternpowered.porygen.math.geom.Line2i
 
 /**
  * Represents the edge of one
  * or multiple [Cell]s.
  */
-interface Edge : CellMapElement, DataHolder {
+interface Edge : CellMapElement {
 
   /**
    * Gets the [Line2i].

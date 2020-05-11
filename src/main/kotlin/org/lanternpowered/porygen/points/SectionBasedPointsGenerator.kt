@@ -11,7 +11,7 @@ package org.lanternpowered.porygen.points
 
 import org.lanternpowered.porygen.GeneratorContext
 import org.lanternpowered.porygen.math.geom.Rectangled
-import org.lanternpowered.porygen.util.random.XorWowRandom
+import org.lanternpowered.porygen.util.random.Xor128Random
 import org.spongepowered.math.vector.Vector2d
 import org.spongepowered.math.vector.Vector2i
 import kotlin.random.Random
@@ -53,7 +53,7 @@ class SectionBasedPointsGenerator(
         val yEnd = yStart + this.sectionSize.y
 
         val sectionArea = Rectangled(xStart.toDouble(), yStart.toDouble(), xEnd.toDouble(), yEnd.toDouble())
-        val sectionRandom = XorWowRandom(x.toLong() * 341873128712L + y.toLong() * 132897987541L xor seed)
+        val sectionRandom = Xor128Random(x.toLong() * 341873128712L + y.toLong() * 132897987541L xor seed)
 
         val generated = this.backing.generatePoints(context, sectionArea, sectionRandom)
         if (x == minX || y == minY || x == maxX || y == maxY) {

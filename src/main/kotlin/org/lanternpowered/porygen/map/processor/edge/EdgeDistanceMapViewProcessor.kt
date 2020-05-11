@@ -15,6 +15,7 @@ import org.lanternpowered.porygen.map.CellMapView
 import org.lanternpowered.porygen.map.processor.CellMapViewProcessor
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
+import kotlin.random.Random
 
 /**
  * A map view processor that computes the distance to closest
@@ -27,7 +28,7 @@ class EdgeDistanceMapViewProcessor(
     private val sideIterations: Int = 10
 ) : CellMapViewProcessor {
 
-  override fun process(context: GeneratorContext, view: CellMapView) {
+  override fun process(context: GeneratorContext, view: CellMapView, random: Random) {
     val v = view.viewRectangle
 
     val startChunkX = v.min.x shr 4

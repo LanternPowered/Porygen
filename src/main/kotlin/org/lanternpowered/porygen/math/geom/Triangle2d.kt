@@ -222,7 +222,7 @@ data class Triangle2d(
       this.polygon.intersects(rectangle)
 
   override fun intersects(minX: Double, minY: Double, maxX: Double, maxY: Double): Boolean =
-      this.polygon.intersects(Rectangled(Vector2d(minX, minY), Vector2d(maxX, maxY)))
+      this.polygon.intersects(Rectangled(minX, minY, maxX, maxY))
 
   override fun intersects(polygon: Polygond): Boolean =
       this.polygon.intersects(polygon)
@@ -234,7 +234,7 @@ data class Triangle2d(
       this.polygon.contains(rectangle)
 
   override fun contains(minX: Double, minY: Double, maxX: Double, maxY: Double): Boolean =
-      this.polygon.contains(Rectangled(Vector2d(minX, minY), Vector2d(maxX, maxY)))
+      this.polygon.contains(Rectangled(minX, minY, maxX, maxY))
 
   override fun contains(x: Double, y: Double): Boolean = contains(Vector2d(x, y))
 

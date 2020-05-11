@@ -9,31 +9,27 @@
  */
 package org.lanternpowered.porygen.map
 
-import org.lanternpowered.porygen.data.DataHolder
 import org.spongepowered.math.vector.Vector2i
 
-interface Corner : CellMapElement, DataHolder {
+interface Corner : CellMapElement {
 
   /**
-   * Gets the corner point [Vector2i].
-   *
-   * @return The corner point
+   * The corner point [Vector2i].
    */
   val point: Vector2i
 
   /**
-   * Gets all the [Cell]s that connect
-   * to this [Corner].
-   *
-   * @return The cells
+   * All the [Cell]s that connect to this [Corner].
    */
   val cells: Collection<Cell>
 
   /**
-   * Gets all the [Edge]s that connect
-   * to this [Corner].
-   *
-   * @return The edges
+   * All the neighbor [Corner]s.
+   */
+  val neighbors: Collection<Corner>
+
+  /**
+   * All the [Edge]s that connect to this [Corner].
    */
   val edges: Collection<Edge>
 }

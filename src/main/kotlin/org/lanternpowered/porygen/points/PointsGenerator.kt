@@ -12,7 +12,7 @@ package org.lanternpowered.porygen.points
 import org.lanternpowered.porygen.GeneratorContext
 import org.lanternpowered.porygen.map.Cell
 import org.lanternpowered.porygen.math.geom.Rectangled
-import org.lanternpowered.porygen.util.random.XorWowRandom
+import org.lanternpowered.porygen.util.random.Xor128Random
 import org.spongepowered.math.vector.Vector2d
 import kotlin.random.Random
 
@@ -31,6 +31,6 @@ interface PointsGenerator {
    * @return A collection with the generated points
    */
   fun generatePoints(
-      context: GeneratorContext, rectangle: Rectangled, random: Random = XorWowRandom(context.seed)
+      context: GeneratorContext, rectangle: Rectangled, random: Random = Xor128Random(context.seed)
   ): Collection<Vector2d>
 }

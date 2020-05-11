@@ -12,11 +12,11 @@ package org.lanternpowered.porygen.impl.map
 import org.lanternpowered.porygen.data.SimpleDataHolder
 import org.lanternpowered.porygen.map.Cell
 import org.lanternpowered.porygen.map.CellMap
+import org.lanternpowered.porygen.map.CellMapElement
 import org.lanternpowered.porygen.map.CellMapView
 import org.lanternpowered.porygen.map.Corner
 import org.lanternpowered.porygen.map.Edge
 import org.lanternpowered.porygen.math.geom.Rectanglei
-import org.spongepowered.math.vector.Vector2i
 
 class PorygenMapView(
     override val map: CellMap,
@@ -30,6 +30,15 @@ class PorygenMapView(
   override fun getCell(id: Long) = this.map.getCell(id)
   override fun getEdge(id: Long) = this.map.getEdge(id)
 
+  override fun contains(element: CellMapElement): Boolean {
+    return when(element) {
+      is Cell -> element in this.cells
+      is Corner -> element in this.corners
+      is Edge -> element in this.edges
+      else -> false
+    }
+  }
+
   override fun getSubView(rectangle: Rectanglei): CellMapView {
     check(this.viewRectangle.contains(rectangle)) {
       "The target rectangle $rectangle must be inside this map view rectangle $viewRectangle"
@@ -38,7 +47,7 @@ class PorygenMapView(
   }
 
   override fun getCell(x: Int, z: Int): Cell {
-    check(this.viewRectangle.contains(Vector2i(x, z))) {
+    check(this.viewRectangle.contains(x, z)) {
       "The target block coordinates ($x, $z) must be inside this map view rectangle $viewRectangle"
     }
     return this.map.getCell(x, z)

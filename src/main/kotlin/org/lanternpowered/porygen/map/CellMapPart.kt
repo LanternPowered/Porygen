@@ -77,5 +77,5 @@ interface CellMapPart {
    */
   fun getCell(id: Long): Cell?
 
-  operator fun contains(cell: Cell): Boolean
+  operator fun contains(element: CellMapElement): Boolean
 }

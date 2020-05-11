@@ -37,6 +37,9 @@ class Rectangled : AbstractRectangle<Vector2d> {
   override fun contains(x: Double, y: Double): Boolean =
       x <= max.x && x >= min.x && y <= max.y && y >= min.y
 
+  override fun contains(x: Int, y: Int): Boolean =
+      x <= max.x && x >= min.x && y <= max.y && y >= min.y
+
   override fun toInt(): Rectanglei {
     val min = min
     val max = max

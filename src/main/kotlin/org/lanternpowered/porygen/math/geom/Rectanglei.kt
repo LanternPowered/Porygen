@@ -13,13 +13,24 @@ import org.lanternpowered.porygen.math.vector.max
 import org.lanternpowered.porygen.math.vector.min
 import org.spongepowered.math.vector.Vector2i
 import java.awt.Polygon
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  * Represents a rectangle.
  */
-class Rectanglei(min: Vector2i, max: Vector2i) : AbstractRectangle<Vector2i>(min(min, max), max(min, max)) {
+class Rectanglei : AbstractRectangle<Vector2i> {
+
+  constructor(min: Vector2i, max: Vector2i) :
+      super(min(min, max), max(min, max))
+
+  constructor(minX: Int, minY: Int, maxX: Int, maxY: Int) :
+      super(Vector2i(min(minX, maxX), min(minY, maxY)), Vector2i(max(minX, maxX), max(minY, maxY)))
 
   override fun contains(x: Double, y: Double): Boolean =
+      x <= max.x && x >= min.x && y <= max.y && y >= min.y
+
+  override fun contains(x: Int, y: Int): Boolean =
       x <= max.x && x >= min.x && y <= max.y && y >= min.y
 
   override fun toInt() = this

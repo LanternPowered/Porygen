@@ -14,7 +14,9 @@ import org.lanternpowered.porygen.math.geom.Rectangled
 import org.lanternpowered.porygen.util.IntArrays
 import org.spongepowered.math.vector.Vector2d
 import java.awt.Color
+import java.awt.Graphics
 import kotlin.random.Random
+import kotlin.random.nextInt
 
 /**
  * Generates points which always have a minimal spread.
@@ -40,7 +42,7 @@ class BlueNoiseRandomPointsGenerator : AbstractRandomPointsGenerator() {
   // Cell coverage in the y direction
   var yCellCoverage = 0.8
 
-  var debug = false
+  var debug = true
 
   fun setCells(xCells: Int, yCells: Int) = apply {
     this.xCells = xCells
@@ -52,15 +54,7 @@ class BlueNoiseRandomPointsGenerator : AbstractRandomPointsGenerator() {
     this.yCellCoverage = yCellCoverage
   }
 
-  override fun generatePoints(context: GeneratorContext, rectangle: Rectangled, random: Random): List<Vector2d> {
-    val points = ArrayList<Vector2d>()
-
-    val min = this.points.first
-    val max = this.points.last
-
-    // Randomize the amount of points that will be generated
-    val amount = min + random.nextInt(max - min + 1)
-
+  fun drawDebug(graphics: Graphics, rectangle: Rectangled, random: Random) {
     val minX = rectangle.min.x
     val minY = rectangle.min.y
     val maxX = rectangle.max.x
@@ -77,20 +71,39 @@ class BlueNoiseRandomPointsGenerator : AbstractRandomPointsGenerator() {
     val xCellSize = dX * this.xCellCoverage / this.xCells
     val yCellSize = dY * this.yCellCoverage / this.yCells
 
-    if (this.debug) {
-      context.debugGraphics?.let { graphics ->
-        val color = graphics.color
-        graphics.color = Color.RED
-        for (x in 0 until this.xCells) {
-          for (y in 0 until this.yCells) {
-            val startX = (minX + x * xCellSize + x * xGapSize + xGapSize / 2.0).toInt()
-            val startY = (minY + y * yCellSize + y * yGapSize + yGapSize / 2.0).toInt()
-            graphics.drawRect(startX, startY, xCellSize.toInt(), yCellSize.toInt())
-          }
-        }
-        graphics.color = color
+    val color = graphics.color
+    graphics.color = Color.RED
+    for (x in 0 until this.xCells) {
+      for (y in 0 until this.yCells) {
+        val startX = (minX + x * xCellSize + x * xGapSize + xGapSize / 2.0).toInt()
+        val startY = (minY + y * yCellSize + y * yGapSize + yGapSize / 2.0).toInt()
+        graphics.drawRect(startX, startY, xCellSize.toInt(), yCellSize.toInt())
       }
     }
+    graphics.color = color
+  }
+
+  override fun generatePoints(context: GeneratorContext, rectangle: Rectangled, random: Random): List<Vector2d> {
+    val points = mutableListOf<Vector2d>()
+
+    // Randomize the amount of points that will be generated
+    val amount = random.nextInt(this.points)
+
+    val minX = rectangle.min.x
+    val minY = rectangle.min.y
+    val maxX = rectangle.max.x
+    val maxY = rectangle.max.y
+
+    val dX = maxX - minX
+    val dY = maxY - minY
+
+    // Calculate the size of each gap
+    val xGapSize = dX * (1.0 - this.xCellCoverage) / this.xCells
+    val yGapSize = dY * (1.0 - this.yCellCoverage) / this.yCells
+
+    // Calculate the size of each cell
+    val xCellSize = dX * this.xCellCoverage / this.xCells
+    val yCellSize = dY * this.yCellCoverage / this.yCells
 
     fun addCellPoint(cell: Int) {
       // Get the coordinates from the cell index

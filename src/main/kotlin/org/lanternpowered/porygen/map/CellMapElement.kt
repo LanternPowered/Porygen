@@ -9,7 +9,9 @@
  */
 package org.lanternpowered.porygen.map
 
-interface CellMapElement {
+import org.lanternpowered.porygen.data.DataHolder
+
+interface CellMapElement : DataHolder {
 
   /**
    * The id of this identifiable. This id is unique
