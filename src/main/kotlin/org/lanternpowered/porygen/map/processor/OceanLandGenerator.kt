@@ -16,7 +16,7 @@ import kotlin.random.Random
 
 class OceanLandGenerator(
     private val terrainHeightModule: Module
-) : CellMapViewProcessor {
+) : CellMapProcessor {
 
   override fun process(context: GeneratorContext, view: CellMapView, random: Random) {
     for (cell in view.cells) {

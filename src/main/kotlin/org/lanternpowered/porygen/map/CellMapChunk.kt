@@ -12,7 +12,8 @@ package org.lanternpowered.porygen.map
 import org.spongepowered.math.vector.Vector2i
 
 /**
- * Represents a chunk on a map.
+ * Represents a chunk on a map. A chunk consists of
+ * (chunkSize.x * chunkSize.y) tiles.
  */
 interface CellMapChunk : CellMapElement {
 
@@ -33,7 +34,7 @@ interface CellMapChunk : CellMapElement {
   val cells: Collection<Cell>
 
   /**
-   * Gets the [Cell] for the given local coordinates.
+   * Gets the [Cell] for the given local tile coordinates.
    */
   fun getCell(localX: Int, localY: Int): Cell
 }

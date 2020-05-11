@@ -29,6 +29,7 @@ import org.spongepowered.math.vector.Vector2i
  * @property sectionSize The size of a single section, should
  *   be a multiple of the chunk size
  */
+// TODO: Move to map concept
 class SectionBasedPointsGenerator(
     private val backing: PointsGenerator,
     private val sectionSize: Vector2i

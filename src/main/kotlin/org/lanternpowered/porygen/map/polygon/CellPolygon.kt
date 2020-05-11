@@ -23,4 +23,13 @@ import org.spongepowered.math.vector.Vector2d
 data class CellPolygon(
     val center: Vector2d,
     val polygon: Polygond
-)
+) {
+
+  fun mul(scale: Vector2d): CellPolygon {
+    val center = this.center.mul(scale)
+    val vertices = this.polygon.vertices
+        .map { it.mul(scale) }
+    val polygon = Polygond(vertices) // TODO: Persist convex state
+    return CellPolygon(center, polygon)
+  }
+}

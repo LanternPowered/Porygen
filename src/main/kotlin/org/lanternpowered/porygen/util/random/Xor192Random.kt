@@ -22,10 +22,11 @@ class Xor192Random private constructor(
     private var y: Int,
     private var z: Int,
     private var w: Int,
-    private var v: Int
+    private var v: Int,
+    private var u: Int
 ) : Random() {
 
-  private constructor(seed1: Int, seed2: Int) : this(seed1, seed2, 0, seed1.inv(), 0)
+  private constructor(seed1: Int, seed2: Int) : this(seed1, seed2, 0, seed1.inv(), 0, 0)
 
   constructor(seed: Long) : this((seed and 0xffffffffL).toInt(), (seed ushr 32).toInt())
 
@@ -35,11 +36,12 @@ class Xor192Random private constructor(
     x = y
     y = z
     z = w
-    val v0 = v
-    w = v0
-    val v1 = (v0 xor (v0 ushr 19)) xor (t xor (t ushr 8))
-    v = v1
-    return v1
+    w = v
+    val u0 = u
+    v = u0
+    val u1 = (u0 xor (u0 ushr 19)) xor (t xor (t ushr 8))
+    u = u1
+    return u1
   }
 
   override fun nextBits(bitCount: Int): Int =

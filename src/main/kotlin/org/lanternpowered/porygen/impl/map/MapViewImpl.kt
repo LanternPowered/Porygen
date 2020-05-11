@@ -18,7 +18,7 @@ import org.lanternpowered.porygen.map.Corner
 import org.lanternpowered.porygen.map.Edge
 import org.lanternpowered.porygen.math.geom.Rectanglei
 
-class PorygenMapView(
+open class MapViewImpl(
     override val map: CellMap,
     override val viewRectangle: Rectanglei,
     override val cells: Collection<Cell>,

@@ -21,7 +21,7 @@ import kotlin.random.Random
 class DistanceToOceanGenerator(
     private val maxOceanCornerDistance: Int = 5,
     private val maxOceanCellDistance: Int = 5
-) : CellMapViewProcessor {
+) : CellMapProcessor {
 
   override fun process(context: GeneratorContext, view: CellMapView, random: Random) {
     for (cell in view.cells)

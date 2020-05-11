@@ -9,7 +9,7 @@
  */
 @file:Suppress("EXPERIMENTAL_FEATURE_WARNING", "FunctionName", "NOTHING_TO_INLINE")
 
-package org.lanternpowered.porygen.util.tuple
+package org.lanternpowered.porygen.util.pair
 
 /**
  * Converts the [Pair] into a [IntPair].

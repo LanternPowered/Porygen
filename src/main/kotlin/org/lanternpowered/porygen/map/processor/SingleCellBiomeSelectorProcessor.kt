@@ -14,7 +14,6 @@ import org.lanternpowered.porygen.map.CellMapView
 import org.lanternpowered.porygen.util.random.XorWowRandom
 import org.spongepowered.noise.module.Module
 import java.util.EnumMap
-import java.util.Random
 
 /**
  * @property terrainHeightModule The module that provides the terrain height,
@@ -31,7 +30,7 @@ class SingleCellBiomeSelectorProcessor<Biome>(
     val oceanBiomeTypes: List<Biome>,
     val landBiomeTypes: List<Biome>,
     val hillBiomeTypes: List<Biome>
-) : CellMapViewProcessor {
+) : CellMapProcessor {
 
   /*
   // TODO: Height modifiers aren't properly implemented in sponge... And they should be base height and variation, not min/max.

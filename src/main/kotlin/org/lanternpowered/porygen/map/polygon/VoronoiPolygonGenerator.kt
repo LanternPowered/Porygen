@@ -11,24 +11,28 @@ package org.lanternpowered.porygen.map.polygon
 
 import org.lanternpowered.porygen.delaunay.DelaunayTriangulator
 import org.lanternpowered.porygen.math.geom.Polygond
+import org.lanternpowered.porygen.points.PointsGenerator
 import org.spongepowered.math.vector.Vector2d
 import kotlin.math.atan2
+import kotlin.random.Random
 
 /**
- * Generates voronoi polygons.
+ * Generates [CellPolygon]s that are voronoi polygons.
  *
  * @property triangleCenterProvider The provider for the center point of a triangle,
  *   the center point becomes a vertex of a voronoi polygon, so modifying this
  *   gives a different output.
  */
 class VoronoiPolygonGenerator(
-    val triangleCenterProvider: TriangleCenterProvider = TriangleCenterProvider.Circumcenter
+    private val pointsGenerator: PointsGenerator,
+    private val triangleCenterProvider: TriangleCenterProvider = TriangleCenterProvider.Circumcenter
 ) : CellPolygonGenerator {
 
-  override fun generate(points: Collection<Vector2d>): Collection<CellPolygon> {
+  override fun generate(random: Random): Collection<CellPolygon> {
+    val points = this.pointsGenerator.generate(random)
     val centeredPolygons = mutableListOf<CellPolygon>()
 
-    val delaunayTriangulator = DelaunayTriangulator(points.toList())
+    val delaunayTriangulator = DelaunayTriangulator(points)
     delaunayTriangulator.triangulate()
 
     val triangles = delaunayTriangulator.triangles

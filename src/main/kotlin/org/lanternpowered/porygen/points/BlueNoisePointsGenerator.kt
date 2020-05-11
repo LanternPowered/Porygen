@@ -26,8 +26,8 @@ import kotlin.random.nextInt
  * @property amount The amount of points that will be generated
  * @property cells The amount of cells the grid will be divided by
  * @property cellCoverage The coverage percentage (0 - 1) of each cell, the coverage is
- *                        the area of a cell where a point can be generated.
- *                        So, 2 * (1 - coverage) is the minimal spread between each cell
+ *   the area of a cell where a point can be generated. So, 2 * (1 - coverage) is the
+ *   minimal spread between each cell.
  */
 class BlueNoisePointsGenerator(
     private val amount: IntRange,
@@ -39,11 +39,12 @@ class BlueNoisePointsGenerator(
     // Randomize the amount of points that will be generated
     val amount = random.nextInt(this.amount)
 
-    println(amount)
-
     // Calculate the size of each gap
     val xGapSize = (1.0 - this.cellCoverage.x) / this.cells.x
     val yGapSize = (1.0 - this.cellCoverage.y) / this.cells.y
+
+    val xHalfGapSize = xGapSize / 2.0
+    val yHalfGapSize = yGapSize / 2.0
 
     // Calculate the size of each cell
     val xCellSize = this.cellCoverage.x / this.cells.x
@@ -55,8 +56,8 @@ class BlueNoisePointsGenerator(
       val cx = (cell % this.cells.y).toDouble()
       val cy = (cell / this.cells.y).toDouble()
       // Calculate point coordinates within the cell
-      val x = cx * xCellSize + cx * xGapSize + xGapSize / 2.0 + random.nextDouble() * xCellSize
-      val y = cy * yCellSize + cy * yGapSize + yGapSize / 2.0 + random.nextDouble() * yCellSize
+      val x = cx * xCellSize + cx * xGapSize + xHalfGapSize + random.nextDouble() * xCellSize
+      val y = cy * yCellSize + cy * yGapSize + yHalfGapSize + random.nextDouble() * yCellSize
       // Add the point
       points.add(Vector2d(x, y))
     }
@@ -75,7 +76,6 @@ class BlueNoisePointsGenerator(
         addCellPoint(cells[i])
     }
 
-    println("DEBUG: ${points.size}")
     return points
   }
 

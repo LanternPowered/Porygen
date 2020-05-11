@@ -26,8 +26,38 @@ class TriangleCenterProvider(
 ) {
 
   companion object {
+
+    /**
+     * A provider which uses the circumcenter of the triangle.
+     */
     val Circumcenter = TriangleCenterProvider(Triangle2d::circumcenter, alwaysConvexPolygons = true)
+
+    /**
+     * A provider which uses the centroid of the triangle.
+     */
     val Centroid = TriangleCenterProvider(Triangle2d::centroid)
+
+    /**
+     * A provider which uses the incenter of the triangle.
+     */
     val Incenter = TriangleCenterProvider(Triangle2d::incenter)
+
+    /**
+     * Gets a provider which interpolates between the two given [TriangleCenterProvider]s.
+     */
+    fun lerp(from: TriangleCenterProvider, to: TriangleCenterProvider, fraction: Double): TriangleCenterProvider {
+      check(fraction in 0.0..1.0)
+      if (from === to || fraction == 0.0)
+        return from
+      if (fraction == 1.0)
+        return to
+      val function = { triangle: Triangle2d ->
+        val fromPoint = from.function(triangle)
+        val toPoint = from.function(triangle)
+        fromPoint.add(toPoint.min(fromPoint).mul(fraction))
+      }
+      return TriangleCenterProvider(function,
+          from.alwaysConvexPolygons && to.alwaysConvexPolygons)
+    }
   }
 }

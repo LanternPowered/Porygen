@@ -61,9 +61,9 @@ data class Triangle2d(
   }
 
   private fun getCentroid0(): Vector2d {
-    return Vector2d(
-        (a.x + b.x + c.x) / 3.0,
-        (a.y + b.y + c.y) / 3.0)
+    val x = (a.x + b.x + c.x) / 3.0
+    val y = (a.y + b.y + c.y) / 3.0
+    return Vector2d(x, y)
   }
 
   private fun getIncenter0(): Vector2d {

@@ -20,7 +20,7 @@ import kotlin.random.Random
  * get consistent results. Data may be stored in various
  * map elements.
  */
-interface CellMapViewProcessor {
+interface CellMapProcessor {
 
   /**
    * Processes the given [CellMapView]s.

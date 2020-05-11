@@ -10,18 +10,21 @@
 package org.lanternpowered.porygen.map.polygon
 
 import org.lanternpowered.porygen.map.Cell
-import org.spongepowered.math.vector.Vector2d
+import kotlin.random.Random
 
 /**
  * This generator provides [CellPolygon]s which will be used to construct [Cell]s.
+ *
+ * Polygon points should range between 0 (inclusive) and
+ * 1 (exclusive) on the x and y axes.
  */
 interface CellPolygonGenerator {
 
   /**
-   * Generates [CellPolygon]s for the given input point [Vector2d]s.
+   * Generates [CellPolygon]s for the given input [Random].
    *
-   * @param points The points
-   * @return The output centered polygons
+   * @param random The random
+   * @return The output cell polygons
    */
-  fun generate(points: Collection<Vector2d>): Collection<CellPolygon>
+  fun generate(random: Random): Collection<CellPolygon>
 }

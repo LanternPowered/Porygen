@@ -11,6 +11,9 @@ package org.lanternpowered.porygen.map
 
 import org.lanternpowered.porygen.data.DataHolder
 
+/**
+ * Represents an element of a [CellMap].
+ */
 interface CellMapElement : DataHolder {
 
   /**

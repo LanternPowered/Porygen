@@ -12,7 +12,7 @@ package org.lanternpowered.porygen.map.processor.edge
 import org.lanternpowered.porygen.GeneratorContext
 import org.lanternpowered.porygen.data.DataKey
 import org.lanternpowered.porygen.map.CellMapView
-import org.lanternpowered.porygen.map.processor.CellMapViewProcessor
+import org.lanternpowered.porygen.map.processor.CellMapProcessor
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 import kotlin.random.Random
@@ -26,7 +26,7 @@ import kotlin.random.Random
  */
 class EdgeDistanceMapViewProcessor(
     private val sideIterations: Int = 10
-) : CellMapViewProcessor {
+) : CellMapProcessor {
 
   override fun process(context: GeneratorContext, view: CellMapView, random: Random) {
     val v = view.viewRectangle

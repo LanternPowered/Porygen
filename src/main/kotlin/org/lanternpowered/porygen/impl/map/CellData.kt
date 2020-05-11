@@ -16,7 +16,7 @@ import org.lanternpowered.porygen.math.geom.Polygond
 import org.lanternpowered.porygen.math.geom.Rectanglei
 import org.lanternpowered.porygen.util.ceilToInt
 import org.lanternpowered.porygen.util.floorToInt
-import org.lanternpowered.porygen.util.tuple.packIntPair
+import org.lanternpowered.porygen.util.pair.packIntPair
 import org.spongepowered.math.vector.Vector2i
 import kotlin.math.max
 import kotlin.math.min

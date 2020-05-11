@@ -11,17 +11,13 @@ package org.lanternpowered.porygen.test
 
 import org.lanternpowered.porygen.GeneratorContext
 import org.lanternpowered.porygen.map.polygon.CellPolygonGenerator
-import org.lanternpowered.porygen.map.polygon.VoronoiPolygonGenerator
 import org.lanternpowered.porygen.map.polygon.TriangleCenterProvider
-import org.lanternpowered.porygen.math.geom.Rectangled
-import org.lanternpowered.porygen.math.geom.Rectanglei
-import org.lanternpowered.porygen.points.SectionBasedPointsGenerator
+import org.lanternpowered.porygen.map.polygon.VoronoiPolygonGenerator
 import org.lanternpowered.porygen.points.BlueNoisePointsGenerator
 import org.lanternpowered.porygen.points.PointsGenerator
 import org.lanternpowered.porygen.points.ZoomPointsGenerator
-import org.lanternpowered.porygen.util.random.XorWowRandom
+import org.lanternpowered.porygen.util.random.Xor128Random
 import org.spongepowered.math.vector.Vector2d
-import org.spongepowered.math.vector.Vector2i
 import org.spongepowered.noise.module.modifier.ScalePoint
 import org.spongepowered.noise.module.source.Perlin
 import java.awt.BorderLayout
@@ -36,30 +32,11 @@ object PointsGeneratorTest {
   @JvmStatic
   fun main(args: Array<String>) {
     val seed = 1452454844896546548L
-    val random = XorWowRandom(seed)
+    val random = Xor128Random(seed)
 
     // The random points generator
-    var generator: PointsGenerator =
-        BlueNoisePointsGenerator(
-            amount = 1000..2000,
-            cells = Vector2i(30, 30),
-            cellCoverage = Vector2d(0.8, 0.8)
-        )
-
-    /*
-    generator = WhiteNoiseRandomPointsGenerator().apply {
-      this.points = 1000 .. 2000
-    }
-
-    generator = GridBasedRandomPointsGenerator().apply {
-        this.setGrid(30, 30)
-        this.points = 1000 .. 2000
-    }*/
-
-    generator = ZoomPointsGenerator(generator, Vector2d(3.0, 3.0))
-
-    val chunkSize = Vector2i(16, 16)
-    val sectionBasedPointsGenerator = SectionBasedPointsGenerator(generator, chunkSize.mul(16))
+    var generator: PointsGenerator = BlueNoisePointsGenerator(amount = 1000..2000)
+    generator = ZoomPointsGenerator(generator, Vector2d(1.1, 1.1))
 
     val width = 1000
     val height = 1000
@@ -101,6 +78,7 @@ object PointsGeneratorTest {
     graphics.setColor(Color.WHITE);
     graphics.fillRect(0, 0, width, height);
     */
+    /*
     val points = sectionBasedPointsGenerator.generate(
         context, Rectangled(0.0, 0.0, width.toDouble(), height.toDouble()))
     graphics.color = Color.BLACK
@@ -110,11 +88,14 @@ object PointsGeneratorTest {
       val y = point.floorY
       graphics.fillRect(x, y, 3, 3)
     }
+    */
 
     var centeredPolygonGenerator: CellPolygonGenerator
+    val scale = Vector2d(width.toDouble(), height.toDouble())
+    centeredPolygonGenerator = VoronoiPolygonGenerator(generator, TriangleCenterProvider.Centroid)
     // centeredPolygonGenerator = DelaunayTrianglePolygonGenerator()
-    centeredPolygonGenerator = VoronoiPolygonGenerator(TriangleCenterProvider.Centroid)
-    val centeredPolygons = centeredPolygonGenerator.generate(points)
+    val centeredPolygons = centeredPolygonGenerator.generate(random)
+        .map { it.mul(scale) }
 
     for (polygon in centeredPolygons) {
       val center = polygon.center

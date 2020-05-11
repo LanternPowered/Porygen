@@ -11,15 +11,20 @@ package org.lanternpowered.porygen.map.polygon
 
 import org.lanternpowered.porygen.delaunay.DelaunayTriangulator
 import org.lanternpowered.porygen.math.geom.Polygond
-import org.spongepowered.math.vector.Vector2d
+import org.lanternpowered.porygen.points.PointsGenerator
+import kotlin.random.Random
 
 /**
  * Generates [CellPolygon]s that are delaunay triangles.
  */
-object DelaunayTrianglePolygonGenerator : CellPolygonGenerator {
+class DelaunayTrianglePolygonGenerator(
+    private val pointsGenerator: PointsGenerator
+) : CellPolygonGenerator {
 
-  override fun generate(points: Collection<Vector2d>): Collection<CellPolygon> {
-    val delaunayTriangulator = DelaunayTriangulator(points.toList())
+  override fun generate(random: Random): Collection<CellPolygon> {
+    val points = this.pointsGenerator.generate(random)
+
+    val delaunayTriangulator = DelaunayTriangulator(points)
     delaunayTriangulator.triangulate()
 
     return delaunayTriangulator.triangles

@@ -19,8 +19,8 @@ import org.spongepowered.math.vector.Vector2i
  * @param map The map this chunk is located in
  * @param chunkPosition The position of the chunk
  */
-class PorygenMapChunk(
-    override val map: PorygenMap,
+class MapChunkImpl(
+    override val map: MapImpl,
     override val chunkPosition: Vector2i,
     override val chunkSize: Vector2i,
     override val id: Long,

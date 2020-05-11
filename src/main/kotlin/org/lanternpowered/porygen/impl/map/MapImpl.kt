@@ -24,14 +24,14 @@ import org.lanternpowered.porygen.map.polygon.CellPolygonGenerator
 import org.lanternpowered.porygen.math.geom.Rectangled
 import org.lanternpowered.porygen.math.geom.Rectanglei
 import org.lanternpowered.porygen.points.PointsGenerator
-import org.lanternpowered.porygen.util.tuple.packIntPair
-import org.lanternpowered.porygen.util.tuple.unpackIntPairFirst
-import org.lanternpowered.porygen.util.tuple.unpackIntPairSecond
+import org.lanternpowered.porygen.util.pair.packIntPair
+import org.lanternpowered.porygen.util.pair.unpackIntPairFirst
+import org.lanternpowered.porygen.util.pair.unpackIntPairSecond
 import org.spongepowered.math.vector.Vector2i
 import java.awt.Graphics
 import java.util.HashMap
 
-class PorygenMap(
+class MapImpl(
     private val seed: Long,
     private val polygonGenerator: CellPolygonGenerator,
     private val pointsGenerator: PointsGenerator
@@ -40,15 +40,15 @@ class PorygenMap(
   val sectionSize = Vector2i(16, 16)
 
   // All the cells mapped by their center coordinates
-  private val cellsByCenter = HashMap<Vector2i, PorygenCell>()
+  private val cellsByCenter = HashMap<Vector2i, CellImpl>()
 
   // All the cells mapped by chunk coordinates
-  private val cellsByChunk = Long2ObjectOpenHashMap<MutableSet<PorygenCell>>()
+  private val cellsByChunk = Long2ObjectOpenHashMap<MutableSet<CellImpl>>()
 
-  private val chunksById = Long2ObjectOpenHashMap<PorygenMapChunk>()
-  private val cornersById = Long2ObjectOpenHashMap<PorygenCorner>()
-  private val cellsById = Long2ObjectOpenHashMap<PorygenCell>()
-  private val edgesById = Long2ObjectOpenHashMap<PorygenEdge>()
+  private val chunksById = Long2ObjectOpenHashMap<MapChunkImpl>()
+  private val cornersById = Long2ObjectOpenHashMap<CornerImpl>()
+  private val cellsById = Long2ObjectOpenHashMap<CellImpl>()
+  private val edgesById = Long2ObjectOpenHashMap<EdgeImpl>()
 
   /**
    * The coordinates of all the chunks that are loaded in the [World].
@@ -94,18 +94,18 @@ class PorygenMap(
 */
   private class Ctx constructor(override val debugGraphics: Graphics?, override val seed: Long) : GeneratorContext
 
-  private fun constructMapView(viewRectangle: Rectangled): PorygenMapView? {
+  private fun constructMapView(viewRectangle: Rectangled): MapViewImpl? {
     val context = Ctx(null, this.seed)
     // Generate CenteredPolygons from the given points
     val centeredPolygons: List<CellPolygon> = emptyList() // TODO: this.polygonGenerator.generate()
     // Construct or lookup Cells for the centered polygons
     for (centeredPolygon in centeredPolygons) {
       val center = centeredPolygon.center.toInt()
-      var porygenCell: PorygenCell? = this.cellsByCenter[center]
+      var porygenCell: CellImpl? = this.cellsByCenter[center]
       // Construct a new cell if necessary
       if (porygenCell == null) {
         val cellData = buildCellData(centeredPolygon)
-        porygenCell = PorygenCell(this, cellData)
+        porygenCell = CellImpl(this, cellData)
         this.cellsByCenter[center] = porygenCell
 
         // Loop through all the edges and construct them if necessary
@@ -198,7 +198,7 @@ class PorygenMap(
     val chunkPos = Vector2i(chunkX, chunkZ)
     val cells = this.cellsByChunk[id]!!
     val cellBlockData = generateCellBlockData(chunkPos, sectionSize, cells.toTypedArray())
-    chunk = PorygenMapChunk(this, chunkPos, sectionSize, id, cellBlockData)
+    chunk = MapChunkImpl(this, chunkPos, sectionSize, id, cellBlockData)
     this.chunksById[id] = chunk
     return chunk
   }
@@ -207,9 +207,9 @@ class PorygenMap(
 
   override fun getCell(x: Int, z: Int): Cell = getChunk(x shr 4, z shr 4).getCell(x and 0xf, z and 0xf)
 
-  override fun getCorner(id: Long): PorygenCorner? = this.cornersById[id]
-  override fun getCell(id: Long): PorygenCell? = this.cellsById[id]
-  override fun getEdge(id: Long): PorygenEdge? = this.edgesById[id]
+  override fun getCorner(id: Long): CornerImpl? = this.cornersById[id]
+  override fun getCell(id: Long): CellImpl? = this.cellsById[id]
+  override fun getEdge(id: Long): EdgeImpl? = this.edgesById[id]
 
   override fun contains(element: CellMapElement): Boolean = element.map == this
 
