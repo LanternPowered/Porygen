@@ -37,7 +37,7 @@ interface CellMapPart {
   fun getSubView(rectangle: Rectanglei): CellMapView
 
   /**
-   * Gets the [Cell] the specified point is located in.
+   * Gets the [Cell] the specified tile coordinate is located in.
    *
    * @param point The point
    * @return The cell
@@ -45,7 +45,7 @@ interface CellMapPart {
   fun getCell(point: Vector2i) = getCell(point.x, point.y)
 
   /**
-   * Gets the [Cell] the specified point is located in.
+   * Gets the [Cell] the specified tile coordinate is located in.
    *
    * @param x The x coordinate
    * @param z The z coordinate
@@ -77,5 +77,8 @@ interface CellMapPart {
    */
   fun getCell(id: Long): Cell?
 
+  /**
+   * Checks whether the given map element is present in this map part.
+   */
   operator fun contains(element: CellMapElement): Boolean
 }

@@ -32,7 +32,7 @@ class SingleCellBlockData(
   override fun getCell(localX: Int, localY: Int) = this.cell
 }
 
-class NibbleBackedCellBlockData(
+class ArrayBackedCellBlockData(
     private val cellArray: Array<Cell>,
     private val blocks: VariableValueArray,
     private val sizeY: Int
@@ -50,8 +50,6 @@ class NibbleBackedCellBlockData(
  */
 internal fun generateCellBlockData(position: Vector2i, size: Vector2i, cells: Array<Cell>): CellBlockData {
   check(cells.isNotEmpty()) { "Cell list cannot be empty" }
-  check(cells.size <= 16) { "Exceeded max different cells per chunk ${cells.size} is > 16" }
-
   if (cells.size == 1)
     return SingleCellBlockData(cells[0])
 
@@ -77,5 +75,5 @@ internal fun generateCellBlockData(position: Vector2i, size: Vector2i, cells: Ar
     }
   }
 
-  return NibbleBackedCellBlockData(cells, blockData, size.y)
+  return ArrayBackedCellBlockData(cells, blockData, size.y)
 }

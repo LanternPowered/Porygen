@@ -66,8 +66,8 @@ interface Cell : CellMapElement {
    * inside this [Cell].
    *
    * @param x The x coordinate
-   * @param z The z coordinate
+   * @param y The y coordinate
    * @return Whether the point is located in this cell
    */
-  fun contains(x: Int, z: Int): Boolean
+  fun contains(x: Int, y: Int): Boolean
 }

@@ -33,11 +33,10 @@ import java.util.HashMap
 
 class MapImpl(
     private val seed: Long,
+    private val sectionSize: Vector2i,
     private val polygonGenerator: CellPolygonGenerator,
     private val pointsGenerator: PointsGenerator
 ) : SimpleDataHolder(), CellMap {
-
-  val sectionSize = Vector2i(16, 16)
 
   // All the cells mapped by their center coordinates
   private val cellsByCenter = HashMap<Vector2i, CellImpl>()
@@ -60,6 +59,13 @@ class MapImpl(
 
   private val loadQueuedMapChunks = LongOpenHashSet()
   private val unloadQueuedMapChunks = LongOpenHashSet()
+
+  //private val sectionCache = Caffeine.
+
+  fun getSection(position: SectionPosition): MapSection {
+
+    TODO()
+  }
 
   /*
   // A cache with all the map views that are currently allocated
@@ -184,7 +190,7 @@ class MapImpl(
     }
   }
 
-  override fun getChunk(chunkX: Int, chunkZ: Int) = getChunk(packIntPair(chunkX, chunkZ))
+  override fun getChunk(chunkX: Int, chunkY: Int) = getChunk(packIntPair(chunkX, chunkY))
 
   fun getChunk(id: Long): CellMapChunk {
     var chunk = this.chunksById[id]

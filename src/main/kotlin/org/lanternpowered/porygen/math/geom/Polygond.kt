@@ -84,6 +84,11 @@ class Polygond : AbstractShape {
     return true
   }
 
+  private constructor(vertices: List<Vector2d>) {
+    check(vertices.size >= 3) { "There must be at least 3 vertices." }
+    this.vertices = vertices
+  }
+
   /**
    * Constructs a [Polygond] from the given vertices.
    *
@@ -103,10 +108,7 @@ class Polygond : AbstractShape {
    *
    * @param vertices The vertices
    */
-  constructor(vertices: Iterable<Vector2d>) {
-    this.vertices = vertices.toList()
-    check(this.vertices.size >= 3) { "There must be at least 3 vertices." }
-  }
+  constructor(vertices: Iterable<Vector2d>) : this(vertices.toList())
 
   override fun contains(x: Double, y: Double): Boolean {
     // https://stackoverflow.com/questions/8721406/how-to-determine-if-a-point-is-inside-a-2d-convex-polygon
@@ -256,6 +258,30 @@ class Polygond : AbstractShape {
       pointsY[i] = vertex.y.toInt()
     }
     return Polygon(pointsX, pointsY, pointsX.size)
+  }
+
+  /**
+   * Multiplies all the vertices of this polygon
+   * with the given [vector] and returns a new
+   * [Polygond].
+   */
+  fun scale(vector: Vector2d): Polygond {
+    val vertices = vertices.map { it.mul(vector) }
+    val polygon = Polygond(vertices)
+    polygon.isConvexState = this.isConvexState
+    return polygon
+  }
+
+  /**
+   * Translates all the vertices of this polygon
+   * with the given [vector] and returns a new
+   * [Polygond].
+   */
+  fun translate(vector: Vector2d): Polygond {
+    val vertices = vertices.map { it.add(vector) }
+    val polygon = Polygond(vertices)
+    polygon.isConvexState = this.isConvexState
+    return polygon
   }
 
   override fun toString(): String =

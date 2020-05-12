@@ -9,14 +9,13 @@
  */
 package org.lanternpowered.porygen.impl.map
 
-import org.lanternpowered.porygen.data.SimpleDataHolder
 import org.lanternpowered.porygen.map.Cell
 import org.lanternpowered.porygen.map.Corner
 import org.lanternpowered.porygen.map.Edge
 import org.lanternpowered.porygen.util.pair.packIntPair
 import org.spongepowered.math.vector.Vector2d
 
-class CellImpl internal constructor(override val map: MapImpl, data: CellData) : SimpleDataHolder(), Cell {
+class CellImpl internal constructor(override val map: MapImpl, data: CellData) : MapElementImpl(), Cell {
 
   override val centerPoint = data.center
   override val polygon = data.polygon
@@ -33,15 +32,15 @@ class CellImpl internal constructor(override val map: MapImpl, data: CellData) :
   override val edges: List<Edge> get() = mutableEdges
   override val corners: List<Corner> get() = mutableCorners
 
-  override fun contains(x: Int, z: Int): Boolean {
-    val chunkPos = packIntPair(x shr 4, z shr 4)
+  override fun contains(x: Int, y: Int): Boolean {
+    val chunkPos = packIntPair(x shr 4, y shr 4)
     val chunk = map.getChunkIfLoaded(chunkPos)
     // If there is a chunk, it's already populated with information
     // about every block in which cells they are located, so use
     // this information to speed up the lookup.
     if (chunk != null)
-      return chunk.getCell(x and 0xf, z and 0xf) == this
+      return chunk.getCell(x and 0xf, y and 0xf) == this
     // Don't even perform any calculations if the chunk pos isn't in this cell
-    return this.chunks.contains(chunkPos) && this.polygon.contains(Vector2d(x + 0.5, z + 0.5)) // Use block center as check pos
+    return this.chunks.contains(chunkPos) && this.polygon.contains(Vector2d(x + 0.5, y + 0.5)) // Use block center as check pos
   }
 }

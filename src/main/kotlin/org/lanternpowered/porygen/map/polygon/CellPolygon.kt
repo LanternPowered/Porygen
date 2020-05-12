@@ -25,11 +25,9 @@ data class CellPolygon(
     val polygon: Polygond
 ) {
 
-  fun mul(scale: Vector2d): CellPolygon {
-    val center = this.center.mul(scale)
-    val vertices = this.polygon.vertices
-        .map { it.mul(scale) }
-    val polygon = Polygond(vertices) // TODO: Persist convex state
-    return CellPolygon(center, polygon)
-  }
+  fun scale(scale: Vector2d): CellPolygon =
+      CellPolygon(this.center.mul(scale), this.polygon.scale(scale))
+
+  fun translate(translation: Vector2d): CellPolygon =
+      CellPolygon(this.center.add(translation), this.polygon.translate(translation))
 }

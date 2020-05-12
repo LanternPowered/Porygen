@@ -54,7 +54,7 @@ class TriangleCenterProvider(
       val function = { triangle: Triangle2d ->
         val fromPoint = from.function(triangle)
         val toPoint = from.function(triangle)
-        fromPoint.add(toPoint.min(fromPoint).mul(fraction))
+        fromPoint.add(toPoint.sub(fromPoint).mul(fraction))
       }
       return TriangleCenterProvider(function,
           from.alwaysConvexPolygons && to.alwaysConvexPolygons)

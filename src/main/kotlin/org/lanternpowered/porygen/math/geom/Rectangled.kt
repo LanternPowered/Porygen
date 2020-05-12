@@ -10,8 +10,7 @@
 package org.lanternpowered.porygen.math.geom
 
 import org.lanternpowered.porygen.util.ToStringHelper
-import org.lanternpowered.porygen.util.floorToInt
-import org.spongepowered.math.GenericMath
+import org.lanternpowered.porygen.math.floorToInt
 import org.spongepowered.math.vector.Vector2d
 import org.spongepowered.math.vector.Vector2i
 import java.awt.Polygon
@@ -44,8 +43,8 @@ class Rectangled : AbstractRectangle<Vector2d> {
     val min = min
     val max = max
     return Rectanglei(
-        Vector2i(GenericMath.floor(min.x), GenericMath.floor(min.y)),
-        Vector2i(GenericMath.floor(max.x), GenericMath.floor(max.y)))
+        Vector2i(floorToInt(min.x), floorToInt(min.y)),
+        Vector2i(floorToInt(max.x), floorToInt(max.y)))
   }
 
   override fun toDouble(): Rectangled = this
@@ -66,14 +65,14 @@ class Rectangled : AbstractRectangle<Vector2d> {
   fun toDrawable(): Polygon {
     val pointsX = IntArray(4)
     val pointsY = IntArray(4)
-    pointsX[0] = min.x.floorToInt()
-    pointsY[0] = min.y.floorToInt()
-    pointsX[1] = max.x.floorToInt()
-    pointsY[1] = min.y.floorToInt()
-    pointsX[2] = max.x.floorToInt()
-    pointsY[2] = max.y.floorToInt()
-    pointsX[3] = min.x.floorToInt()
-    pointsY[3] = max.y.floorToInt()
+    pointsX[0] = floorToInt(min.x)
+    pointsY[0] = floorToInt(min.y)
+    pointsX[1] = floorToInt(max.x)
+    pointsY[1] = floorToInt(min.y)
+    pointsX[2] = floorToInt(max.x)
+    pointsY[2] = floorToInt(max.y)
+    pointsX[3] = floorToInt(min.x)
+    pointsY[3] = floorToInt(max.y)
     return Polygon(pointsX, pointsY, 4)
   }
 

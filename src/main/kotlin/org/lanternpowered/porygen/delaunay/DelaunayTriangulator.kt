@@ -38,31 +38,21 @@ import kotlin.math.max
 
 /**
  * An implementation of an incremental 2D Delaunay triangulation algorithm.
- *
- * @property points The point set
- * @throws IllegalArgumentException Thrown when the point set contains less than three points
  */
-class DelaunayTriangulator(val points: List<Vector2d>) {
-
-  private val mutableTriangles = mutableListOf<Triangle2d>()
-
-  /**
-   * The triangles of the triangulation.
-   */
-  val triangles: List<Triangle2d>
-    get() = mutableTriangles
-
-  init {
-    if (points.size < 3)
-      throw IllegalArgumentException("Less than three points in point set.")
-  }
+object DelaunayTriangulator {
 
   /**
    * This method generates a Delaunay triangulation from the specified point set.
    *
+   * @param points The point set to use
+   * @return The delaunay triangles
+   * @throws IllegalArgumentException Thrown when the point set contains less than three points
    */
-  fun triangulate() {
-    mutableTriangles.clear()
+  fun triangulate(points: List<Vector2d>): List<Triangle2d> {
+    if (points.size < 3)
+      throw IllegalArgumentException("Less than three points in point set.")
+
+    val triangles = mutableListOf<Triangle2d>()
 
     // In order for the in circumcircle test to not consider the vertices of
     // the super triangle we have to start out with a big triangle
@@ -77,9 +67,9 @@ class DelaunayTriangulator(val points: List<Vector2d>) {
     val p2 = Vector2d(3.0 * maxOfAnyCoordinate, 0.0)
     val p3 = Vector2d(-3.0 * maxOfAnyCoordinate, -3.0 * maxOfAnyCoordinate)
     val superTriangle = Triangle2d(p1, p2, p3)
-    mutableTriangles.add(superTriangle)
+    triangles.add(superTriangle)
     for (point in points) {
-      val triangle = mutableTriangles.findContainingTriangle(point)
+      val triangle = triangles.findContainingTriangle(point)
       if (triangle == null) {
         // If no containing triangle exists, then the vertex is not
         // inside a triangle (this can also happen due to numerical
@@ -87,51 +77,52 @@ class DelaunayTriangulator(val points: List<Vector2d>) {
         // search all edges of the triangle soup and select the one
         // which is nearest to the point we try to add. This edge is
         // removed and four new edges are added.
-        val edge = mutableTriangles.findNearestEdge(point)
+        val edge = triangles.findNearestEdge(point)
             ?: throw IllegalStateException()
-        val first = mutableTriangles.findOneTriangleSharing(edge)
+        val first = triangles.findOneTriangleSharing(edge)
             ?: throw IllegalStateException()
-        val second = mutableTriangles.findNeighbour(first, edge)
+        val second = triangles.findNeighbour(first, edge)
             ?: throw IllegalStateException()
         val firstNoneEdgeVertex = first.getNoneEdgeVertex(edge)
             ?: throw IllegalStateException()
         val secondNoneEdgeVertex = second.getNoneEdgeVertex(edge)
             ?: throw IllegalStateException()
-        mutableTriangles.remove(first)
-        mutableTriangles.remove(second)
+        triangles.remove(first)
+        triangles.remove(second)
         val triangle1 = Triangle2d(edge.a, firstNoneEdgeVertex, point)
         val triangle2 = Triangle2d(edge.b, firstNoneEdgeVertex, point)
         val triangle3 = Triangle2d(edge.a, secondNoneEdgeVertex, point)
         val triangle4 = Triangle2d(edge.b, secondNoneEdgeVertex, point)
-        mutableTriangles.add(triangle1)
-        mutableTriangles.add(triangle2)
-        mutableTriangles.add(triangle3)
-        mutableTriangles.add(triangle4)
-        legalizeEdge(triangle1, Edge2d(edge.a, firstNoneEdgeVertex), point)
-        legalizeEdge(triangle2, Edge2d(edge.b, firstNoneEdgeVertex), point)
-        legalizeEdge(triangle3, Edge2d(edge.a, secondNoneEdgeVertex), point)
-        legalizeEdge(triangle4, Edge2d(edge.b, secondNoneEdgeVertex), point)
+        triangles.add(triangle1)
+        triangles.add(triangle2)
+        triangles.add(triangle3)
+        triangles.add(triangle4)
+        legalizeEdge(triangles, triangle1, Edge2d(edge.a, firstNoneEdgeVertex), point)
+        legalizeEdge(triangles, triangle2, Edge2d(edge.b, firstNoneEdgeVertex), point)
+        legalizeEdge(triangles, triangle3, Edge2d(edge.a, secondNoneEdgeVertex), point)
+        legalizeEdge(triangles, triangle4, Edge2d(edge.b, secondNoneEdgeVertex), point)
       } else {
         // The vertex is inside a triangle.
         val a = triangle.a
         val b = triangle.b
         val c = triangle.c
-        mutableTriangles.remove(triangle)
+        triangles.remove(triangle)
         val first = Triangle2d(a, b, point)
         val second = Triangle2d(b, c, point)
         val third = Triangle2d(c, a, point)
-        mutableTriangles.add(first)
-        mutableTriangles.add(second)
-        mutableTriangles.add(third)
-        legalizeEdge(first, Edge2d(a, b), point)
-        legalizeEdge(second, Edge2d(b, c), point)
-        legalizeEdge(third, Edge2d(c, a), point)
+        triangles.add(first)
+        triangles.add(second)
+        triangles.add(third)
+        legalizeEdge(triangles, first, Edge2d(a, b), point)
+        legalizeEdge(triangles, second, Edge2d(b, c), point)
+        legalizeEdge(triangles, third, Edge2d(c, a), point)
       }
     }
     // Remove all triangles that contain vertices of the super triangle.
-    mutableTriangles.removeTrianglesUsing(superTriangle.a)
-    mutableTriangles.removeTrianglesUsing(superTriangle.b)
-    mutableTriangles.removeTrianglesUsing(superTriangle.c)
+    triangles.removeTrianglesUsing(superTriangle.a)
+    triangles.removeTrianglesUsing(superTriangle.b)
+    triangles.removeTrianglesUsing(superTriangle.c)
+    return triangles
   }
 
   /**
@@ -141,21 +132,21 @@ class DelaunayTriangulator(val points: List<Vector2d>) {
    * @param edge The edge to be legalized
    * @param newVertex The new vertex
    */
-  private fun legalizeEdge(triangle: Triangle2d, edge: Edge2d, newVertex: Vector2d) {
-    val neighbourTriangle = mutableTriangles.findNeighbour(triangle, edge)
+  private fun legalizeEdge(triangles: MutableList<Triangle2d>, triangle: Triangle2d, edge: Edge2d, newVertex: Vector2d) {
+    val neighbourTriangle = triangles.findNeighbour(triangle, edge)
     // If the triangle has a neighbor, then legalize the edge
     if (neighbourTriangle != null) {
       if (neighbourTriangle.isPointInCircumcircle(newVertex)) {
-        mutableTriangles.remove(triangle)
-        mutableTriangles.remove(neighbourTriangle)
+        triangles.remove(triangle)
+        triangles.remove(neighbourTriangle)
         val noneEdgeVertex = neighbourTriangle.getNoneEdgeVertex(edge)
             ?: throw IllegalStateException()
         val firstTriangle = Triangle2d(noneEdgeVertex, edge.a, newVertex)
         val secondTriangle = Triangle2d(noneEdgeVertex, edge.b, newVertex)
-        mutableTriangles.add(firstTriangle)
-        mutableTriangles.add(secondTriangle)
-        legalizeEdge(firstTriangle, Edge2d(noneEdgeVertex, edge.a), newVertex)
-        legalizeEdge(secondTriangle, Edge2d(noneEdgeVertex, edge.b), newVertex)
+        triangles.add(firstTriangle)
+        triangles.add(secondTriangle)
+        legalizeEdge(triangles, firstTriangle, Edge2d(noneEdgeVertex, edge.a), newVertex)
+        legalizeEdge(triangles, secondTriangle, Edge2d(noneEdgeVertex, edge.b), newVertex)
       }
     }
   }

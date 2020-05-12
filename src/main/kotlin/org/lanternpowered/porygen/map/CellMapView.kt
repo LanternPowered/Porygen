@@ -10,15 +10,20 @@
 package org.lanternpowered.porygen.map
 
 import org.lanternpowered.porygen.math.geom.Rectanglei
+import org.spongepowered.math.vector.Vector2i
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 
 /**
  * Represents a partial view of a [CellMap]. It allows access to all the
- * [Cell]s, etc. that are visible to this [CellMapView].
+ * [Cell]s, etc. that are visible to this [CellMapView]. Neighbor cells,
+ * etc. that aren't in the view, won't be available.
  *
- * Using neighbor accessors of [Cell], etc. are still allowed, they will
- * lazily load the info when requested.
+ * After the view is no longer needed, it should be released through
+ * [release]. Otherwise it's kept into memory until the map itself is
+ * destroyed.
  */
-interface CellMapView : CellMapPart {
+interface CellMapView : CellMapPart, Releasable {
 
   /**
    * The bounds of this cell map view.
@@ -44,4 +49,13 @@ interface CellMapView : CellMapPart {
    * All the [Edge]s that are (partially) visible in this [CellMapView].
    */
   val edges: Collection<Edge>
+
+  /**
+   * Grows the [CellMapView] and returns a new [CellMapView] with new size.
+   *
+   * The [size] will be applied in every direction, +x, -x, +y, -y
+   *
+   * This doesn't release the original [CellMapView].
+   */
+  fun grow(size: Vector2i): CellMapView
 }

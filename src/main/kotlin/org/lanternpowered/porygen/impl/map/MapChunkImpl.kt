@@ -29,4 +29,8 @@ class MapChunkImpl(
 
   override val cells get() = this.cellBlockData.cells
   override fun getCell(localX: Int, localY: Int) = this.cellBlockData.getCell(localX, localY)
+
+  override fun release() {
+    TODO("Not yet implemented")
+  }
 }

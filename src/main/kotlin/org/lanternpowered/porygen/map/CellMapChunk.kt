@@ -14,8 +14,12 @@ import org.spongepowered.math.vector.Vector2i
 /**
  * Represents a chunk on a map. A chunk consists of
  * (chunkSize.x * chunkSize.y) tiles.
+ *
+ * After the chunk is no longer needed, it should be released through
+ * [release]. Otherwise it's kept into memory until the map itself is
+ * destroyed.
  */
-interface CellMapChunk : CellMapElement {
+interface CellMapChunk : CellMapElement, Releasable {
 
   /**
    * The chunk size. This should be the same

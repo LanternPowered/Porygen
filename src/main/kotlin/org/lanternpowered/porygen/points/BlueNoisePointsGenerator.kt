@@ -10,7 +10,7 @@
 package org.lanternpowered.porygen.points
 
 import org.lanternpowered.porygen.util.IntArrays
-import org.lanternpowered.porygen.util.ceilToInt
+import org.lanternpowered.porygen.math.ceilToInt
 import org.spongepowered.math.vector.Vector2d
 import org.spongepowered.math.vector.Vector2i
 import kotlin.math.sqrt
@@ -82,7 +82,7 @@ class BlueNoisePointsGenerator(
   companion object {
 
     fun getDefaultCells(amount: IntRange): Vector2i {
-      val size = sqrt(amount.last.toDouble()).ceilToInt() + 1
+      val size = ceilToInt(sqrt(amount.last.toDouble())) + 1
       return Vector2i(size, size)
     }
   }

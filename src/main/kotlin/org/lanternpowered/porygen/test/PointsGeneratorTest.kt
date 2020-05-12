@@ -10,7 +10,11 @@
 package org.lanternpowered.porygen.test
 
 import org.lanternpowered.porygen.GeneratorContext
+import org.lanternpowered.porygen.impl.map.SectionPolygonGenerator
+import org.lanternpowered.porygen.impl.map.SectionPosition
+import org.lanternpowered.porygen.map.polygon.CellPolygon
 import org.lanternpowered.porygen.map.polygon.CellPolygonGenerator
+import org.lanternpowered.porygen.map.polygon.DelaunayTrianglePolygonGenerator
 import org.lanternpowered.porygen.map.polygon.TriangleCenterProvider
 import org.lanternpowered.porygen.map.polygon.VoronoiPolygonGenerator
 import org.lanternpowered.porygen.points.BlueNoisePointsGenerator
@@ -18,12 +22,14 @@ import org.lanternpowered.porygen.points.PointsGenerator
 import org.lanternpowered.porygen.points.ZoomPointsGenerator
 import org.lanternpowered.porygen.util.random.Xor128Random
 import org.spongepowered.math.vector.Vector2d
+import org.spongepowered.math.vector.Vector2i
 import org.spongepowered.noise.module.modifier.ScalePoint
 import org.spongepowered.noise.module.source.Perlin
 import java.awt.BorderLayout
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.image.BufferedImage
+import java.lang.Exception
 import javax.swing.JFrame
 import javax.swing.JPanel
 
@@ -35,7 +41,7 @@ object PointsGeneratorTest {
     val random = Xor128Random(seed)
 
     // The random points generator
-    var generator: PointsGenerator = BlueNoisePointsGenerator(amount = 1000..2000)
+    var generator: PointsGenerator = BlueNoisePointsGenerator(amount = 200..250)
     generator = ZoomPointsGenerator(generator, Vector2d(1.1, 1.1))
 
     val width = 1000
@@ -90,12 +96,18 @@ object PointsGeneratorTest {
     }
     */
 
-    var centeredPolygonGenerator: CellPolygonGenerator
+    var polygonGenerator: CellPolygonGenerator
     val scale = Vector2d(width.toDouble(), height.toDouble())
-    centeredPolygonGenerator = VoronoiPolygonGenerator(generator, TriangleCenterProvider.Centroid)
-    // centeredPolygonGenerator = DelaunayTrianglePolygonGenerator()
-    val centeredPolygons = centeredPolygonGenerator.generate(random)
-        .map { it.mul(scale) }
+    polygonGenerator = VoronoiPolygonGenerator(TriangleCenterProvider.Circumcenter)
+    // polygonGenerator = DelaunayTrianglePolygonGenerator()
+
+    val sectionPolygonGenerator = SectionPolygonGenerator(seed, Vector2i(300, 300), generator, polygonGenerator)
+    val centeredPolygons = mutableListOf<CellPolygon>()
+    centeredPolygons.addAll(sectionPolygonGenerator.generate(SectionPosition(0,0)))
+    centeredPolygons.addAll(sectionPolygonGenerator.generate(SectionPosition(0, 1)))
+    centeredPolygons.addAll(sectionPolygonGenerator.generate(SectionPosition(1, 1)))
+    centeredPolygons.addAll(sectionPolygonGenerator.generate(SectionPosition(2, 2)))
+    centeredPolygons.addAll(sectionPolygonGenerator.generate(SectionPosition(2, 0)))
 
     for (polygon in centeredPolygons) {
       val center = polygon.center

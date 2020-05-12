@@ -11,10 +11,8 @@ package org.lanternpowered.porygen.map.polygon
 
 import org.lanternpowered.porygen.delaunay.DelaunayTriangulator
 import org.lanternpowered.porygen.math.geom.Polygond
-import org.lanternpowered.porygen.points.PointsGenerator
 import org.spongepowered.math.vector.Vector2d
 import kotlin.math.atan2
-import kotlin.random.Random
 
 /**
  * Generates [CellPolygon]s that are voronoi polygons.
@@ -24,23 +22,21 @@ import kotlin.random.Random
  *   gives a different output.
  */
 class VoronoiPolygonGenerator(
-    private val pointsGenerator: PointsGenerator,
-    private val triangleCenterProvider: TriangleCenterProvider = TriangleCenterProvider.Circumcenter
+    private val triangleCenterProvider: TriangleCenterProvider = TriangleCenterProvider.Circumcenter,
+    override val pointsOffset: Vector2d = Vector2d(0.2, 0.2)
 ) : CellPolygonGenerator {
 
-  override fun generate(random: Random): Collection<CellPolygon> {
-    val points = this.pointsGenerator.generate(random)
+  override fun generate(points: Collection<Vector2d>): Collection<CellPolygon> {
+    if (points.size < 3)
+      return emptyList()
+
     val centeredPolygons = mutableListOf<CellPolygon>()
-
-    val delaunayTriangulator = DelaunayTriangulator(points)
-    delaunayTriangulator.triangulate()
-
-    val triangles = delaunayTriangulator.triangles
+    val triangles = DelaunayTriangulator.triangulate(points.toList())
 
     // Go through all the vertices, to find all the touching triangles,
     // for this triangles is each circumcenter a point of the polygon shape
-    for (vertex in delaunayTriangulator.points) {
-      val polygonVertices = ArrayList<VertexEntry>()
+    for (vertex in points) {
+      val polygonVertices = mutableListOf<VertexEntry>()
       for (triangle in triangles) {
         if (triangle.hasVertex(vertex)) {
           val point = this.triangleCenterProvider.function(triangle)
@@ -48,6 +44,8 @@ class VoronoiPolygonGenerator(
           polygonVertices.add(VertexEntry(point, angle))
         }
       }
+      if (!polygonVertices.any { entry -> entry.point.x in 0.0..1.0 && entry.point.y in 0.0..1.0 })
+        continue
       if (polygonVertices.size <= 2) // Not enough vertices
         continue
       // Create a polygon from vertices that are sorted clockwise+

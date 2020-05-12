@@ -14,8 +14,8 @@ import it.unimi.dsi.fastutil.longs.LongSet
 import org.lanternpowered.porygen.map.polygon.CellPolygon
 import org.lanternpowered.porygen.math.geom.Polygond
 import org.lanternpowered.porygen.math.geom.Rectanglei
-import org.lanternpowered.porygen.util.ceilToInt
-import org.lanternpowered.porygen.util.floorToInt
+import org.lanternpowered.porygen.math.ceilToInt
+import org.lanternpowered.porygen.math.floorToInt
 import org.lanternpowered.porygen.util.pair.packIntPair
 import org.spongepowered.math.vector.Vector2i
 import kotlin.math.max
@@ -55,10 +55,10 @@ internal fun buildCellData(cellPolygon: CellPolygon): CellData {
 
   // Collect all the chunks the cell is actually located in
 
-  val chunkStartX = minX.floorToInt() shr 4
-  val chunkStartZ = minZ.floorToInt() shr 4
-  val chunkEndX = maxX.ceilToInt() shr 4
-  val chunkEndZ = maxZ.ceilToInt() shr 4
+  val chunkStartX = floorToInt(minX) shr 4
+  val chunkStartZ = floorToInt(minZ) shr 4
+  val chunkEndX = ceilToInt(maxX) shr 4
+  val chunkEndZ = ceilToInt(maxZ) shr 4
 
   for (chunkX in chunkStartX..chunkEndX) {
     for (chunkZ in chunkStartZ..chunkEndZ) {

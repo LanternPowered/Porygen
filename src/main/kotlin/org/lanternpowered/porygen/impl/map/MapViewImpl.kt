@@ -17,14 +17,20 @@ import org.lanternpowered.porygen.map.CellMapView
 import org.lanternpowered.porygen.map.Corner
 import org.lanternpowered.porygen.map.Edge
 import org.lanternpowered.porygen.math.geom.Rectanglei
+import org.spongepowered.math.vector.Vector2i
 
+/**
+ * @property sections All the sections this view (partially) contains
+ */
 open class MapViewImpl(
-    override val map: CellMap,
+    val sections: Set<MapSection>,
     override val viewRectangle: Rectanglei,
     override val cells: Collection<Cell>,
     override val corners: Collection<Corner>,
     override val edges: Collection<Edge>
 ) : SimpleDataHolder(), CellMapView {
+
+  override val map: CellMap = this.sections.first().map
 
   override fun getCorner(id: Long) = this.map.getCorner(id)
   override fun getCell(id: Long) = this.map.getCell(id)
@@ -51,5 +57,14 @@ open class MapViewImpl(
       "The target block coordinates ($x, $z) must be inside this map view rectangle $viewRectangle"
     }
     return this.map.getCell(x, z)
+  }
+
+  override fun grow(size: Vector2i): CellMapView {
+    TODO("Not yet implemented")
+  }
+
+  override fun release() {
+    for (section in this.sections)
+      section.removeReference(this)
   }
 }

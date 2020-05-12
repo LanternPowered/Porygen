@@ -29,10 +29,10 @@ interface CellMap : CellMapPart, DataHolder {
   /**
    * Gets the [CellMapChunk] at the given chunk coordinates.
    *
-   * @param sectionX The section x coordinate
-   * @param sectionZ The section z coordinate
+   * @param chunkX The chunk x coordinate
+   * @param chunkY The chunk y coordinate
    */
-  fun getChunk(sectionX: Int, sectionZ: Int): CellMapChunk
+  fun getChunk(chunkX: Int, chunkY: Int): CellMapChunk
 }
 
 /**
