@@ -15,7 +15,6 @@ import org.lanternpowered.porygen.map.CellMapView
 import org.lanternpowered.porygen.map.Corner
 import org.spongepowered.math.GenericMath
 import kotlin.math.abs
-import kotlin.math.min
 
 /**
  * Calculates the distance of cells to the ocean. This also
@@ -55,10 +54,10 @@ class DistanceToOceanProcessor(
   ): Int? {
     // Already processed before
     var distance = element[DataKeys.DISTANCE_TO_OCEAN]
-    if (distance != null)
+    if (distance != null && distance <= processStack.size)
       return distance
-    // We reached the length (complexity)
-    if (allowedDistance == 0)
+    // We reached the maximum allowed distance (complexity)
+    if (processStack.size == allowedDistance)
       return null
 
     fun findNeighborDistance(): Int? {
@@ -67,7 +66,7 @@ class DistanceToOceanProcessor(
       // Find the shortest distance
       val value = element.neighbors().asSequence()
           .filter { neighbor -> neighbor !in processStack } // Prevent infinite loops
-          .map { neighbor -> updateOceanDistance(neighbor, view, neighbors, isOcean, allowedDistance - 1, newProcessed) }
+          .map { neighbor -> updateOceanDistance(neighbor, view, neighbors, isOcean, allowedDistance, newProcessed) }
           .filterNotNull()
           .sortedBy { abs(it) } // Find the closest distance to 0
           .firstOrNull()

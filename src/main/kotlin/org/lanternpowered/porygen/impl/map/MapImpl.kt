@@ -156,7 +156,7 @@ class MapImpl(
 
       val vertices = cellPolygon.polygon.vertices
       var i = 0
-      var j = vertices.size - 1
+      var j = vertices.lastIndex
       while (i < vertices.size) {
         val vi = vertices[i].floorToInt()
         val vj = vertices[j].floorToInt()
@@ -176,12 +176,6 @@ class MapImpl(
         edges += edge
 
         edge.mutableCells += cell
-        val otherCell = edge.mutableCells.firstOrNull { it != cell }
-        if (otherCell != null) {
-          cell.mutableNeighbors.add(otherCell)
-          otherCell.mutableNeighbors.add(cell)
-        }
-
         edge.mutableCorners += corneri
         edge.mutableCorners += cornerj
 
