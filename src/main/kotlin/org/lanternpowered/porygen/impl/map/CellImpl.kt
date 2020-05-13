@@ -10,9 +10,6 @@
 package org.lanternpowered.porygen.impl.map
 
 import org.lanternpowered.porygen.map.Cell
-import org.lanternpowered.porygen.map.Corner
-import org.lanternpowered.porygen.map.Edge
-import org.lanternpowered.porygen.map.polygon.CellPolygon
 import org.lanternpowered.porygen.math.geom.Polygond
 import org.lanternpowered.porygen.util.pair.packIntPair
 import org.spongepowered.math.vector.Vector2d
@@ -28,13 +25,13 @@ class CellImpl internal constructor(
   // A set with all the chunk coordinates this cell is located in
   //val chunks = data.chunks
 
-  internal val mutableNeighbors = mutableListOf<Cell>()
-  internal val mutableEdges = mutableListOf<Edge>()
-  internal val mutableCorners = mutableListOf<Corner>()
+  internal val mutableNeighbors = mutableSetOf<CellImpl>()
+  internal val mutableEdges = mutableSetOf<EdgeImpl>()
+  internal val mutableCorners = mutableSetOf<CornerImpl>()
 
-  override val neighbors: List<Cell> get() = mutableNeighbors
-  override val edges: List<Edge> get() = mutableEdges
-  override val corners: List<Corner> get() = mutableCorners
+  override val neighbors: Collection<CellImpl> get() = mutableNeighbors
+  override val edges: Collection<EdgeImpl> get() = mutableEdges
+  override val corners: Collection<CornerImpl> get() = mutableCorners
 
   // TODO
   override fun contains(x: Int, y: Int): Boolean {
@@ -47,11 +44,5 @@ class CellImpl internal constructor(
       return chunk.getCell(x and 0xf, y and 0xf) == this
     // Don't even perform any calculations if the chunk pos isn't in this cell
     return /*this.chunks.contains(chunkPos) && */ this.polygon.contains(Vector2d(x + 0.5, y + 0.5)) // Use block center as check pos
-  }
-
-  companion object {
-
-    fun getId(cellPolygon: CellPolygon): Long =
-        packIntPair(cellPolygon.center.floorX, cellPolygon.center.floorY)
   }
 }

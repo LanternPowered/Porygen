@@ -10,7 +10,7 @@
 package org.lanternpowered.porygen.map.processor.edge
 
 import org.lanternpowered.porygen.data.DataKey
-import org.lanternpowered.porygen.map.GrowableCellMapView
+import org.lanternpowered.porygen.map.CellMapView
 import org.lanternpowered.porygen.map.processor.CellMapProcessor
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
@@ -26,7 +26,7 @@ class EdgeDistanceMapViewProcessor(
     private val sideIterations: Int = 10
 ) : CellMapProcessor {
 
-  override fun process(view: GrowableCellMapView) {
+  override fun process(view: CellMapView) {
     val v = view.viewRectangle
 
     val startChunkX = v.min.x shr 4

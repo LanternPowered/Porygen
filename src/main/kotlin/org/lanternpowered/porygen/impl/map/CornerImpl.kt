@@ -10,9 +10,7 @@
 package org.lanternpowered.porygen.impl.map
 
 import org.lanternpowered.porygen.data.SimpleDataHolder
-import org.lanternpowered.porygen.map.Cell
 import org.lanternpowered.porygen.map.Corner
-import org.lanternpowered.porygen.map.Edge
 import org.spongepowered.math.vector.Vector2i
 
 class CornerImpl(
@@ -21,11 +19,11 @@ class CornerImpl(
     override val map: MapImpl
 ) : SimpleDataHolder(), Corner {
 
-  internal val mutableEdges = mutableListOf<EdgeImpl>()
-  internal val mutableCells = mutableListOf<CellImpl>()
-  internal val mutableNeighbors = mutableListOf<CornerImpl>()
+  internal val mutableEdges = mutableSetOf<EdgeImpl>()
+  internal val mutableCells = mutableSetOf<CellImpl>()
+  internal val mutableNeighbors = mutableSetOf<CornerImpl>()
 
-  override val edges: Collection<Edge> get() = this.mutableEdges
-  override val cells: Collection<Cell> get() = this.mutableCells
-  override val neighbors: Collection<Corner> get() = this.mutableNeighbors
+  override val edges: Collection<EdgeImpl> get() = mutableEdges
+  override val cells: Collection<CellImpl> get() = mutableCells
+  override val neighbors: Collection<CornerImpl> get() = mutableNeighbors
 }

@@ -17,9 +17,11 @@ import org.lanternpowered.porygen.map.CellMapChunk
 import org.lanternpowered.porygen.map.CellMapElement
 import org.lanternpowered.porygen.map.CellMapView
 import org.lanternpowered.porygen.map.polygon.CellPolygonGenerator
+import org.lanternpowered.porygen.map.processor.CellMapProcessor
 import org.lanternpowered.porygen.math.floorToInt
 import org.lanternpowered.porygen.math.geom.Line2i
 import org.lanternpowered.porygen.math.geom.Rectanglei
+import org.lanternpowered.porygen.math.vector.floorToInt
 import org.lanternpowered.porygen.points.PointsGenerator
 import org.lanternpowered.porygen.util.pair.packIntPair
 import org.lanternpowered.porygen.util.pair.unpackIntPairFirst
@@ -30,7 +32,8 @@ class MapImpl(
     override val seed: Long,
     private val sectionSize: Vector2i,
     private val polygonGenerator: CellPolygonGenerator,
-    private val pointsGenerator: PointsGenerator
+    private val pointsGenerator: PointsGenerator,
+    private val processors: List<CellMapProcessor>
 ) : SimpleDataHolder(), CellMap {
 
   // All the cells mapped by their center coordinates
@@ -59,8 +62,69 @@ class MapImpl(
     if (section != null)
       return MapSectionReference(section)
 
-    section = generateSectionData(position)
-    // TODO: Run processors
+    // Processing area sections
+    val areaSections = Long2ObjectOpenHashMap<MapSection>()
+    for (x in -1..1) {
+      for (y in -1..1) {
+        val added = position.offset(x, y)
+        areaSections[added.packed] = generateSectionData(added)
+      }
+    }
+
+    // The section that was requested
+    section = areaSections[position.packed]!!
+
+    val sectionRectangleMin = Vector2i(position.x, position.y).mul(sectionSize)
+    val sectionRectangleMax = sectionRectangleMin.add(sectionSize)
+
+    val processorViews = mutableMapOf<Rectanglei, CellMapView>()
+
+    println("Started processing: $position")
+
+    fun CellMapProcessor.getProcessorView(left: Int, right: Int, top: Int, down: Int): CellMapView {
+      val offset = sectionSize.toDouble().mul(areaOffset).floorToInt()
+
+      val processorRectangleMin = sectionRectangleMin.sub(offset.mul(left, top))
+      val processorRectangleMax = sectionRectangleMax.add(offset.mul(right, down))
+      val processorRectangle = Rectanglei(processorRectangleMin, processorRectangleMax)
+
+      return processorViews.computeIfAbsent(processorRectangle) {
+        getSubView(processorRectangle) { areaSectionPosition ->
+          val areaSection = areaSections[areaSectionPosition.packed]
+              ?: throw IllegalStateException("Requested an area that's too big.")
+          MapSectionReference(areaSection)
+        }
+      }
+    }
+
+    for (i in processors.indices) {
+      // Run the last processor for surrounding areas
+      if (i > 0) {
+        val processor = processors[i - 1]
+        for (x in -1..1) {
+          for (y in -1..1) {
+            if (x == 0 && y == 0)
+              continue
+
+            val view = processor.getProcessorView(
+                left = if (x > -1) 1 else 0,
+                right = if (x < 1) 1 else 0,
+                top = if (y > -1) 1 else 0,
+                down = if (y < 1) 1 else 0)
+            processor.process(view)
+          }
+        }
+      }
+
+      val processor = processors[i]
+      println("Started process: " + processor.javaClass.name)
+
+      val view = processor.getProcessorView(1, 1, 1, 1)
+      processor.process(view)
+    }
+
+    for (view in processorViews.values)
+      view.release()
 
     sections[section.position.packed] = section
     return MapSectionReference(section)
@@ -78,7 +142,7 @@ class MapImpl(
     val corners = mutableSetOf<CornerImpl>()
 
     for (cellPolygon in cellPolygons) {
-      val center = cellPolygon.center.toInt()
+      val center = cellPolygon.center.floorToInt()
       val cellId = packIntPair(center.x, center.y)
       val cell = cellsById.computeIfAbsent(cellId) {
         CellImpl(cellId, this, center, cellPolygon.polygon)
@@ -94,8 +158,8 @@ class MapImpl(
       var i = 0
       var j = vertices.size - 1
       while (i < vertices.size) {
-        val vi = vertices[i].toInt()
-        val vj = vertices[j].toInt()
+        val vi = vertices[i].floorToInt()
+        val vj = vertices[j].floorToInt()
 
         val corneri = getCorner(vi)
         val cornerj = getCorner(vj)
@@ -108,8 +172,15 @@ class MapImpl(
         val edgeLine = Line2i(vi, vj)
         val edgeCenter = edgeLine.center
         val edgeId = packIntPair(edgeCenter.x, edgeCenter.y)
-        val edge = edgesById.computeIfAbsent(edgeId) { EdgeImpl(edgeLine.toInt(), this) }
+        val edge = edgesById.computeIfAbsent(edgeId) { EdgeImpl(edgeId, edgeLine, this) }
         edges += edge
+
+        edge.mutableCells += cell
+        val otherCell = edge.mutableCells.firstOrNull { it != cell }
+        if (otherCell != null) {
+          cell.mutableNeighbors.add(otherCell)
+          otherCell.mutableNeighbors.add(cell)
+        }
 
         edge.mutableCorners += corneri
         edge.mutableCorners += cornerj
@@ -127,10 +198,18 @@ class MapImpl(
       }
     }
 
+    for (corner in corners) {
+      for (cell in corner.cells) {
+        cell.mutableNeighbors.addAll(corner.cells.filter { it != cell })
+      }
+    }
+
     return MapSection(position, this, viewRectangle, cells, corners, edges)
   }
 
-  override fun getSubView(rectangle: Rectanglei): CellMapView {
+  override fun getSubView(rectangle: Rectanglei): CellMapView = getSubView(rectangle, ::getSection)
+
+  private fun getSubView(rectangle: Rectanglei, getSection: (position: SectionPosition) -> MapSectionReference): CellMapView {
     // Get the sections that are required for this sub view
     val minSectionX = floorToInt(rectangle.min.x.toDouble() / sectionSize.x)
     val minSectionY = floorToInt(rectangle.min.y.toDouble() / sectionSize.y)

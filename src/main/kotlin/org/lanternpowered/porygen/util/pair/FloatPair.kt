@@ -22,18 +22,17 @@ fun Pair<Float, Float>.toFloatPair() = FloatPair(this.first, this.second)
 /**
  * Packs the first and second float values into one long value.
  */
-fun packFloatPair(first: Float, second: Float): Long =
-    (floatToIntBits(first).toLong() shl 32) or floatToIntBits(second).toLong()
+fun packFloatPair(first: Float, second: Float): Long = packIntPair(floatToIntBits(first), floatToIntBits(second))
 
 /**
  * Unpacks the first value from the packed float pair (long) value.
  */
-fun unpackFloatPairFirst(packed: Long): Float = intBitsToFloat((packed shr 32).toInt())
+fun unpackFloatPairFirst(packed: Long): Float = intBitsToFloat(unpackIntPairFirst(packed))
 
 /**
  * Unpacks the second value from the packed float pair (long) value.
  */
-fun unpackFloatPairSecond(packed: Long): Float = intBitsToFloat(((packed shl 32) shr 32).toInt())
+fun unpackFloatPairSecond(packed: Long): Float = intBitsToFloat(unpackIntPairSecond(packed))
 
 /**
  * Represents tuple with two float values.

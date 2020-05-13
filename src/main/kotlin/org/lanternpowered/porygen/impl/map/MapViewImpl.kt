@@ -17,7 +17,6 @@ import org.lanternpowered.porygen.map.CellMapView
 import org.lanternpowered.porygen.map.Corner
 import org.lanternpowered.porygen.map.Edge
 import org.lanternpowered.porygen.math.geom.Rectanglei
-import org.spongepowered.math.vector.Vector2i
 
 /**
  * @property sections All the sections this view (partially) contains

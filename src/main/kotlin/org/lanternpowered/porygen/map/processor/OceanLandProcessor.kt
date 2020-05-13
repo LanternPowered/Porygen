@@ -9,14 +9,14 @@
  */
 package org.lanternpowered.porygen.map.processor
 
-import org.lanternpowered.porygen.map.GrowableCellMapView
+import org.lanternpowered.porygen.map.CellMapView
 import org.spongepowered.noise.module.Module
 
 class OceanLandProcessor(
     private val terrainHeightModule: Module
 ) : CellMapProcessor {
 
-  override fun process(view: GrowableCellMapView) {
+  override fun process(view: CellMapView) {
     for (cell in view.cells) {
       val point = cell.centerPoint
 

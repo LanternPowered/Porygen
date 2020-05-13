@@ -9,24 +9,23 @@
  */
 package org.lanternpowered.porygen.map.processor
 
+import org.lanternpowered.porygen.map.CellMapView
 import org.lanternpowered.porygen.map.Corner
 import org.lanternpowered.porygen.map.Edge
-import org.lanternpowered.porygen.map.GrowableCellMapView
 import org.lanternpowered.porygen.util.random.Xor128Random
+import org.spongepowered.math.vector.Vector2d
 import kotlin.random.Random
 import kotlin.random.nextInt
 
 class RiverProcessor(
     private val riverChance: Double = 0.15,
-    private val riverLength: IntRange = 3..5
+    private val riverLength: IntRange = 3..5,
+    override val areaOffset: Vector2d = Vector2d(0.3, 0.3)
 ) : CellMapProcessor {
 
-  override fun process(view: GrowableCellMapView) {
-    // Grow 30% of the original map view, in every direction
-    val riverView = view.grow(view.viewRectangle.size.mul(0.3))
-
+  override fun process(view: CellMapView) {
     // Find all the corners which are next to the ocean
-    val beachCorners = riverView.corners
+    val beachCorners = view.corners
         .filter { corner -> corner[DataKeys.DISTANCE_TO_OCEAN] == 0 }
 
     // The chance per corner that a river may occur
@@ -48,8 +47,6 @@ class RiverProcessor(
           riverEdge[DataKeys.IS_RIVER] = true
       }
     }
-
-    riverView.release()
   }
 
   private fun traverse(corner: Corner, random: Random, data: RiverData): RiverData? {

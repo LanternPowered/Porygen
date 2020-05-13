@@ -24,6 +24,7 @@ class CellMapBuilderImpl : CellMapBuilder {
   private lateinit var pointsGenerator: PointsGenerator
   private var chunkSize = Vector2i(512, 512)
   private var sectionSize = Vector2i(512, 512)
+  private val processors = mutableListOf<CellMapProcessor>()
 
   override fun seed(seed: Long) {
     this.seed = seed
@@ -46,8 +47,8 @@ class CellMapBuilderImpl : CellMapBuilder {
   }
 
   override fun addProcessor(processor: CellMapProcessor) {
-    // TODO
+    this.processors += processor
   }
 
-  fun build(): CellMap = MapImpl(seed, sectionSize, polygonGenerator, pointsGenerator)
+  fun build(): CellMap = MapImpl(seed, sectionSize, polygonGenerator, pointsGenerator, processors.toList())
 }

@@ -26,7 +26,7 @@ interface Edge : CellMapElement {
 
   /**
    * A collection with all the [Cell]s that have this edge.
-  */
+   */
   val cells: Collection<Cell>
 
   /**

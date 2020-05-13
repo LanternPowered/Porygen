@@ -19,4 +19,8 @@ inline class SectionPosition(val packed: Long) {
 
   val x: Int get() = unpackIntPairFirst(this.packed)
   val y: Int get() = unpackIntPairSecond(this.packed)
+
+  override fun toString(): String = "($x,$y)"
+
+  fun offset(x: Int, y: Int): SectionPosition = SectionPosition(this.x + x, this.y + y)
 }

@@ -17,7 +17,7 @@ import org.spongepowered.math.vector.Vector2d
  * Generates [CellPolygon]s that are delaunay triangles.
  */
 class DelaunayTrianglePolygonGenerator(
-    override val pointsOffset: Vector2d = Vector2d(0.2, 0.2)
+    override val areaOffset: Vector2d = Vector2d(0.2, 0.2)
 ) : CellPolygonGenerator {
 
   override fun generate(points: Collection<Vector2d>): Collection<CellPolygon> {

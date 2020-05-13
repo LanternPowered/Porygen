@@ -23,7 +23,7 @@ import kotlin.math.atan2
  */
 class VoronoiPolygonGenerator(
     private val triangleCenterProvider: TriangleCenterProvider = TriangleCenterProvider.Circumcenter,
-    override val pointsOffset: Vector2d = Vector2d(0.2, 0.2)
+    override val areaOffset: Vector2d = Vector2d(0.2, 0.2)
 ) : CellPolygonGenerator {
 
   override fun generate(points: Collection<Vector2d>): Collection<CellPolygon> {

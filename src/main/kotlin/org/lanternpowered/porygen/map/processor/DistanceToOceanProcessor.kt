@@ -13,8 +13,9 @@ import org.lanternpowered.porygen.map.Cell
 import org.lanternpowered.porygen.map.CellMapElement
 import org.lanternpowered.porygen.map.CellMapView
 import org.lanternpowered.porygen.map.Corner
-import org.lanternpowered.porygen.map.GrowableCellMapView
+import org.spongepowered.math.GenericMath
 import kotlin.math.abs
+import kotlin.math.min
 
 /**
  * Calculates the distance of cells to the ocean. This also
@@ -25,9 +26,12 @@ class DistanceToOceanProcessor(
     private val maxOceanCornerDistance: Int = maxOceanCellDistance + 1
 ) : CellMapProcessor {
 
-  override fun process(view: GrowableCellMapView) {
+  override fun process(view: CellMapView) {
     fun Cell.isOcean(): Boolean =
         this[DataKeys.IS_OCEAN] == true
+
+    for (cell in view.cells)
+      println(cell.neighbors.count())
 
     for (cell in view.cells)
       updateOceanDistance(cell, view, Cell::neighbors, Cell::isOcean, maxOceanCellDistance)
@@ -61,12 +65,13 @@ class DistanceToOceanProcessor(
       // Try to scan for neighbor cells
       val newProcessed = processStack + element
       // Find the shortest distance
-      return element.neighbors().asSequence()
+      val value = element.neighbors().asSequence()
           .filter { neighbor -> neighbor !in processStack } // Prevent infinite loops
           .map { neighbor -> updateOceanDistance(neighbor, view, neighbors, isOcean, allowedDistance - 1, newProcessed) }
           .filterNotNull()
           .sortedBy { abs(it) } // Find the closest distance to 0
           .firstOrNull()
+      return if (value != null) GenericMath.clamp(value, -allowedDistance, allowedDistance) else null
     }
 
     // Check if the cell is at the coastline

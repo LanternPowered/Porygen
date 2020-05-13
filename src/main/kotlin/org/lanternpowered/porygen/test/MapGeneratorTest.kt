@@ -10,7 +10,9 @@
 package org.lanternpowered.porygen.test
 
 import org.lanternpowered.porygen.map.cellMap
+import org.lanternpowered.porygen.map.polygon.TriangleCenterProvider
 import org.lanternpowered.porygen.map.polygon.VoronoiPolygonGenerator
+import org.lanternpowered.porygen.map.processor.DataKeys
 import org.lanternpowered.porygen.map.processor.DistanceToOceanProcessor
 import org.lanternpowered.porygen.map.processor.OceanLandProcessor
 import org.lanternpowered.porygen.math.geom.Rectanglei
@@ -19,7 +21,9 @@ import org.lanternpowered.porygen.points.PointsGenerator
 import org.lanternpowered.porygen.points.ZoomPointsGenerator
 import org.spongepowered.math.vector.Vector2d
 import org.spongepowered.math.vector.Vector2i
+import org.spongepowered.noise.module.combiner.Add
 import org.spongepowered.noise.module.modifier.ScalePoint
+import org.spongepowered.noise.module.source.Const
 import org.spongepowered.noise.module.source.Perlin
 import java.awt.BorderLayout
 import java.awt.Color
@@ -27,6 +31,7 @@ import java.awt.Graphics
 import java.awt.image.BufferedImage
 import javax.swing.JFrame
 import javax.swing.JPanel
+import kotlin.math.abs
 
 object MapGeneratorTest {
 
@@ -46,6 +51,14 @@ object MapGeneratorTest {
     scalePoint.yScale = 1.0
     scalePoint.zScale = 0.07
 
+    val constant = Const()
+    constant.value = -1.0
+
+    val terrainHeight = Add()
+    terrainHeight.setSourceModule(0, constant)
+    terrainHeight.setSourceModule(1, scalePoint)
+
+    /*
     showGraphics { bounds, graphics ->
       for (x in 0 until bounds.x) {
         for (y in 0 until bounds.y) {
@@ -59,26 +72,52 @@ object MapGeneratorTest {
         }
       }
     }
+    */
 
+    val maxOceanCellDistance = 3
     val map = cellMap {
       seed(seed)
 
-      var pointsGenerator: PointsGenerator = BlueNoisePointsGenerator(amount = 200..250)
+      var pointsGenerator: PointsGenerator = BlueNoisePointsGenerator(amount = 300..350)
       pointsGenerator = ZoomPointsGenerator(pointsGenerator, Vector2d(1.1, 1.1))
 
       pointsGenerator(pointsGenerator)
-      polygonGenerator(VoronoiPolygonGenerator())
+      polygonGenerator(VoronoiPolygonGenerator(TriangleCenterProvider.Centroid))
       sectionSize(Vector2i(512, 512))
 
-      addProcessor(OceanLandProcessor(scalePoint))
-      addProcessor(DistanceToOceanProcessor())
+      addProcessor(OceanLandProcessor(terrainHeight))
+      addProcessor(DistanceToOceanProcessor(maxOceanCellDistance = maxOceanCellDistance))
     }
 
     showGraphics { bounds, graphics ->
       val view = map.getSubView(Rectanglei(Vector2i.ZERO, bounds))
       for (cell in view.cells) {
+        val drawable = cell.polygon.toDrawable()
+        val distance = cell[DataKeys.DISTANCE_TO_OCEAN]
+        var color = if (cell[DataKeys.IS_OCEAN] == true) Color.blue else Color.yellow
+        if (distance != null) {
+          repeat(abs(distance)) {
+            color = color.darker()
+          }
+        } else {
+          repeat(maxOceanCellDistance + 1) {
+            color = color.darker()
+          }
+        }
+        graphics.color = color
+        graphics.fillPolygon(drawable)
         graphics.color = Color.black
-        graphics.drawPolygon(cell.polygon.toDrawable())
+        graphics.drawPolygon(drawable)
+      }
+      // Color invalid cells
+      for (cell in view.cells) {
+        if (cell.neighbors.size > 11) {
+          graphics.color = Color.red
+          val drawable = cell.polygon.toDrawable()
+          graphics.fillPolygon(drawable)
+          graphics.color = Color.black
+          graphics.drawPolygon(drawable)
+        }
       }
     }
   }

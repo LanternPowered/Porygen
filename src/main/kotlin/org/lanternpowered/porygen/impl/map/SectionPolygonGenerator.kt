@@ -41,7 +41,7 @@ class SectionPolygonGenerator(
     // points of nearby sections
     // The offset is the amount of sections -x, -y, +x, +y
     // relative to the needed section
-    val offset = polygonGenerator.pointsOffset
+    val offset = polygonGenerator.areaOffset
 
     val offsetSectionX = ceilToInt(offset.x)
     val offsetSectionY = ceilToInt(offset.y)

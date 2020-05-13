@@ -19,17 +19,17 @@ fun Pair<Int, Int>.toIntPair() = IntPair(this.first, this.second)
 /**
  * Packs the first and second int values into one long value.
  */
-fun packIntPair(first: Int, second: Int): Long = (first.toLong() shl 32) or second.toLong()
+fun packIntPair(first: Int, second: Int): Long = (Integer.toUnsignedLong(first) shl 32) or Integer.toUnsignedLong(second)
 
 /**
  * Unpacks the first value from the packed int pair (long) value.
  */
-fun unpackIntPairFirst(packed: Long): Int = (packed shr 32).toInt()
+fun unpackIntPairFirst(packed: Long): Int = (packed ushr 32).toInt()
 
 /**
  * Unpacks the second value from the packed int pair (long) value.
  */
-fun unpackIntPairSecond(packed: Long): Int = ((packed shl 32) shr 32).toInt()
+fun unpackIntPairSecond(packed: Long): Int = (packed and 0xffffffffL).toInt()
 
 /**
  * Represents tuple with two int values.

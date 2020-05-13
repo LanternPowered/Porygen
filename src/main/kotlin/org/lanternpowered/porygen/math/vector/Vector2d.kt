@@ -11,6 +11,7 @@ package org.lanternpowered.porygen.math.vector
 
 import org.spongepowered.math.vector.Vector2d
 import org.spongepowered.math.vector.Vector2i
+import org.lanternpowered.porygen.math.floorToInt
 import kotlin.math.max
 import kotlin.math.min
 
@@ -35,3 +36,6 @@ fun min(first: Vector2i, second: Vector2i): Vector2i =
 
 fun max(first: Vector2i, second: Vector2i): Vector2i =
     Vector2i(max(first.x, second.x), max(first.y, second.y))
+
+fun Vector2d.floorToInt(): Vector2i =
+    Vector2i(floorToInt(x), floorToInt(y))
