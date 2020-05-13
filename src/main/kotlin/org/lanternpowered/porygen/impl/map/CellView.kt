@@ -15,6 +15,9 @@ import org.lanternpowered.porygen.map.Edge
 import org.lanternpowered.porygen.math.geom.Polygond
 import org.spongepowered.math.vector.Vector2i
 
+val Cell.delegate: Cell
+  get() = if (this is CellView) delegate else this
+
 class CellView private constructor(
     override val delegate: Cell,
     override val view: MapViewImpl
@@ -49,9 +52,6 @@ class CellView private constructor(
 
   override fun contains(x: Int, y: Int): Boolean =
       delegate.contains(x, y)
-
-  private val Cell.delegate: Cell
-    get() = if (this is CellView) delegate else this
 
   override fun equals(other: Any?): Boolean {
     if (other !is Cell)

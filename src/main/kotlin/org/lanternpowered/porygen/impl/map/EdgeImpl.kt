@@ -15,12 +15,10 @@ import org.lanternpowered.porygen.map.Corner
 import org.lanternpowered.porygen.map.Edge
 import org.lanternpowered.porygen.math.geom.Line2i
 import org.lanternpowered.porygen.util.pair.packIntPair
-import java.util.Collections
 
 class EdgeImpl(
     override val line: Line2i,
-    override val map: MapImpl,
-    val viewImpl: MapViewImpl
+    override val map: MapImpl
 ) : SimpleDataHolder(), Edge {
 
   override val id = run {
@@ -28,9 +26,14 @@ class EdgeImpl(
     packIntPair(center.x, center.y)
   }
 
-  internal val theCells = mutableSetOf<CellImpl>()
-  internal val theCorners = mutableSetOf<CornerImpl>()
+  internal val mutableCells = mutableSetOf<CellImpl>()
+  internal val mutableCorners = mutableSetOf<CornerImpl>()
 
-  override val cells: Collection<Cell> = Collections.unmodifiableCollection(this.theCells)
-  override val corners: Collection<Corner> = Collections.unmodifiableCollection(this.theCorners)
+  override fun other(cell: Cell): Cell {
+    check(cell in this.mutableCells)
+    return mutableCells.first { it != cell }
+  }
+
+  override val cells: Collection<Cell> = this.mutableCells
+  override val corners: Collection<Corner> = this.mutableCorners
 }

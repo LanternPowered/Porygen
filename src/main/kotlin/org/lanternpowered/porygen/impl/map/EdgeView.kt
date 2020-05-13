@@ -14,6 +14,9 @@ import org.lanternpowered.porygen.map.Corner
 import org.lanternpowered.porygen.map.Edge
 import org.lanternpowered.porygen.math.geom.Line2i
 
+val Edge.delegate: Edge
+  get() = if (this is EdgeView) delegate else this
+
 class EdgeView private constructor(
     override val delegate: Edge,
     override val view: MapViewImpl
@@ -22,11 +25,17 @@ class EdgeView private constructor(
   override val line: Line2i
     get() = delegate.line
 
-  override val cells: Collection<Cell> by lazy {
+  override val cells: Collection<CellView> by lazy {
     delegate.cells.asSequence()
         .filter { cell -> view.contains(cell) }
         .map { cell -> CellView.of(cell, view) }
         .toList()
+  }
+
+  override fun other(cell: Cell): Cell {
+    val delegateCell = cell.delegate
+    check(delegateCell in delegate.cells)
+    return cells.first { it.delegate != delegateCell }
   }
 
   override val corners: Collection<Corner> by lazy {
@@ -35,9 +44,6 @@ class EdgeView private constructor(
         .map { corner -> CornerView.of(corner, view) }
         .toList()
   }
-
-  private val Edge.delegate: Edge
-    get() = if (this is EdgeView) delegate else this
 
   override fun equals(other: Any?): Boolean {
     if (other !is Edge)

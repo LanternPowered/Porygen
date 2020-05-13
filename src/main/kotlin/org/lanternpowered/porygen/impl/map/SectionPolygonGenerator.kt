@@ -29,10 +29,10 @@ import org.spongepowered.math.vector.Vector2i
  * @property polygonGenerator The polygon generator
  */
 class SectionPolygonGenerator(
-    val seed: Long,
-    val sectionSize: Vector2i,
-    val pointsGenerator: PointsGenerator,
-    val polygonGenerator: CellPolygonGenerator
+    private val seed: Long,
+    private val sectionSize: Vector2i,
+    private val pointsGenerator: PointsGenerator,
+    private val polygonGenerator: CellPolygonGenerator
 ) {
 
   fun generate(section: SectionPosition): Collection<CellPolygon> {

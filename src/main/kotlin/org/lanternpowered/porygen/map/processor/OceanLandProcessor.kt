@@ -9,16 +9,14 @@
  */
 package org.lanternpowered.porygen.map.processor
 
-import org.lanternpowered.porygen.GeneratorContext
-import org.lanternpowered.porygen.map.CellMapView
+import org.lanternpowered.porygen.map.GrowableCellMapView
 import org.spongepowered.noise.module.Module
-import kotlin.random.Random
 
-class OceanLandGenerator(
+class OceanLandProcessor(
     private val terrainHeightModule: Module
 ) : CellMapProcessor {
 
-  override fun process(context: GeneratorContext, view: CellMapView, random: Random) {
+  override fun process(view: GrowableCellMapView) {
     for (cell in view.cells) {
       val point = cell.centerPoint
 

@@ -9,9 +9,7 @@
  */
 package org.lanternpowered.porygen.map.processor
 
-import org.lanternpowered.porygen.GeneratorContext
-import org.lanternpowered.porygen.map.CellMapView
-import org.lanternpowered.porygen.util.random.XorWowRandom
+import org.lanternpowered.porygen.map.GrowableCellMapView
 import org.spongepowered.noise.module.Module
 import java.util.EnumMap
 
@@ -75,9 +73,9 @@ class SingleCellBiomeSelectorProcessor<Biome>(
     filterByTemperature(this.hillBiomeTypes, this.hillBiomesByTemperature)
   }
 
-  override fun process(context: GeneratorContext, view: CellMapView, random: kotlin.random.Random) {
+  override fun process(view: GrowableCellMapView) {
     for (cell in view.cells) {
-      val cellRandom = XorWowRandom(context.seed xor cell.id)
+      // val cellRandom = XorWowRandom(context.seed xor cell.id)
 
       val x = cell.centerPoint.x.toDouble()
       val z = cell.centerPoint.y.toDouble()

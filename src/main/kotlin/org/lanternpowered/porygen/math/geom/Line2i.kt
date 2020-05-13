@@ -13,6 +13,8 @@ import org.spongepowered.math.vector.Vector2i
 
 class Line2i(start: Vector2i, end: Vector2i) : AbstractLine2<Vector2i>(start, end) {
 
+  override val center: Vector2i by lazy { start.add(end.sub(start).div(2.0)) }
+
   constructor(startX: Int, startY: Int, endX: Int, endY: Int) : this(Vector2i(startX, startY), Vector2i(endX, endY))
 
   override fun intersects(startX: Double, startY: Double, endX: Double, endY: Double) = Line2d.linesIntersect(

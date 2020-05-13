@@ -13,15 +13,13 @@ import org.lanternpowered.porygen.data.SimpleDataHolder
 import org.lanternpowered.porygen.map.Cell
 import org.lanternpowered.porygen.map.Corner
 import org.lanternpowered.porygen.map.Edge
-import org.lanternpowered.porygen.util.pair.packIntPair
 import org.spongepowered.math.vector.Vector2i
 
 class CornerImpl(
+    override val id: Long,
     override val point: Vector2i,
     override val map: MapImpl
 ) : SimpleDataHolder(), Corner {
-
-  override val id: Long = packIntPair(this.point.x, this.point.y)
 
   internal val mutableEdges = mutableListOf<EdgeImpl>()
   internal val mutableCells = mutableListOf<CellImpl>()

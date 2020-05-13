@@ -29,16 +29,21 @@ class MapSection(
 ) {
 
   /**
+   * The current state of the processing of the [MapSection].
+   */
+  var processorState: Int = -1
+
+  /**
    * All the [MapViewImpl]s that hold a reference to this [MapSection].
    */
-  val references = mutableSetOf<MapViewImpl>()
+  val references = mutableSetOf<MapSectionReference>()
 
-  fun addReference(mapView: MapViewImpl) {
-    this.references.add(mapView)
+  fun addReference(reference: MapSectionReference) {
+    this.references.add(reference)
   }
 
-  fun removeReference(mapView: MapViewImpl) {
-    if (!this.references.remove(mapView))
+  fun removeReference(reference: MapSectionReference) {
+    if (!this.references.remove(reference))
       return
     // No more references, the section is
     // no longer needed

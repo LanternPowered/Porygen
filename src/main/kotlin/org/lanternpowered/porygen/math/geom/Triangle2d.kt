@@ -13,6 +13,7 @@ import org.lanternpowered.porygen.delaunay.Edge2d
 import org.lanternpowered.porygen.delaunay.EdgeDistancePack
 import org.lanternpowered.porygen.math.vector.cross
 import org.spongepowered.math.vector.Vector2d
+import kotlin.math.abs
 import kotlin.math.sign
 import kotlin.math.sqrt
 

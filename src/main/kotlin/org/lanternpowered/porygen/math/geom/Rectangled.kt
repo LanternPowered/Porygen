@@ -27,6 +27,8 @@ class Rectangled : AbstractRectangle<Vector2d> {
         Vector2d(min.x, max.y))
   }
 
+  override val size: Vector2d by lazy { max.sub(min) }
+
   constructor(minX: Double, minY: Double, maxX: Double, maxY: Double) :
       super(Vector2d(min(minX, maxX), min(minY, maxY)), Vector2d(max(minX, maxX), max(minY, maxY)))
 

@@ -26,8 +26,15 @@ interface Edge : CellMapElement {
 
   /**
    * A collection with all the [Cell]s that have this edge.
-   */
+  */
   val cells: Collection<Cell>
+
+  /**
+   * Gets the other cell this edge is next to.
+   *
+   * @throws IllegalArgumentException If the given [cell] doesn't have this edge
+   */
+  fun other(cell: Cell): Cell
 
   /**
    * A collection with all the [Corner]s that connect to this edge.

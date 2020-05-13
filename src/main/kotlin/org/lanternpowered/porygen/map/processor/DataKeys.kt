@@ -21,11 +21,21 @@ object DataKeys {
   val IS_OCEAN = DataKey<Boolean>()
 
   /**
+   * A key to represent whether a edge is marked
+   * or corner is marked as a river.
+   */
+  val IS_RIVER = DataKey<Boolean>()
+
+  /**
    * A key to represent the distance to the ocean.
    *
-   * This can be applied to cells and corners, for
-   * cells it represents the number of cells to reach
-   * the ocean. For corners, it's the number of edges.
+   * Corners at the coastline will have a distance
+   * of 0. Corners further in land start at 1. Corners
+   * further into the ocean start at -1.
+   *
+   * Cells that are the coastline will have a distance
+   * of 1. Cells further in land start at 2. Cells further
+   * in the ocean start at -1.
    */
   val DISTANCE_TO_OCEAN = DataKey<Int>()
 }

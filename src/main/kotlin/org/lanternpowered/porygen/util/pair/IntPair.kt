@@ -17,11 +17,6 @@ package org.lanternpowered.porygen.util.pair
 fun Pair<Int, Int>.toIntPair() = IntPair(this.first, this.second)
 
 /**
- * Constructs a [IntPair] with the given first and second values.
- */
-inline fun IntPair(first: Int, second: Int): IntPair = IntPair(packIntPair(first, second))
-
-/**
  * Packs the first and second int values into one long value.
  */
 fun packIntPair(first: Int, second: Int): Long = (first.toLong() shl 32) or second.toLong()
@@ -44,6 +39,11 @@ fun unpackIntPairSecond(packed: Long): Int = ((packed shl 32) shr 32).toInt()
  * @property second The second value
  */
 inline class IntPair(val packed: Long) {
+
+  /**
+   * Constructs a [IntPair] with the given first and second values.
+   */
+  constructor(first: Int, second: Int) : this(packIntPair(first, second))
 
   inline val first get() = unpackIntPairFirst(this.packed)
   inline val second get() = unpackIntPairSecond(this.packed)

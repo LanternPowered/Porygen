@@ -18,11 +18,6 @@ import kotlin.math.ceil
  * will be 64 / 4 values be stored on a single long value. If
  * you use a number that's not the power of two, a few bits will
  * be unused per long, e.g. for bit per value 3, 64 % 3 = 1
- *
- * The implementation was changed for minecraft 1.16 changes, prior
- * to this version, values could be spread out over multiple long
- * values if the bits per value wasn't a power of two. This was
- * changed for performance reasons and was a breaking change.
  */
 class VariableValueArray {
 

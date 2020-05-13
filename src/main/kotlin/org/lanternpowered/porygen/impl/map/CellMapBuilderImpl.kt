@@ -9,30 +9,45 @@
  */
 package org.lanternpowered.porygen.impl.map
 
+import org.lanternpowered.porygen.map.CellMap
 import org.lanternpowered.porygen.map.CellMapBuilder
 import org.lanternpowered.porygen.map.polygon.CellPolygonGenerator
 import org.lanternpowered.porygen.map.processor.CellMapProcessor
+import org.lanternpowered.porygen.points.PointsGenerator
 import org.spongepowered.math.vector.Vector2i
+import kotlin.random.Random
 
 class CellMapBuilderImpl : CellMapBuilder {
 
+  private var seed = Random.nextLong()
+  private lateinit var polygonGenerator: CellPolygonGenerator
+  private lateinit var pointsGenerator: PointsGenerator
+  private var chunkSize = Vector2i(512, 512)
+  private var sectionSize = Vector2i(512, 512)
+
   override fun seed(seed: Long) {
-    TODO("Not yet implemented")
+    this.seed = seed
   }
 
   override fun polygonGenerator(polygonGenerator: CellPolygonGenerator) {
-    TODO("Not yet implemented")
+    this.polygonGenerator = polygonGenerator
+  }
+
+  override fun pointsGenerator(pointsGenerator: PointsGenerator) {
+    this.pointsGenerator = pointsGenerator
   }
 
   override fun chunkSize(size: Vector2i) {
-    TODO("Not yet implemented")
+    this.chunkSize = size
   }
 
   override fun sectionSize(size: Vector2i) {
-    TODO("Not yet implemented")
+    this.sectionSize = size
   }
 
   override fun addProcessor(processor: CellMapProcessor) {
-    TODO("Not yet implemented")
+    // TODO
   }
+
+  fun build(): CellMap = MapImpl(seed, sectionSize, polygonGenerator, pointsGenerator)
 }

@@ -15,6 +15,8 @@ import kotlin.math.min
 
 class Line2d(start: Vector2d, end: Vector2d) : AbstractLine2<Vector2d>(start, end) {
 
+  override val center: Vector2d by lazy { start.add(end.sub(start).div(2.0)) }
+
   constructor(startX: Double, startY: Double, endX: Double, endY: Double) :
       this(Vector2d(startX, startY), Vector2d(endX, endY))
 

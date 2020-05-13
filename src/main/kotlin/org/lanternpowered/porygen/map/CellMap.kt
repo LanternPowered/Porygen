@@ -10,21 +10,27 @@
 package org.lanternpowered.porygen.map
 
 import org.lanternpowered.porygen.data.DataHolder
+import org.lanternpowered.porygen.impl.map.CellMapBuilderImpl
 import org.lanternpowered.porygen.map.polygon.CellPolygonGenerator
 import org.lanternpowered.porygen.map.processor.CellMapProcessor
+import org.lanternpowered.porygen.points.PointsGenerator
 import org.spongepowered.math.vector.Vector2i
 
 /**
  * Constructs a new [CellMap].
  */
-fun cellMap(fn: CellMapBuilder.() -> Unit): CellMap {
-  TODO()
-}
+fun cellMap(fn: CellMapBuilder.() -> Unit): CellMap =
+    CellMapBuilderImpl().apply(fn).build()
 
 /**
  * Represents the complete map.
  */
 interface CellMap : CellMapPart, DataHolder {
+
+  /**
+   * The seed of the map.
+   */
+  val seed: Long
 
   /**
    * Gets the [CellMapChunk] at the given chunk coordinates.
@@ -55,6 +61,13 @@ interface CellMapBuilder {
   fun polygonGenerator(polygonGenerator: CellPolygonGenerator)
 
   /**
+   * Sets the points generator.
+   *
+   * @param pointsGenerator The points generator
+   */
+  fun pointsGenerator(pointsGenerator: PointsGenerator)
+
+  /**
    * Sets the chunk size.
    *
    * Defaults to (16, 16).
@@ -64,13 +77,13 @@ interface CellMapBuilder {
   /**
    * Sets the section size (in chunks).
    *
-   * Defaults to (16, 16), so
-   * (16, 16) * (16, 16) tiles.
+   * Defaults to (512, 512), so
+   * (512, 512) * (16, 16) tiles.
    */
   fun sectionSize(size: Vector2i)
 
   /**
-   * Adds a [CellMapProcessor].
+   * Adds a [CellMapPreProcessor].
    *
    * The order processors are added matters, they
    * will be executed in the same order they were

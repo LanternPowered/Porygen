@@ -18,6 +18,7 @@ import org.lanternpowered.porygen.map.polygon.DelaunayTrianglePolygonGenerator
 import org.lanternpowered.porygen.map.polygon.TriangleCenterProvider
 import org.lanternpowered.porygen.map.polygon.VoronoiPolygonGenerator
 import org.lanternpowered.porygen.points.BlueNoisePointsGenerator
+import org.lanternpowered.porygen.points.GridBasedPointsGenerator
 import org.lanternpowered.porygen.points.PointsGenerator
 import org.lanternpowered.porygen.points.ZoomPointsGenerator
 import org.lanternpowered.porygen.util.random.Xor128Random
@@ -42,6 +43,7 @@ object PointsGeneratorTest {
 
     // The random points generator
     var generator: PointsGenerator = BlueNoisePointsGenerator(amount = 200..250)
+    // generator = GridBasedPointsGenerator(amount = 200..250)
     generator = ZoomPointsGenerator(generator, Vector2d(1.1, 1.1))
 
     val width = 1000
@@ -96,6 +98,12 @@ object PointsGeneratorTest {
     }
     */
 
+    /*
+    for (point in generator.generate(Xor128Random(seed))) {
+      graphics.color = Color.BLACK
+      graphics.fillRect((point.x * width).toInt(), (point.y * height).toInt(), 3, 3)
+    }*/
+
     var polygonGenerator: CellPolygonGenerator
     val scale = Vector2d(width.toDouble(), height.toDouble())
     polygonGenerator = VoronoiPolygonGenerator(TriangleCenterProvider.Circumcenter)
@@ -103,7 +111,7 @@ object PointsGeneratorTest {
 
     val sectionPolygonGenerator = SectionPolygonGenerator(seed, Vector2i(300, 300), generator, polygonGenerator)
     val centeredPolygons = mutableListOf<CellPolygon>()
-    centeredPolygons.addAll(sectionPolygonGenerator.generate(SectionPosition(0,0)))
+    centeredPolygons.addAll(sectionPolygonGenerator.generate(SectionPosition(0, 0)))
     centeredPolygons.addAll(sectionPolygonGenerator.generate(SectionPosition(0, 1)))
     centeredPolygons.addAll(sectionPolygonGenerator.generate(SectionPosition(1, 1)))
     centeredPolygons.addAll(sectionPolygonGenerator.generate(SectionPosition(2, 2)))

@@ -49,13 +49,4 @@ interface CellMapView : CellMapPart, Releasable {
    * All the [Edge]s that are (partially) visible in this [CellMapView].
    */
   val edges: Collection<Edge>
-
-  /**
-   * Grows the [CellMapView] and returns a new [CellMapView] with new size.
-   *
-   * The [size] will be applied in every direction, +x, -x, +y, -y
-   *
-   * This doesn't release the original [CellMapView].
-   */
-  fun grow(size: Vector2i): CellMapView
 }

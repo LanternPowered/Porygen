@@ -9,30 +9,25 @@
  */
 package org.lanternpowered.porygen.impl.map
 
-import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import org.lanternpowered.porygen.GeneratorContext
 import org.lanternpowered.porygen.data.SimpleDataHolder
 import org.lanternpowered.porygen.map.Cell
 import org.lanternpowered.porygen.map.CellMap
 import org.lanternpowered.porygen.map.CellMapChunk
 import org.lanternpowered.porygen.map.CellMapElement
 import org.lanternpowered.porygen.map.CellMapView
-import org.lanternpowered.porygen.map.polygon.CellPolygon
 import org.lanternpowered.porygen.map.polygon.CellPolygonGenerator
-import org.lanternpowered.porygen.math.geom.Rectangled
+import org.lanternpowered.porygen.math.floorToInt
+import org.lanternpowered.porygen.math.geom.Line2i
 import org.lanternpowered.porygen.math.geom.Rectanglei
 import org.lanternpowered.porygen.points.PointsGenerator
 import org.lanternpowered.porygen.util.pair.packIntPair
 import org.lanternpowered.porygen.util.pair.unpackIntPairFirst
 import org.lanternpowered.porygen.util.pair.unpackIntPairSecond
 import org.spongepowered.math.vector.Vector2i
-import java.awt.Graphics
-import java.util.HashMap
 
 class MapImpl(
-    private val seed: Long,
+    override val seed: Long,
     private val sectionSize: Vector2i,
     private val polygonGenerator: CellPolygonGenerator,
     private val pointsGenerator: PointsGenerator
@@ -50,144 +45,150 @@ class MapImpl(
   private val edgesById = Long2ObjectOpenHashMap<EdgeImpl>()
 
   /**
-   * The coordinates of all the chunks that are loaded in the [World].
+   * The polygon generator of sections.
    */
-  // private val loadedChunks = Long2IntOpenHashMap()
+  private val sectionPolygonGenerator = SectionPolygonGenerator(seed, sectionSize, pointsGenerator, polygonGenerator)
 
-  // All the map chunks that should be in memory
-  private val loadedMapChunks = Long2IntOpenHashMap()
+  /**
+   * All the sections that are currently loaded.
+   */
+  private val sections = Long2ObjectOpenHashMap<MapSection>()
 
-  private val loadQueuedMapChunks = LongOpenHashSet()
-  private val unloadQueuedMapChunks = LongOpenHashSet()
+  fun getSection(position: SectionPosition): MapSectionReference {
+    var section = sections.get(position.packed)
+    if (section != null)
+      return MapSectionReference(section)
 
-  //private val sectionCache = Caffeine.
+    section = generateSectionData(position)
+    // TODO: Run processors
 
-  fun getSection(position: SectionPosition): MapSection {
-
-    TODO()
+    sections[section.position.packed] = section
+    return MapSectionReference(section)
   }
 
-  /*
-  // A cache with all the map views that are currently allocated
-  private val mapViewCache = (Caffeine.newBuilder().uncheckedCast<Caffeine<Rectanglei, PorygenMapView>>())
-          .weakValues()
-          .removalListener(RemovalListener removalListener@ { key, value, _ ->
-              // Cleanup the cells when the MapView is being cleaned up
-              if (value == null) {
-                  return@removalListener
-              }
-              val cells = value.cells
-              for (cell in cells) {
-                  cell as PorygenCell
-                  // The view reference got removed
-                  cell.referencedViews.remove(key)
-                  // When all references to the cell get removed, destroy the cell
-                  if (cell.referencedViews.isEmpty()) {
-                      this.cellsByCenter.remove(cell.centerPoint)
-                      cell.chunks.forEach { coords ->
-                          val list = this.cellsByChunk.get(coords)
-                          if (list != null && list.remove(cell)) {
-                              this.cellsByChunk.remove(coords)
-                          }
-                      }
-                  }
-              }
-          })
-          .build(CacheLoader { key ->
-              //PorygenMapView() // TODO
-              TODO()
-          })
-*/
-  private class Ctx constructor(override val debugGraphics: Graphics?, override val seed: Long) : GeneratorContext
+  private fun generateSectionData(position: SectionPosition): MapSection {
+    val viewRectangleMin = Vector2i(position.x, position.y).mul(sectionSize)
+    val viewRectangleMax = viewRectangleMin.add(sectionSize)
+    val viewRectangle = Rectanglei(viewRectangleMin, viewRectangleMax)
 
-  private fun constructMapView(viewRectangle: Rectangled): MapViewImpl? {
-    val context = Ctx(null, this.seed)
-    // Generate CenteredPolygons from the given points
-    val centeredPolygons: List<CellPolygon> = emptyList() // TODO: this.polygonGenerator.generate()
-    // Construct or lookup Cells for the centered polygons
-    for (centeredPolygon in centeredPolygons) {
-      val center = centeredPolygon.center.toInt()
-      var porygenCell: CellImpl? = this.cellsByCenter[center]
-      // Construct a new cell if necessary
-      if (porygenCell == null) {
-        val cellData = buildCellData(centeredPolygon)
-        porygenCell = CellImpl(this, cellData)
-        this.cellsByCenter[center] = porygenCell
+    val cellPolygons = sectionPolygonGenerator.generate(position)
 
-        // Loop through all the edges and construct them if necessary
-        val polygon = centeredPolygon.polygon
-        val vertices = polygon.vertices
-        var i = 0
-        var j = vertices.size - 1
-        while (i < vertices.size) {
-          val vi = vertices[i].toInt()
-          val vj = vertices[j].toInt()
-          // Construct the line which represents the edge
-          //val line = Line2i(vi, vj)
-          // Only construct a new edge if there isn't already a cell using it
-          /*
-          val edge = this.edgesByLine.computeIfAbsent(line) { PorygenEdge(it) }*/
-          /*edge.theCells.add(porygenCell) // Add the cell we constructed
-          j = i++*/
-        }
+    val cells = mutableSetOf<CellImpl>()
+    val edges = mutableSetOf<EdgeImpl>()
+    val corners = mutableSetOf<CornerImpl>()
+
+    for (cellPolygon in cellPolygons) {
+      val center = cellPolygon.center.toInt()
+      val cellId = packIntPair(center.x, center.y)
+      val cell = cellsById.computeIfAbsent(cellId) {
+        CellImpl(cellId, this, center, cellPolygon.polygon)
+      }
+      cells += cell
+
+      fun getCorner(point: Vector2i): CornerImpl {
+        val cornerId = packIntPair(point.x, point.y)
+        return cornersById.computeIfAbsent(cornerId) { CornerImpl(cornerId, point, this) }
+      }
+
+      val vertices = cellPolygon.polygon.vertices
+      var i = 0
+      var j = vertices.size - 1
+      while (i < vertices.size) {
+        val vi = vertices[i].toInt()
+        val vj = vertices[j].toInt()
+
+        val corneri = getCorner(vi)
+        val cornerj = getCorner(vj)
+        corners += corneri
+        corners += cornerj
+
+        cell.mutableCorners += corneri
+        cell.mutableCorners += cornerj
+
+        val edgeLine = Line2i(vi, vj)
+        val edgeCenter = edgeLine.center
+        val edgeId = packIntPair(edgeCenter.x, edgeCenter.y)
+        val edge = edgesById.computeIfAbsent(edgeId) { EdgeImpl(edgeLine.toInt(), this) }
+        edges += edge
+
+        edge.mutableCorners += corneri
+        edge.mutableCorners += cornerj
+
+        corneri.mutableEdges += edge
+        cornerj.mutableEdges += edge
+
+        corneri.mutableCells += cell
+        cornerj.mutableCells += cell
+
+        corneri.mutableNeighbors += cornerj
+        cornerj.mutableNeighbors += corneri
+
+        j = i++
       }
     }
-    return null
-  }
 
-  fun buildMapView() {
-
+    return MapSection(position, this, viewRectangle, cells, corners, edges)
   }
 
   override fun getSubView(rectangle: Rectanglei): CellMapView {
-    return TODO()//this.mapViewCache.get(rectangle)!!
-  }
+    // Get the sections that are required for this sub view
+    val minSectionX = floorToInt(rectangle.min.x.toDouble() / sectionSize.x)
+    val minSectionY = floorToInt(rectangle.min.y.toDouble() / sectionSize.y)
+    val maxSectionX = floorToInt(rectangle.max.x.toDouble() / sectionSize.x)
+    val maxSectionY = floorToInt(rectangle.max.y.toDouble() / sectionSize.y)
 
-  // Keep references to everything that should cause the map pieces
-  // to be loaded or kept in memory.
-
-  private fun addChunkRef(id: Long) {
-    // Increase the references to the chunk and the surrounding chunks
-    val ref = this.loadedMapChunks[id]
-    this.loadedMapChunks[id] = ref + 1
-    // Check if the chunk is newly added,
-    if (ref == 0) {
-      // Queue the chunk to be loaded
-      this.loadQueuedMapChunks.add(id)
-      // Remove a old unload entry
-      this.unloadQueuedMapChunks.remove(id)
-    }
-  }
-
-  private fun removeChunkRef(id: Long) {
-    // Increase the references to the chunk and the surrounding chunks
-    val ref = this.loadedMapChunks[id]
-    this.loadedMapChunks[id] = ref - 1
-    // Check if the chunk is newly added,
-    if (ref == 1) {
-      // Queue the chunk to be unloaded
-      this.loadQueuedMapChunks.remove(id)
-      // Remove a load entry
-      this.unloadQueuedMapChunks.add(id)
-    }
-  }
-
-  internal fun onLoadChunk(chunkX: Int, chunkZ: Int) {
-    // Increase the references to the chunk and the surrounding chunks
-    for (x in chunkX - SURROUNDING_LOADED_CHUNKS..chunkX + SURROUNDING_LOADED_CHUNKS) {
-      for (z in chunkZ - SURROUNDING_LOADED_CHUNKS..chunkZ + SURROUNDING_LOADED_CHUNKS) {
-        addChunkRef(packIntPair(chunkX, chunkZ))
+    val sectionReferences = mutableSetOf<MapSectionReference>()
+    for (sectionX in minSectionX..maxSectionX) {
+      for (sectionY in minSectionY..maxSectionY) {
+        sectionReferences += getSection(SectionPosition(sectionX, sectionY))
       }
     }
-  }
 
-  internal fun onUnloadChunk(chunkX: Int, chunkZ: Int) {
-    // Decrease the references to the chunk and the surrounding chunks
-    for (x in chunkX - SURROUNDING_LOADED_CHUNKS..chunkX + SURROUNDING_LOADED_CHUNKS) {
-      for (z in chunkZ - SURROUNDING_LOADED_CHUNKS..chunkZ + SURROUNDING_LOADED_CHUNKS) {
-        removeChunkRef(packIntPair(chunkX, chunkZ))
-      }
+    fun isEdgeSection(section: MapSection): Boolean {
+      val position = section.position
+      return position.x == minSectionX || position.y == minSectionY ||
+          position.x == maxSectionX || position.y == maxSectionY
     }
+
+    val sections = sectionReferences.asSequence()
+        .map { reference -> reference.get() }
+    val edges = sections
+        .map { section ->
+          if (isEdgeSection(section)) {
+            section.edges.filter { edge ->
+              val line = edge.line
+              rectangle.contains(line.start) || rectangle.contains(line.end)
+            }
+          } else {
+            section.edges
+          }
+        }
+        .flatten()
+        .toSet()
+    val corners = sections
+        .map { section ->
+          if (isEdgeSection(section)) {
+            section.corners.filter { corner -> rectangle.contains(corner.point) }
+          } else {
+            section.corners
+          }
+        }
+        .flatten()
+        .toSet()
+    val cells = sections
+        .map { section ->
+          if (isEdgeSection(section)) {
+            section.cells.filter { cell ->
+              cell.polygon.vertices.any { vertex -> rectangle.contains(vertex) }
+            }
+          } else {
+            section.cells
+          }
+        }
+        .flatten()
+        .toSet()
+
+    return MapViewImpl(sectionReferences, rectangle, cells, corners, edges)
   }
 
   override fun getChunk(chunkX: Int, chunkY: Int) = getChunk(packIntPair(chunkX, chunkY))
@@ -197,8 +198,6 @@ class MapImpl(
     if (chunk != null) {
       return chunk
     }
-    this.loadQueuedMapChunks.remove(id)
-    this.unloadQueuedMapChunks.remove(id)
     val chunkX = unpackIntPairFirst(id)
     val chunkZ = unpackIntPairSecond(id)
     val chunkPos = Vector2i(chunkX, chunkZ)
@@ -226,9 +225,4 @@ class MapImpl(
    * @return The cell, if found
    */
   fun getCellByCenter(point: Vector2i) = getCell(packIntPair(point.x, point.y))
-
-  companion object {
-
-    const val SURROUNDING_LOADED_CHUNKS = 5
-  }
 }

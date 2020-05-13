@@ -15,18 +15,19 @@ import org.spongepowered.math.vector.Vector2i
 interface Line2<P> {
 
   /**
-   * Gets the start point of this [Line2].
-   *
-   * @return The start point
+   * The start point of this [Line2].
    */
   val start: P
 
   /**
-   * Gets the end point of this [Line2].
-   *
-   * @return The end point
+   * The end point of this [Line2].
    */
   val end: P
+
+  /**
+   * The center point of this [Line2].
+   */
+  val center: P
 
   /**
    * Gets whether this [Line2] intersects with

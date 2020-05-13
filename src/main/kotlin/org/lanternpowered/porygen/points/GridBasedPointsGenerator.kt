@@ -30,14 +30,17 @@ class GridBasedPointsGenerator(
     val xLineDiff = 1.0 / this.gridSize.x
     val yLineDiff = 1.0 / this.gridSize.y
 
+    val xHalfLineDiff = xLineDiff / 2.0
+    val yHalfLineDiff = yLineDiff / 2.0
+
     val points = mutableListOf<Vector2d>()
     fun addCellPoint(cell: Int) {
       // Get the coordinates from the point index
       val px = (cell % this.gridSize.y).toDouble()
       val py = (cell / this.gridSize.y).toDouble()
       // Calculate point coordinates within the cell
-      val x = xLineDiff * px + xLineDiff / 2.0
-      val y = yLineDiff * py + yLineDiff / 2.0
+      val x = xLineDiff * px + xHalfLineDiff
+      val y = yLineDiff * py + yHalfLineDiff
       points.add(Vector2d(x, y))
     }
 
@@ -61,7 +64,7 @@ class GridBasedPointsGenerator(
   companion object {
 
     fun getDefaultCells(amount: IntRange): Vector2i {
-      val size = ceilToInt(sqrt(amount.last.toDouble())) + 3
+      val size = ceilToInt(sqrt(amount.last.toDouble())) + 4
       return Vector2i(size, size)
     }
   }

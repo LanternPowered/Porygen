@@ -9,24 +9,21 @@
  */
 package org.lanternpowered.porygen.map.processor
 
-import org.lanternpowered.porygen.GeneratorContext
 import org.lanternpowered.porygen.map.CellMapView
-import kotlin.random.Random
+import org.lanternpowered.porygen.map.GrowableCellMapView
 
 /**
- * A processor which will handle the given [CellMapView].
+ * A processor which will handle the given section [CellMapView].
  *
- * Processing will always be done for a map section, to
- * get consistent results. Data may be stored in various
- * map elements.
+ * Data which was provided by previous processors may be accessed
+ * in this processor.
  */
 interface CellMapProcessor {
 
   /**
-   * Processes the given [CellMapView]s.
+   * Processes the given [GrowableCellMapView].
    *
-   * @param context The context
    * @param view The cell map view to process
    */
-  fun process(context: GeneratorContext, view: CellMapView, random: Random)
+  fun process(view: GrowableCellMapView)
 }

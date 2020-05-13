@@ -20,11 +20,6 @@ import java.lang.Float.intBitsToFloat
 fun Pair<Float, Float>.toFloatPair() = FloatPair(this.first, this.second)
 
 /**
- * Constructs a [FloatPair] with the given first and second values.
- */
-inline fun FloatPair(first: Float, second: Float): FloatPair = FloatPair(packFloatPair(first, second))
-
-/**
  * Packs the first and second float values into one long value.
  */
 fun packFloatPair(first: Float, second: Float): Long =
@@ -49,13 +44,22 @@ fun unpackFloatPairSecond(packed: Long): Float = intBitsToFloat(((packed shl 32)
  */
 inline class FloatPair(val packed: Long) {
 
-  inline val first get() = unpackFloatPairFirst(this.packed)
-  inline val second get() = unpackFloatPairSecond(this.packed)
+  /**
+   * Constructs a [FloatPair] with the given first and second values.
+   */
+  constructor(first: Float, second: Float) : this(packFloatPair(first, second))
+
+  inline val first: Float
+    get() = unpackFloatPairFirst(this.packed)
+
+  inline val second: Float
+    get() = unpackFloatPairSecond(this.packed)
 
   inline operator fun component1() = this.first
   inline operator fun component2() = this.second
 
-  fun toPair() = Pair(this.first, this.second)
+  fun toPair(): Pair<Float, Float> =
+      Pair(this.first, this.second)
 
   override fun toString() = "($first, $second)"
 }

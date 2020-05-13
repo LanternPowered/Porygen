@@ -23,14 +23,14 @@ import org.spongepowered.math.vector.Vector2i
  * @property sections All the sections this view (partially) contains
  */
 open class MapViewImpl(
-    val sections: Set<MapSection>,
+    val sections: Set<MapSectionReference>,
     override val viewRectangle: Rectanglei,
     override val cells: Collection<Cell>,
     override val corners: Collection<Corner>,
     override val edges: Collection<Edge>
 ) : SimpleDataHolder(), CellMapView {
 
-  override val map: CellMap = this.sections.first().map
+  override val map: CellMap = this.sections.first().get().map
 
   override fun getCorner(id: Long) = this.map.getCorner(id)
   override fun getCell(id: Long) = this.map.getCell(id)
@@ -59,12 +59,8 @@ open class MapViewImpl(
     return this.map.getCell(x, z)
   }
 
-  override fun grow(size: Vector2i): CellMapView {
-    TODO("Not yet implemented")
-  }
-
   override fun release() {
     for (section in this.sections)
-      section.removeReference(this)
+      section.release()
   }
 }

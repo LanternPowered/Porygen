@@ -12,18 +12,19 @@ package org.lanternpowered.porygen.math.geom
 interface Rectangle<P> : Shape {
 
   /**
-   * Gets the minimum coordinates of this rectangle.
-   *
-   * @return The minimum
+   * The minimum coordinates of this rectangle.
    */
   val min: P
 
   /**
-   * Gets the maximum coordinates of this rectangle.
-   *
-   * @return The maximum
+   * The maximum coordinates of this rectangle.
    */
   val max: P
+
+  /**
+   * The size of this rectangle.
+   */
+  val size: P
 
   /**
    * Converts this [Rectangle] into a [Rectanglei].

@@ -21,6 +21,8 @@ import kotlin.math.min
  */
 class Rectanglei : AbstractRectangle<Vector2i> {
 
+  override val size: Vector2i by lazy { max.sub(min) }
+
   constructor(min: Vector2i, max: Vector2i) :
       super(min(min, max), max(min, max))
 
