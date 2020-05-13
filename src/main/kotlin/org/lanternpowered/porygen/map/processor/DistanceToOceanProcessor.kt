@@ -22,15 +22,12 @@ import kotlin.math.abs
  */
 class DistanceToOceanProcessor(
     private val maxOceanCellDistance: Int = 5,
-    private val maxOceanCornerDistance: Int = maxOceanCellDistance + 1
+    private val maxOceanCornerDistance: Int = maxOceanCellDistance + 3
 ) : CellMapProcessor {
 
   override fun process(view: CellMapView) {
     fun Cell.isOcean(): Boolean =
         this[DataKeys.IS_OCEAN] == true
-
-    for (cell in view.cells)
-      println(cell.neighbors.count())
 
     for (cell in view.cells)
       updateOceanDistance(cell, view, Cell::neighbors, Cell::isOcean, maxOceanCellDistance)
@@ -52,10 +49,6 @@ class DistanceToOceanProcessor(
       allowedDistance: Int,
       processStack: Set<T> = setOf()
   ): Int? {
-    // Already processed before
-    var distance = element[DataKeys.DISTANCE_TO_OCEAN]
-    if (distance != null && distance <= processStack.size)
-      return distance
     // We reached the maximum allowed distance (complexity)
     if (processStack.size == allowedDistance)
       return null
@@ -74,7 +67,7 @@ class DistanceToOceanProcessor(
     }
 
     // Check if the cell is at the coastline
-    distance = if (element.isOcean()) {
+    val distance = if (element.isOcean()) {
       // If any neighbor is land, this is next to the coastline,
       // cells next to the coastline get a distance of 0
       if (element.neighbors().any { neighbor -> !neighbor.isOcean() }) {
@@ -96,8 +89,12 @@ class DistanceToOceanProcessor(
       }
     }
 
-    if (distance != null)
+    if (distance != null) {
       element[DataKeys.DISTANCE_TO_OCEAN] = distance
+    } else if (element[DataKeys.DISTANCE_TO_OCEAN] == null) {
+      // Insert a fallback value, can be overwritten later
+      element[DataKeys.DISTANCE_TO_OCEAN] = if (element.isOcean()) -allowedDistance else allowedDistance
+    }
 
     return distance
   }

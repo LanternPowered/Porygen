@@ -18,10 +18,20 @@ interface DataHolder {
    * Gets the data attached for the given key.
    *
    * @param key The key
-   * @param <T> The object type
+   * @param T The value type
    * @return The value if present, otherwise null
    */
   operator fun <T> get(key: DataKey<T>): T?
+
+  /**
+   * Requires the data attached for the given key.
+   *
+   * @param key The key
+   * @param T The value type
+   * @return The value
+   */
+  fun <T> require(key: DataKey<T>): T =
+      get(key) ?: throw IllegalArgumentException("Can't find key: ${key.name} for $this.")
 
   /**
    * Sets the data attached for the given key.

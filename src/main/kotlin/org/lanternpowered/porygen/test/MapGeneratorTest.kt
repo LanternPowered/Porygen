@@ -15,22 +15,22 @@ import org.lanternpowered.porygen.map.polygon.VoronoiPolygonGenerator
 import org.lanternpowered.porygen.map.processor.DataKeys
 import org.lanternpowered.porygen.map.processor.DistanceToOceanProcessor
 import org.lanternpowered.porygen.map.processor.OceanLandProcessor
+import org.lanternpowered.porygen.map.processor.RiverProcessor
 import org.lanternpowered.porygen.math.geom.Rectanglei
 import org.lanternpowered.porygen.points.BlueNoisePointsGenerator
 import org.lanternpowered.porygen.points.PointsGenerator
 import org.lanternpowered.porygen.points.ZoomPointsGenerator
+import org.lanternpowered.porygen.util.graphics.drawLine
+import org.lanternpowered.porygen.util.graphics.showGraphics
+import org.lanternpowered.porygen.util.graphics.with
 import org.spongepowered.math.vector.Vector2d
 import org.spongepowered.math.vector.Vector2i
 import org.spongepowered.noise.module.combiner.Add
 import org.spongepowered.noise.module.modifier.ScalePoint
 import org.spongepowered.noise.module.source.Const
 import org.spongepowered.noise.module.source.Perlin
-import java.awt.BorderLayout
+import java.awt.BasicStroke
 import java.awt.Color
-import java.awt.Graphics
-import java.awt.image.BufferedImage
-import javax.swing.JFrame
-import javax.swing.JPanel
 import kotlin.math.abs
 
 object MapGeneratorTest {
@@ -74,7 +74,7 @@ object MapGeneratorTest {
     }
     */
 
-    val maxOceanCellDistance = 3
+    val maxOceanCellDistance = 5
     val map = cellMap {
       seed(seed)
 
@@ -87,6 +87,7 @@ object MapGeneratorTest {
 
       addProcessor(OceanLandProcessor(terrainHeight))
       addProcessor(DistanceToOceanProcessor(maxOceanCellDistance = maxOceanCellDistance))
+      addProcessor(RiverProcessor())
     }
 
     showGraphics { bounds, graphics ->
@@ -109,40 +110,13 @@ object MapGeneratorTest {
         graphics.color = Color.black
         graphics.drawPolygon(drawable)
       }
-      // Color invalid cells
-      for (cell in view.cells) {
-        if (cell.neighbors.size > 11) {
-          graphics.color = Color.red
-          val drawable = cell.polygon.toDrawable()
-          graphics.fillPolygon(drawable)
-          graphics.color = Color.black
-          graphics.drawPolygon(drawable)
+      graphics.with(stroke = BasicStroke(4f), color = Color.green) {
+        for (edge in view.edges) {
+          if (edge[DataKeys.IS_RIVER] == true) {
+            graphics.drawLine(edge.line)
+          }
         }
       }
     }
-  }
-
-  fun showGraphics(fn: (bounds: Vector2i, graphics: Graphics) -> Unit) {
-    val width = 1000
-    val height = 1000
-
-    val image = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
-    val graphics = image.graphics
-    fn(Vector2i(width, height), graphics)
-
-    val canvas = object : JPanel() {
-      override fun paintComponent(g: Graphics) {
-        super.paintComponent(g)
-        g.drawImage(image, 0, 0, this)
-      }
-    }
-
-    val frame = JFrame()
-    frame.layout = BorderLayout()
-    frame.add(canvas, BorderLayout.CENTER)
-    frame.setSize(width, height)
-    frame.isVisible = true
-
-    canvas.repaint()
   }
 }

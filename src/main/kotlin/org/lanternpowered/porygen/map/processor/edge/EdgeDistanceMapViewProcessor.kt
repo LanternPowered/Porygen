@@ -124,6 +124,6 @@ class EdgeDistanceMapViewProcessor(
 
   companion object {
 
-    val EdgeDistanceData = DataKey<EdgeDistanceChunkData>()
+    val EdgeDistanceData = DataKey<EdgeDistanceChunkData>("edge_distance")
   }
 }

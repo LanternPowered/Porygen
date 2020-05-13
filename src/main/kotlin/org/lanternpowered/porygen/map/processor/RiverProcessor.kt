@@ -9,6 +9,7 @@
  */
 package org.lanternpowered.porygen.map.processor
 
+import it.unimi.dsi.fastutil.HashCommon
 import org.lanternpowered.porygen.map.CellMapView
 import org.lanternpowered.porygen.map.Corner
 import org.lanternpowered.porygen.map.Edge
@@ -18,8 +19,8 @@ import kotlin.random.Random
 import kotlin.random.nextInt
 
 class RiverProcessor(
-    private val riverChance: Double = 0.15,
-    private val riverLength: IntRange = 3..5,
+    private val riverChance: Double = 0.19,
+    private val riverLength: IntRange = 3..15,
     override val areaOffset: Vector2d = Vector2d(0.3, 0.3)
 ) : CellMapProcessor {
 
@@ -31,7 +32,7 @@ class RiverProcessor(
     // The chance per corner that a river may occur
     for (corner in beachCorners) {
       // Every river corner gets it own random
-      val random = Xor128Random(corner.id xor view.map.seed)
+      val random = Xor128Random(HashCommon.murmurHash3(corner.id) xor view.map.seed)
       if (random.nextDouble() > riverChance)
         continue
 
@@ -53,6 +54,17 @@ class RiverProcessor(
     if (corner in data.corners || corner[DataKeys.IS_OCEAN] == true)
       return null
     val lastCorner = data.corners.lastOrNull()
+    // The river can't go back to the ocean
+    if (lastCorner != null) {
+      val distance = corner[DataKeys.DISTANCE_TO_OCEAN] ?: 0
+      // River can only go land inwards
+      if (distance <= 0)
+        return null
+      val lastDistance = corner.require(DataKeys.DISTANCE_TO_OCEAN)
+      // Rivers can only go up hill, or stay on the same level
+      if (lastDistance > distance)
+        return null
+    }
     val edges = if (lastCorner != null) {
       // Add the common edge between the last corner and the current one
       data.edges + lastCorner.edges.first { edge -> edge in corner.edges }
@@ -62,8 +74,11 @@ class RiverProcessor(
     val data = data.copy(corners = corners, edges = edges)
     if (data.edges.size == data.expectedLength)
       return data
+
     // Try to traverse to neighbor corners
-    val neighborData = corner.neighbors.asSequence()
+    val neighborData = corner.neighbors.shuffled(random)
+        .asSequence()
+        .sortedBy { neighbor -> -(neighbor[DataKeys.DISTANCE_TO_OCEAN] ?: 0) }
         .map { neighbor -> traverse(neighbor, random, data) }
         .filterNotNull()
         // The longest river comes first

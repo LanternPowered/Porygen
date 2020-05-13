@@ -18,13 +18,13 @@ object DataKeys {
    * as an ocean. Can be used later to determine
    * biomes.
    */
-  val IS_OCEAN = DataKey<Boolean>()
+  val IS_OCEAN = DataKey<Boolean>("is_ocean")
 
   /**
    * A key to represent whether a edge is marked
    * or corner is marked as a river.
    */
-  val IS_RIVER = DataKey<Boolean>()
+  val IS_RIVER = DataKey<Boolean>("is_river")
 
   /**
    * A key to represent the distance to the ocean.
@@ -37,5 +37,5 @@ object DataKeys {
    * of 1. Cells further in land start at 2. Cells further
    * in the ocean start at -1.
    */
-  val DISTANCE_TO_OCEAN = DataKey<Int>()
+  val DISTANCE_TO_OCEAN = DataKey<Int>("distance_to_ocean")
 }

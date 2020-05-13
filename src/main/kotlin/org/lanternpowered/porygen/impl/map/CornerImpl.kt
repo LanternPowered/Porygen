@@ -11,6 +11,7 @@ package org.lanternpowered.porygen.impl.map
 
 import org.lanternpowered.porygen.data.SimpleDataHolder
 import org.lanternpowered.porygen.map.Corner
+import org.lanternpowered.porygen.util.ToStringHelper
 import org.spongepowered.math.vector.Vector2i
 
 class CornerImpl(
@@ -26,4 +27,9 @@ class CornerImpl(
   override val edges: Collection<EdgeImpl> get() = mutableEdges
   override val cells: Collection<CellImpl> get() = mutableCells
   override val neighbors: Collection<CornerImpl> get() = mutableNeighbors
+
+  override fun toString(): String = ToStringHelper(this)
+      .add("id", id)
+      .add("point", point)
+      .toString()
 }

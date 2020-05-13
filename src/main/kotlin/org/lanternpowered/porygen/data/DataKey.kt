@@ -9,10 +9,16 @@
  */
 package org.lanternpowered.porygen.data
 
+import org.lanternpowered.porygen.util.ToStringHelper
+
 /**
  * Represents a key that can be used
  * to attach data to a [DataHolder].
  *
  * @param T The data value type
  */
-class DataKey<T>
+class DataKey<T>(val name: String) {
+
+  override fun toString(): String =
+      ToStringHelper(this).add("name", name).toString()
+}
