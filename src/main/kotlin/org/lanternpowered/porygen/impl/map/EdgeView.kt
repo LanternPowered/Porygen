@@ -45,8 +45,6 @@ class EdgeView private constructor(
     return cells.first { it.delegate != delegateCell }
   }
 
-  override val isPartial: Boolean by lazy { cells.size != delegate.cells.size || corners.size != delegate.corners.size }
-
   override fun equals(other: Any?): Boolean {
     if (other !is Edge)
       return false

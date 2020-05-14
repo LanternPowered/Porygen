@@ -50,10 +50,6 @@ class CellView private constructor(
         .toList()
   }
 
-  override val isPartial: Boolean by lazy {
-    corners.size != delegate.corners.size || neighbors.size != delegate.neighbors.size || edges.size != delegate.edges.size
-  }
-
   override fun contains(x: Int, y: Int): Boolean =
       delegate.contains(x, y)
 

@@ -23,10 +23,12 @@ import org.lanternpowered.porygen.math.floorToInt
 import org.lanternpowered.porygen.math.geom.Line2i
 import org.lanternpowered.porygen.math.geom.Rectanglei
 import org.lanternpowered.porygen.math.vector.floorToInt
+import org.lanternpowered.porygen.math.vector.max
 import org.lanternpowered.porygen.points.PointsGenerator
 import org.lanternpowered.porygen.util.pair.packIntPair
 import org.lanternpowered.porygen.util.pair.unpackIntPairFirst
 import org.lanternpowered.porygen.util.pair.unpackIntPairSecond
+import org.spongepowered.math.vector.Vector2d
 import org.spongepowered.math.vector.Vector2i
 
 class MapImpl(
@@ -86,53 +88,31 @@ class MapImpl(
 
     println("Started processing: $position")
 
-    fun CellMapProcessor.getProcessorView(sectionX: Int, sectionY: Int, left: Int, right: Int, top: Int, down: Int): CellMapView {
-      val offset = sectionSize.mul(sectionX, sectionY)
-      val extend = sectionSize.toDouble().mul(areaOffset).floorToInt()
+    // Find the biggest required area
+    var offsetFactor = Vector2d.ZERO
+    for (processor in processors)
+      offsetFactor = max(offsetFactor, processor.areaOffset)
 
-      val processorRectangleMin = sectionRectangleMin.add(offset).sub(extend.mul(left, top))
-      val processorRectangleMax = sectionRectangleMax.add(offset).add(extend.mul(right, down))
+    for (i in processors.indices) {
+      val processor = processors[i]
+      println("Started process: " + processor.javaClass.name)
+
+      val offset = sectionSize.toDouble().mul(offsetFactor).floorToInt()
+
+      val processorRectangleMin = sectionRectangleMin.sub(offset)
+      val processorRectangleMax = sectionRectangleMax.add(offset)
       val processorRectangle = Rectanglei(processorRectangleMin, processorRectangleMax)
 
-      return processorViews.computeIfAbsent(processorRectangle) {
+      val view = processorViews.computeIfAbsent(processorRectangle) {
         getSubView(processorRectangle) { areaSectionPosition ->
           val areaSection = areaSections[areaSectionPosition.packed]
               ?: throw IllegalStateException("Requested an area that's too big.")
           MapSectionReference(areaSection)
         }
       }
-    }
 
-    fun runSurroundingProcessor(index: Int) {
-      val processor = processors[index]
-      for (x in -1..1) {
-        for (y in -1..1) {
-          if (x == 0 && y == 0)
-            continue
-
-          val view = processor.getProcessorView(x, y,
-              left = if (x > -1) 1 else 0,
-              right = if (x < 1) 1 else 0,
-              top = if (y > -1) 1 else 0,
-              down = if (y < 1) 1 else 0)
-          processor.process(view)
-        }
-      }
-    }
-
-    for (i in processors.indices) {
-      // Run the last processor for surrounding areas
-      /*if (i > 0)
-        runSurroundingProcessor(i - 1)*/
-
-      val processor = processors[i]
-      println("Started process: " + processor.javaClass.name)
-
-      val view = processor.getProcessorView(0, 0, 1, 1, 1, 1)
       processor.process(view)
     }
-
-    // runSurroundingProcessor(processors.lastIndex)
 
     for (view in processorViews.values)
       view.release()

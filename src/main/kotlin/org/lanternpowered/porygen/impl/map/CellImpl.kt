@@ -27,8 +27,6 @@ class CellImpl internal constructor(
   // A set with all the chunk coordinates this cell is located in
   //val chunks = data.chunks
 
-  override val isPartial: Boolean get() = false // TODO
-
   internal val mutableNeighbors = mapElementSetOf<CellImpl>()
   internal val mutableEdges = mapElementSetOf<EdgeImpl>()
   internal val mutableCorners = mapElementSetOf<CornerImpl>()

@@ -22,8 +22,6 @@ class CornerImpl(
 
   private var hashCode: Int = 0
 
-  override val isPartial: Boolean get() = false // TODO
-
   internal val mutableCells = mapElementSetOf<CellImpl>()
   internal val mutableEdges = mapElementSetOf<EdgeImpl>()
   internal val mutableNeighbors = mapElementSetOf<CornerImpl>()

@@ -25,8 +25,6 @@ class EdgeImpl(
   internal val mutableCells = mapElementSetOf<CellImpl>()
   internal val mutableCorners = mapElementSetOf<CornerImpl>()
 
-  override val isPartial: Boolean get() = false // TODO
-
   override fun other(cell: Cell): CellImpl {
     check(cell in mutableCells)
     return mutableCells.first { it != cell }

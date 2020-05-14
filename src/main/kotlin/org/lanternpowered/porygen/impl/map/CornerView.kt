@@ -46,10 +46,6 @@ class CornerView private constructor(
         .toList()
   }
 
-  override val isPartial: Boolean by lazy {
-    cells.size != delegate.cells.size || neighbors.size != delegate.neighbors.size || edges.size != delegate.edges.size
-  }
-
   override fun equals(other: Any?): Boolean {
     if (other !is Corner)
       return false
