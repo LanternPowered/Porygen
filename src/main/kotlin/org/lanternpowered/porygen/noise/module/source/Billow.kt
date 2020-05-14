@@ -34,13 +34,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.noise
+package org.lanternpowered.porygen.noise.module.source
 
-import org.spongepowered.noise.NoiseQuality
-import org.spongepowered.noise.module.Module
+import org.lanternpowered.porygen.noise.Noise
+import org.lanternpowered.porygen.noise.NoiseModule
+import org.lanternpowered.porygen.noise.Utils
+import org.lanternpowered.porygen.noise.NoiseQuality
+import kotlin.math.abs
 
 /**
- * A perlin noise generator.
+ * A billow noise generator.
  *
  * @property frequency The frequency of the first octave
  * @property lacunarity The frequency multiplier between successive octaves
@@ -48,45 +51,44 @@ import org.spongepowered.noise.module.Module
  * @property octaves The total number of octaves
  * @property persistence The persistence
  */
-class Perlin(
+class Billow(
     val frequency: Double = DEFAULT_FREQUENCY,
-    var lacunarity: Double = DEFAULT_LACUNARITY,
-    var quality: NoiseQuality = DEFAULT_QUALITY,
+    val lacunarity: Double = DEFAULT_LACUNARITY,
+    val quality: NoiseQuality = DEFAULT_QUALITY,
     val octaves: Int = DEFAULT_OCTAVES,
     val persistence: Double = DEFAULT_PERSISTENCE,
     val seed: Int = DEFAULT_SEED
-) : Module(0), NoiseModule {
+) : NoiseModule {
 
   init {
-    check(octaves in 1..MAX_OCTAVES) {
-      "octaveCount must be between 1 and MAX OCTAVE: $MAX_OCTAVES" }
+    check(octaves in 1..Perlin.MAX_OCTAVES) {
+      "octaves must be between 1 and $MAX_OCTAVES (inclusive)" }
   }
 
-  // TODO: Figure out the actual maximum, the previous formula was wrong
-
-  override fun getSourceModuleCount(): Int = 0
-  override fun getValue(x: Double, y: Double, z: Double): Double = get(x, y, z)
-
   override fun get(x: Double, y: Double, z: Double): Double {
-    var x1 = x
-    var y1 = y
     var z1 = z
-    var value = 0.0
-    var curPersistence = 1.0
+    var y1 = y
+    var x1 = x
+
     x1 *= frequency
     y1 *= frequency
     z1 *= frequency
+
+    var value = 0.0
+    var curPersistence = 1.0
+
     for (curOctave in 0 until octaves) {
       // Make sure that these floating-point values have the same range as a 32-
       // bit integer so that we can pass them to the coherent-noise functions.
-      val nx = Utils.makeInt32Range(x1)
-      val ny = Utils.makeInt32Range(y1)
-      val nz = Utils.makeInt32Range(z1)
+      val nx = Utils.makeIntRange(x1)
+      val ny = Utils.makeIntRange(y1)
+      val nz = Utils.makeIntRange(z1)
 
       // Get the coherent-noise value from the input value and add it to the
       // final result.
       val seed = seed + curOctave
-      val signal = Noise.gradientCoherentNoise3D(nx, ny, nz, seed, quality)
+      var signal = Noise.gradientCoherentNoise3D(nx, ny, nz, seed, quality) * 2 - 1
+      signal = abs(signal)
       value += signal * curPersistence
 
       // Prepare the next octave.
@@ -95,10 +97,17 @@ class Perlin(
       z1 *= lacunarity
       curPersistence *= persistence
     }
+
+    value += 0.25
     return value
   }
 
   companion object {
+
+    /**
+     * The maximum number of octaves.
+     */
+    const val MAX_OCTAVES = 30
 
     /**
      * The default frequency.
@@ -121,18 +130,13 @@ class Perlin(
     const val DEFAULT_PERSISTENCE = 0.5
 
     /**
-     * The default noise quality.
-     */
-    val DEFAULT_QUALITY = NoiseQuality.STANDARD
-
-    /**
      * The default seed.
      */
     const val DEFAULT_SEED = 0
 
     /**
-     * The maximum number of octaves.
+     * The default noise quality.
      */
-    const val MAX_OCTAVES = 30
+    val DEFAULT_QUALITY = NoiseQuality.STANDARD
   }
 }

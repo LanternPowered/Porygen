@@ -34,12 +34,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.noise
+package org.lanternpowered.porygen.noise.module
 
-interface NoiseModule {
+import org.lanternpowered.porygen.noise.NoiseModule
 
-  /**
-   * Gets the value for the given x, y and z coordinates.
-   */
-  operator fun get(x: Double, y: Double, z: Double): Double
+/**
+ * A module which adds the output values of
+ * the two given [NoiseModule]s.
+ */
+class Multiply(
+    val source1: NoiseModule,
+    val source2: NoiseModule
+) : NoiseModule {
+
+  override fun get(x: Double, y: Double, z: Double): Double =
+      source1[x, y, z] * source2[x, y, z]
 }

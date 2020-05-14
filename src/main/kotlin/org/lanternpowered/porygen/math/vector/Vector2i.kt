@@ -18,39 +18,51 @@ data class Vector2i(
 ) : Comparable<Vector2i> {
 
   val length: Double
-    get() = sqrt(lengthSquared.toDouble())
+    get() = sqrt(this.lengthSquared.toDouble())
 
   val lengthSquared: Int
-    get() = x * x + y * y
+    get() = this.x * this.x + this.y * this.y
+
+  operator fun div(value: Int): Vector2d =
+      Vector2d(this.x / value.toDouble(), this.y / value.toDouble())
+
+  operator fun div(value: Vector2i): Vector2d =
+      Vector2d(this.x / value.x.toDouble(), this.y / value.y.toDouble())
+
+  operator fun div(value: Double): Vector2d =
+      Vector2d(this.x / value, this.y / value)
+
+  operator fun div(value: Vector2d): Vector2d =
+      Vector2d(this.x / value.x, this.y / value.y)
 
   operator fun times(value: Int): Vector2i =
-      Vector2i(x * value, y * value)
+      Vector2i(this.x * value, this.y * value)
 
   operator fun times(value: Vector2i): Vector2i =
-      Vector2i(x * value.x, y * value.x)
+      Vector2i(this.x * value.x, this.y * value.y)
 
   operator fun times(value: Double): Vector2d =
-      Vector2d(x * value, y * value)
+      Vector2d(this.x * value, this.y * value)
 
   operator fun times(value: Vector2d): Vector2d =
-      Vector2d(x * value.x, y * value.x)
+      Vector2d(this.x * value.x, this.y * value.y)
 
   operator fun plus(value: Vector2i): Vector2i =
-      Vector2i(x + value.x, y + value.y)
+      Vector2i(this.x + value.x, this.y + value.y)
 
   operator fun minus(value: Vector2i): Vector2i =
-      Vector2i(x - value.x, y - value.y)
+      Vector2i(this.x - value.x, this.y - value.y)
 
   operator fun unaryMinus(): Vector2i =
-      Vector2i(-x, -y)
+      Vector2i(-this.x, -this.y)
 
   operator fun unaryPlus(): Vector2i = this
 
   fun toDouble(): Vector2d =
-      Vector2d(x.toDouble(), y.toDouble())
+      Vector2d(this.x.toDouble(), this.y.toDouble())
 
   override fun compareTo(other: Vector2i): Int =
-      sign((lengthSquared - other.lengthSquared).toDouble()).toInt()
+      sign((this.lengthSquared - other.lengthSquared).toDouble()).toInt()
 
   companion object {
 

@@ -19,20 +19,19 @@ import org.lanternpowered.porygen.map.processor.MoistureProcessor
 import org.lanternpowered.porygen.map.processor.OceanLandProcessor
 import org.lanternpowered.porygen.map.processor.RiverProcessor
 import org.lanternpowered.porygen.math.geom.Rectanglei
-import org.lanternpowered.porygen.noise.Constant
-import org.lanternpowered.porygen.noise.Perlin
+import org.lanternpowered.porygen.math.vector.Vector2d
+import org.lanternpowered.porygen.math.vector.Vector2i
+import org.lanternpowered.porygen.noise.module.minus
+import org.lanternpowered.porygen.noise.module.plus
+import org.lanternpowered.porygen.noise.module.scalePoint
+import org.lanternpowered.porygen.noise.module.source.Perlin
+import org.lanternpowered.porygen.noise.module.times
 import org.lanternpowered.porygen.points.BlueNoisePointsGenerator
 import org.lanternpowered.porygen.points.PointsGenerator
 import org.lanternpowered.porygen.points.ZoomPointsGenerator
 import org.lanternpowered.porygen.util.graphics.draw
 import org.lanternpowered.porygen.util.graphics.showGraphics
 import org.lanternpowered.porygen.util.graphics.with
-import org.lanternpowered.porygen.math.vector.Vector2d
-import org.lanternpowered.porygen.math.vector.Vector2i
-import org.spongepowered.noise.module.combiner.Add
-import org.spongepowered.noise.module.combiner.Multiply
-import org.spongepowered.noise.module.modifier.ScalePoint
-import org.spongepowered.noise.module.source.Const
 import java.awt.BasicStroke
 import java.awt.Color
 import kotlin.math.abs
@@ -50,18 +49,8 @@ object MapGeneratorTest {
         seed = seed.hashCode()
     )
 
-    val terrainScalePoint = ScalePoint()
-    terrainScalePoint.setSourceModule(0, terrainPerlin)
-    terrainScalePoint.xScale = 0.07
-    terrainScalePoint.yScale = 1.0
-    terrainScalePoint.zScale = 0.07
-
-    val terrainOffset = Const()
-    terrainOffset.value = -1.0
-
-    val terrainHeight = Add()
-    terrainHeight.setSourceModule(0, terrainOffset)
-    terrainHeight.setSourceModule(1, terrainScalePoint)
+    val terrainScalePoint = terrainPerlin.scalePoint(x = 0.07, z = 0.07)
+    val terrainHeight = terrainScalePoint - 1.0
 
     val temperaturePerlin = Perlin(
         frequency = 0.05,
@@ -69,45 +58,22 @@ object MapGeneratorTest {
         octaves = 10,
         seed = HashCommon.murmurHash3(seed).hashCode()
     )
+    val temperatureScalePoint = temperaturePerlin.scalePoint(x = 0.04, z = 0.04)
 
-    val temperatureScalePoint = ScalePoint()
-    temperatureScalePoint.setSourceModule(0, temperaturePerlin)
-    temperatureScalePoint.xScale = 0.04
-    temperatureScalePoint.yScale = 1.0
-    temperatureScalePoint.zScale = 0.04
-
-    val moistureModifierPerlin = Perlin(
+    val moisturePerlin = Perlin(
         frequency = 0.01,
         persistence = 0.3,
         octaves = 2,
         seed = HashCommon.murmurHash3(seed + 2).hashCode()
     )
-
-    val moistureScalePoint = ScalePoint()
-    moistureScalePoint.setSourceModule(0, moistureModifierPerlin)
-    moistureScalePoint.xScale = 0.3
-    moistureScalePoint.zScale = 0.3
-
-    val moistureMultiply = Multiply()
-    moistureMultiply.setSourceModule(0, moistureScalePoint)
-    moistureMultiply.setSourceModule(1, Constant(0.6))
-
-    val moistureModifier = Add()
-    moistureModifier.setSourceModule(0, moistureMultiply)
-    moistureModifier.setSourceModule(1, Constant(1.0))
-
-    val moistureBaseMultiply = Multiply()
-    moistureBaseMultiply.setSourceModule(0, moistureScalePoint)
-    moistureBaseMultiply.setSourceModule(1, Constant(0.4))
-
-    val moistureBase = Add()
-    moistureBase.setSourceModule(0, moistureBaseMultiply)
-    moistureBase.setSourceModule(1, Constant(0.2))
+    val moistureScalePoint = moisturePerlin.scalePoint(x = 0.3, z = 0.3)
+    val moistureModifier = (moistureScalePoint * 0.6) + 1.0
+    val moistureBase = (moistureScalePoint * 0.4) + 0.2
 
     showGraphics { bounds, graphics ->
       for (x in 0 until bounds.x) {
         for (y in 0 until bounds.y) {
-          val value = moistureScalePoint.getValue(x.toDouble(), 0.0, y.toDouble())
+          val value = moistureScalePoint[x.toDouble(), 0.0, y.toDouble()]
           val c = ((value.coerceIn(0.0, 2.2) / 2.2) * 255).toInt()
           graphics.color = Color(c, c, c)
           graphics.fillRect(x, y, 1, 1)

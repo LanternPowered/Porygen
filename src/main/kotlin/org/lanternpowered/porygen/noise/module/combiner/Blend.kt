@@ -34,12 +34,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.noise
+package org.lanternpowered.porygen.noise.module.combiner
 
-interface NoiseModule {
+import org.lanternpowered.porygen.noise.NoiseModule
+import org.lanternpowered.porygen.noise.Utils
 
-  /**
-   * Gets the value for the given x, y and z coordinates.
-   */
-  operator fun get(x: Double, y: Double, z: Double): Double
+/**
+ * A module that blends the [source1] and [source2]
+ * modules using the [control] module.
+ */
+class Blend(
+    val source1: NoiseModule,
+    val source2: NoiseModule,
+    val control: NoiseModule
+) : NoiseModule {
+
+  override fun get(x: Double, y: Double, z: Double): Double {
+    val v1 = source1[x, y, z]
+    val v2 = source2[x, y, z]
+    val alpha = control[x, y, z]
+    return Utils.linearInterp(v1, v2, alpha)
+  }
 }

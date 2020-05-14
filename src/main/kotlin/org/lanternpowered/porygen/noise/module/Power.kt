@@ -34,12 +34,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.noise
+package org.lanternpowered.porygen.noise.module
 
-interface NoiseModule {
+import org.lanternpowered.porygen.noise.NoiseModule
+import org.lanternpowered.porygen.noise.module.source.Constant
+import kotlin.math.pow
 
-  /**
-   * Gets the value for the given x, y and z coordinates.
-   */
-  operator fun get(x: Double, y: Double, z: Double): Double
+/**
+ * A module takes the power of the [value] with the [exponent].
+ */
+class Power(
+    val value: NoiseModule,
+    val exponent: NoiseModule
+) : NoiseModule {
+
+  constructor(value: NoiseModule, exponent: Double) : this(value, Constant(exponent))
+
+  override fun get(x: Double, y: Double, z: Double): Double =
+      value[x, y, z].pow(exponent[x, y, z])
 }

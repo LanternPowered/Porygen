@@ -42,7 +42,6 @@ repositories {
 // Project dependencies
 dependencies {
     // compile 'org.spongepowered:spongeapi:7.1.0-SNAPSHOT'
-    compile 'org.spongepowered:noise:2.0.0-SNAPSHOT'
     // Not exposed in the api, but every known impl supports it
     compile 'it.unimi.dsi:fastutil:8.2.2'
 

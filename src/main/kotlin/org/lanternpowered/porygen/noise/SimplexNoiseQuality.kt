@@ -36,10 +36,26 @@
  */
 package org.lanternpowered.porygen.noise
 
-interface NoiseModule {
+import org.lanternpowered.porygen.noise.Utils.LatticePointBCC
+
+enum class SimplexNoiseQuality(
+    val kernelSquaredRadius: Double,
+    val randomVectors: DoubleArray,
+    val lookup: Array<LatticePointBCC>
+) {
 
   /**
-   * Gets the value for the given x, y and z coordinates.
+   * Generates simplex-style noise using the four nearst lattice vertices and smaller kernels. The
+   * appearance might be more bubbly, and there might be more straight line segments in the ridged
+   * noise. However, Ridged noise using this setting may still be more favorable than the
+   * Perlin / non-Simplex Ridged noise.
    */
-  operator fun get(x: Double, y: Double, z: Double): Double
+  STANDARD(0.5, Utils.RANDOM_VECTORS_SIMPLEXSTYLE_STANDARD, Utils.LOOKUP_SIMPLEXSTYLE_STANDARD),
+
+  /**
+   * Generates simplex-style using the eight nearest lattice vertices and larger kernels. The
+   * appearance will be smoother, and there will be fewer to no straight line segments in the ridged
+   * noise.
+   */
+  SMOOTH(0.75, Utils.RANDOM_VECTORS_SIMPLEXSTYLE_SMOOTH, Utils.LOOKUP_SIMPLEXSTYLE_SMOOTH)
 }

@@ -34,12 +34,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.noise
+package org.lanternpowered.porygen.noise.module
 
-interface NoiseModule {
+import org.lanternpowered.porygen.math.vector.Vector3d
+import org.lanternpowered.porygen.noise.NoiseModule
+import kotlin.math.abs
 
-  /**
-   * Gets the value for the given x, y and z coordinates.
-   */
-  operator fun get(x: Double, y: Double, z: Double): Double
+class ScalePoint(
+    val source: NoiseModule,
+    val xScale: Double = 1.0,
+    val yScale: Double = 1.0,
+    val zScale: Double = 1.0
+) : NoiseModule {
+
+  constructor(value: NoiseModule, scale: Vector3d) : this(value, scale.x, scale.y, scale.z)
+
+  override fun get(x: Double, y: Double, z: Double): Double =
+      source[x * xScale, y * yScale, z * zScale]
 }

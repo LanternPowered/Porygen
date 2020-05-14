@@ -34,12 +34,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.noise
+package org.lanternpowered.porygen.noise.module
 
-interface NoiseModule {
+import org.lanternpowered.porygen.noise.NoiseModule
+import kotlin.math.min
 
-  /**
-   * Gets the value for the given x, y and z coordinates.
-   */
-  operator fun get(x: Double, y: Double, z: Double): Double
+class Min(
+    val source1: NoiseModule,
+    val source2: NoiseModule
+) : NoiseModule {
+
+  override fun get(x: Double, y: Double, z: Double): Double =
+      min(source1[x, y, z], source2[x, y, z])
 }

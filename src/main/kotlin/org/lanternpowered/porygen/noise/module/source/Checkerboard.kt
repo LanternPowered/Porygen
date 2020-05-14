@@ -34,12 +34,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.noise
+package org.lanternpowered.porygen.noise.module.source
 
-interface NoiseModule {
+import org.lanternpowered.porygen.math.floorToInt
+import org.lanternpowered.porygen.noise.NoiseModule
+import org.lanternpowered.porygen.noise.Utils
 
-  /**
-   * Gets the value for the given x, y and z coordinates.
-   */
-  operator fun get(x: Double, y: Double, z: Double): Double
+class Checkerboard : NoiseModule {
+
+  override fun get(x: Double, y: Double, z: Double): Double {
+    val ix = floorToInt(Utils.makeIntRange(x))
+    val iy = floorToInt(Utils.makeIntRange(y))
+    val iz = floorToInt(Utils.makeIntRange(z))
+    return if ((ix and 1) xor (iy and 1) xor (iz and 1) != 0) 0.0 else 1.0
+  }
 }

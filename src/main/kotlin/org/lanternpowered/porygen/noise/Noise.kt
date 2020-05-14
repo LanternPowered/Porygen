@@ -40,7 +40,6 @@ import org.lanternpowered.porygen.noise.Utils.LatticePointBCC
 import org.lanternpowered.porygen.noise.Utils.linearInterp
 import org.lanternpowered.porygen.noise.Utils.sCurve3
 import org.lanternpowered.porygen.noise.Utils.sCurve5
-import org.spongepowered.noise.NoiseQuality
 
 object Noise {
 
@@ -68,7 +67,7 @@ object Noise {
    * @return The generated gradient-coherent-noise value.
    */
   fun simplexStyleGradientCoherentNoise3D(
-      x: Double, y: Double, z: Double, seed: Int, orientation: LatticeOrientation, quality: NoiseQualitySimplex
+      x: Double, y: Double, z: Double, seed: Int, orientation: LatticeOrientation, quality: SimplexNoiseQuality
   ): Double {
     val squaredRadius = quality.kernelSquaredRadius
     val randomVectors = quality.randomVectors

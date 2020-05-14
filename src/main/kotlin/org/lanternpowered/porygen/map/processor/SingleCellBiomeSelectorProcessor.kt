@@ -10,7 +10,7 @@
 package org.lanternpowered.porygen.map.processor
 
 import org.lanternpowered.porygen.map.CellMapView
-import org.spongepowered.noise.module.Module
+import org.lanternpowered.porygen.noise.NoiseModule
 import java.util.EnumMap
 
 /**
@@ -23,8 +23,8 @@ import java.util.EnumMap
  *                             < 0.2 is cold, < 1.0 is medium, >= 1.0 is warm
  */
 class SingleCellBiomeSelectorProcessor<Biome>(
-    val terrainHeightModule: Module,
-    val temperatureModule: Module,
+    val terrainHeightModule: NoiseModule,
+    val temperatureModule: NoiseModule,
     val oceanBiomeTypes: List<Biome>,
     val landBiomeTypes: List<Biome>,
     val hillBiomeTypes: List<Biome>
@@ -80,8 +80,8 @@ class SingleCellBiomeSelectorProcessor<Biome>(
       val x = cell.centerPoint.x.toDouble()
       val z = cell.centerPoint.y.toDouble()
 
-      val terrainHeight = this.terrainHeightModule.getValue(x, 1.0, z)
-      val temperature = this.temperatureModule.getValue(x, 1.0, z)
+      val terrainHeight = this.terrainHeightModule[x, 0.0, z]
+      val temperature = this.temperatureModule[x, 0.0, z]
 
       val biomesByTemperature = when {
         terrainHeight < 0 -> this.oceanBiomesByTemperature

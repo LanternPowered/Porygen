@@ -34,12 +34,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.noise
+package org.lanternpowered.porygen.noise.module
 
-interface NoiseModule {
+import org.lanternpowered.porygen.noise.NoiseModule
+import kotlin.math.abs
 
-  /**
-   * Gets the value for the given x, y and z coordinates.
-   */
-  operator fun get(x: Double, y: Double, z: Double): Double
+class Abs(
+    val source: NoiseModule
+) : NoiseModule {
+
+  override fun get(x: Double, y: Double, z: Double): Double =
+      abs(source[x, y, z])
 }

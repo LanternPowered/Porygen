@@ -34,12 +34,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.noise
+package org.lanternpowered.porygen.noise.module
 
-interface NoiseModule {
+import org.lanternpowered.porygen.math.vector.Vector3d
+import org.lanternpowered.porygen.noise.NoiseModule
+import org.lanternpowered.porygen.noise.module.source.Constant
 
-  /**
-   * Gets the value for the given x, y and z coordinates.
-   */
-  operator fun get(x: Double, y: Double, z: Double): Double
+class TranslatePoint(
+    val source: NoiseModule,
+    val xOffset: NoiseModule = Constant(0.0),
+    val yOffset: NoiseModule = Constant(0.0),
+    val zOffset: NoiseModule = Constant(0.0)
+) : NoiseModule {
+
+  constructor(source: NoiseModule, xOffset: Double = 0.0, yOffset: Double = 0.0, zOffset: Double = 0.0) :
+      this(source, Constant(xOffset), Constant(yOffset), Constant(zOffset))
+
+  constructor(source: NoiseModule, offset: Vector3d) :
+      this(source, offset.x, offset.y, offset.z)
+
+  override fun get(x: Double, y: Double, z: Double): Double {
+    val ox = x + xOffset[x, y, z]
+    val oy = y + yOffset[x, y, z]
+    val oz = z + zOffset[x, y, z]
+    return source[ox, oy, oz]
+  }
 }

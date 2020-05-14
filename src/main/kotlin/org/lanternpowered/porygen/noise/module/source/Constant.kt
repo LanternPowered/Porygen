@@ -34,28 +34,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.noise
+package org.lanternpowered.porygen.noise.module.source
 
-import org.lanternpowered.porygen.noise.Utils.LatticePointBCC
+import org.lanternpowered.porygen.noise.NoiseModule
 
-enum class NoiseQualitySimplex(
-    val kernelSquaredRadius: Double,
-    val randomVectors: DoubleArray,
-    val lookup: Array<LatticePointBCC>
-) {
+class Constant(private val value: Double) : NoiseModule {
 
-  /**
-   * Generates simplex-style noise using the four nearst lattice vertices and smaller kernels. The
-   * appearance might be more bubbly, and there might be more straight line segments in the ridged
-   * noise. However, Ridged noise using this setting may still be more favorable than the
-   * Perlin / non-Simplex Ridged noise.
-   */
-  STANDARD(0.5, Utils.RANDOM_VECTORS_SIMPLEXSTYLE_STANDARD, Utils.LOOKUP_SIMPLEXSTYLE_STANDARD),
-
-  /**
-   * Generates simplex-style using the eight nearest lattice vertices and larger kernels. The
-   * appearance will be smoother, and there will be fewer to no straight line segments in the ridged
-   * noise.
-   */
-  SMOOTH(0.75, Utils.RANDOM_VECTORS_SIMPLEXSTYLE_SMOOTH, Utils.LOOKUP_SIMPLEXSTYLE_SMOOTH);
+  override fun get(x: Double, y: Double, z: Double): Double = value
 }

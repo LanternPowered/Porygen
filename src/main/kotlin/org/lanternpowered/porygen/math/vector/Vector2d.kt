@@ -34,19 +34,19 @@ data class Vector2d(
       Vector2d(x / value, y / value)
 
   operator fun div(value: Vector2d): Vector2d =
-      Vector2d(x / value.x, y / value.x)
+      Vector2d(x / value.x, y / value.y)
 
   operator fun div(value: Vector2i): Vector2d =
-      Vector2d(x / value.x, y / value.x)
+      Vector2d(x / value.x, y / value.y)
 
   operator fun times(value: Double): Vector2d =
       Vector2d(x * value, y * value)
 
   operator fun times(value: Vector2d): Vector2d =
-      Vector2d(x * value.x, y * value.x)
+      Vector2d(x * value.x, y * value.y)
 
   operator fun times(value: Vector2i): Vector2d =
-      Vector2d(x * value.x, y * value.x)
+      Vector2d(x * value.x, y * value.y)
 
   operator fun plus(value: Vector2d): Vector2d =
       Vector2d(x + value.x, y + value.y)

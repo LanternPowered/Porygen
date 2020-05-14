@@ -34,12 +34,41 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.noise
+package org.lanternpowered.porygen.noise.module.source
 
-interface NoiseModule {
+import org.lanternpowered.porygen.math.floorToInt
+import org.lanternpowered.porygen.noise.NoiseModule
+import kotlin.math.min
+import kotlin.math.sqrt
 
-  /**
-   * Gets the value for the given x, y and z coordinates.
-   */
-  operator fun get(x: Double, y: Double, z: Double): Double
+/**
+ * A sphere generator.
+ *
+ * @property frequency The frequency of the concentric spheres
+ */
+class Spheres(
+    val frequency: Double = DEFAULT_FREQUENCY
+) : NoiseModule {
+
+  override fun get(x: Double, y: Double, z: Double): Double {
+    var x1 = x
+    var y1 = y
+    var z1 = z
+    x1 *= frequency
+    y1 *= frequency
+    z1 *= frequency
+    val distFromCenter = sqrt(x1 * x1 + y1 * y1 + z1 * z1)
+    val distFromSmallerSphere = distFromCenter - floorToInt(distFromCenter)
+    val distFromLargerSphere = 1.0 - distFromSmallerSphere
+    val nearestDist = min(distFromSmallerSphere, distFromLargerSphere)
+    return 1.0 - nearestDist * 2.0 // Puts it in the 0 to 1 range.
+  }
+
+  companion object {
+
+    /**
+     * The default frequency.
+     */
+    const val DEFAULT_FREQUENCY = 1.0
+  }
 }

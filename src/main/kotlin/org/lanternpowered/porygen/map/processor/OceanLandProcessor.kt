@@ -11,10 +11,10 @@ package org.lanternpowered.porygen.map.processor
 
 import org.lanternpowered.porygen.map.CellMapView
 import org.lanternpowered.porygen.math.vector.Vector2d
-import org.spongepowered.noise.module.Module
+import org.lanternpowered.porygen.noise.NoiseModule
 
 class OceanLandProcessor(
-    private val terrainHeightModule: Module,
+    private val terrainHeightModule: NoiseModule,
     override val areaOffset: Vector2d = Vector2d(0.3, 0.3)
 ) : CellMapProcessor {
 
@@ -25,7 +25,7 @@ class OceanLandProcessor(
       val x = point.x.toDouble()
       val z = point.y.toDouble()
 
-      val terrainHeight = this.terrainHeightModule.getValue(x, 1.0, z)
+      val terrainHeight = this.terrainHeightModule[x, 1.0, z]
       // Everything below 0 is an ocean, the depth or
       // height for hills will be determined later
       cell[DataKeys.IS_OCEAN] = terrainHeight < 0.0

@@ -13,22 +13,22 @@ package org.lanternpowered.porygen.math
 
 fun floorToInt(value: Float): Int {
   val v = value.toInt()
-  return if (value < v.toFloat()) v - 1 else v
+  return if (value < v) v - 1 else v
 }
 
 fun floorToInt(value: Double): Int {
   val v = value.toInt()
-  return if (value < v.toDouble()) v - 1 else v
+  return if (value < v) v - 1 else v
 }
 
 fun floorToLong(value: Float): Long {
   val v = value.toLong()
-  return if (value < v.toFloat()) v - 1L else v
+  return if (value < v) v - 1L else v
 }
 
 fun floorToLong(value: Double): Long {
   val v = value.toLong()
-  return if (value < v.toDouble()) v - 1L else v
+  return if (value < v) v - 1L else v
 }
 
 fun ceilToInt(value: Float): Int = -floorToInt(-value)

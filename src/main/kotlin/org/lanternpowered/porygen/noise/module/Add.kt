@@ -34,12 +34,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.porygen.noise
+package org.lanternpowered.porygen.noise.module
 
-interface NoiseModule {
+import org.lanternpowered.porygen.noise.NoiseModule
+import org.lanternpowered.porygen.noise.module.source.Constant
 
-  /**
-   * Gets the value for the given x, y and z coordinates.
-   */
-  operator fun get(x: Double, y: Double, z: Double): Double
+/**
+ * A module which adds the output values of
+ * the two given [NoiseModule]s.
+ */
+class Add(
+    val source1: NoiseModule,
+    val source2: NoiseModule
+) : NoiseModule {
+
+  constructor(source1: NoiseModule, value2: Double) : this(source1, Constant(value2))
+  constructor(value1: Double, source2: NoiseModule) : this(Constant(value1), source2)
+
+  override fun get(x: Double, y: Double, z: Double): Double =
+      source1[x, y, z] + source2[x, y, z]
 }

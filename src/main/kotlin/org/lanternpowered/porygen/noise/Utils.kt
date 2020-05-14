@@ -100,11 +100,6 @@ object Utils {
   /**
    * Modifies a floating-point value so that it can be stored in a noise::int32 variable.
    *
-   * @param n A floating-point number.
-   * @return The modified floating-point number.
-   *
-   * This function does not modify @a n.
-   *
    * In libnoise, the noise-generating algorithms are all integer-based; they use variables of
    * type noise::int32. Before calling a noise function, pass the @a x, @a y, and @a z coordinates
    * to this function to ensure that these coordinates can be cast to a noise::int32 value.
@@ -112,38 +107,16 @@ object Utils {
    * Although you could do a straight cast from double to noise::int32, the resulting value may
    * differ between platforms. By using this function, you ensure that the resulting value is
    * identical between platforms.
+   *
+   * @param n A floating-point number.
+   * @return The modified floating-point number.
    */
-  fun makeInt32Range(n: Double): Double {
+  fun makeIntRange(n: Double): Double {
     return when {
       n >= 1073741824.0 -> 2.0 * n % 1073741824.0 - 1073741824.0
       n <= -1073741824.0 -> 2.0 * n % 1073741824.0 + 1073741824.0
       else -> n
     }
-  }
-
-  /**
-   * Clamps the value between the low and high boundaries
-   *
-   * @param value The value to clamp
-   * @param low The low bound of the clamp
-   * @param high The high bound of the clamp
-   * @return the clamped value
-   */
-  fun clamp(value: Int, low: Int, high: Int): Int {
-    if (value < low)
-      return low
-    return if (value > high) high else value
-  }
-
-  /**
-   * Rounds x down to the closest integer
-   *
-   * @param x The value to floor
-   * @return The closest integer
-   */
-  fun floor(x: Double): Int {
-    val y = x.toInt()
-    return if (x < y) y - 1 else y
   }
 
   /**
