@@ -32,6 +32,6 @@
  */
 package org.lanternpowered.porygen.delaunay
 
-import org.spongepowered.math.vector.Vector2d
+import org.lanternpowered.porygen.math.vector.Vector2d
 
 class Edge2d(val a: Vector2d, val b: Vector2d)

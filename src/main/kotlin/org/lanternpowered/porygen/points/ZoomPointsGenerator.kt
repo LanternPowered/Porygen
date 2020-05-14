@@ -9,7 +9,7 @@
  */
 package org.lanternpowered.porygen.points
 
-import org.spongepowered.math.vector.Vector2d
+import org.lanternpowered.porygen.math.vector.Vector2d
 import kotlin.random.Random
 
 /**
@@ -22,6 +22,6 @@ class ZoomPointsGenerator(
 
   override fun generate(random: Random): List<Vector2d> =
       this.original.generate(random)
-          .map { point -> point.mul(this.scale) }
+          .map { point -> point * this.scale }
           .filter { point -> point.x < 1.0 && point.y < 1.0 }
 }

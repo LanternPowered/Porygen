@@ -11,7 +11,7 @@ package org.lanternpowered.porygen.impl.map
 
 import org.lanternpowered.porygen.data.SimpleDataHolder
 import org.lanternpowered.porygen.map.CellMapChunk
-import org.spongepowered.math.vector.Vector2i
+import org.lanternpowered.porygen.math.vector.Vector2i
 
 /**
  * The implementation of [CellMapChunk].

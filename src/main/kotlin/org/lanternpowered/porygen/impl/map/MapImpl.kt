@@ -22,14 +22,13 @@ import org.lanternpowered.porygen.map.processor.CellMapProcessor
 import org.lanternpowered.porygen.math.floorToInt
 import org.lanternpowered.porygen.math.geom.Line2i
 import org.lanternpowered.porygen.math.geom.Rectanglei
-import org.lanternpowered.porygen.math.vector.floorToInt
 import org.lanternpowered.porygen.math.vector.max
 import org.lanternpowered.porygen.points.PointsGenerator
 import org.lanternpowered.porygen.util.pair.packIntPair
 import org.lanternpowered.porygen.util.pair.unpackIntPairFirst
 import org.lanternpowered.porygen.util.pair.unpackIntPairSecond
-import org.spongepowered.math.vector.Vector2d
-import org.spongepowered.math.vector.Vector2i
+import org.lanternpowered.porygen.math.vector.Vector2d
+import org.lanternpowered.porygen.math.vector.Vector2i
 
 class MapImpl(
     override val seed: Long,
@@ -81,8 +80,8 @@ class MapImpl(
     // The section that was requested
     section = areaSections[position.packed]!!
 
-    val sectionRectangleMin = Vector2i(position.x, position.y).mul(sectionSize)
-    val sectionRectangleMax = sectionRectangleMin.add(sectionSize)
+    val sectionRectangleMin = Vector2i(position.x, position.y) * sectionSize
+    val sectionRectangleMax = sectionRectangleMin + sectionSize
 
     val processorViews = mutableMapOf<Rectanglei, CellMapView>()
 
@@ -97,10 +96,10 @@ class MapImpl(
       val processor = processors[i]
       println("Started process: " + processor.javaClass.name)
 
-      val offset = sectionSize.toDouble().mul(offsetFactor).floorToInt()
+      val offset = (sectionSize * offsetFactor).floorToInt()
 
-      val processorRectangleMin = sectionRectangleMin.sub(offset)
-      val processorRectangleMax = sectionRectangleMax.add(offset)
+      val processorRectangleMin = sectionRectangleMin - offset
+      val processorRectangleMax = sectionRectangleMax + offset
       val processorRectangle = Rectanglei(processorRectangleMin, processorRectangleMax)
 
       val view = processorViews.computeIfAbsent(processorRectangle) {
@@ -127,8 +126,8 @@ class MapImpl(
       cellsById: Long2ObjectMap<CellImpl>,
       edgesById: Long2ObjectMap<EdgeImpl>
   ): MapSection {
-    val viewRectangleMin = Vector2i(position.x, position.y).mul(sectionSize)
-    val viewRectangleMax = viewRectangleMin.add(sectionSize)
+    val viewRectangleMin = Vector2i(position.x, position.y) * sectionSize
+    val viewRectangleMax = viewRectangleMin + sectionSize
     val viewRectangle = Rectanglei(viewRectangleMin, viewRectangleMax)
 
     val cellPolygons = sectionPolygonGenerator.generate(position)

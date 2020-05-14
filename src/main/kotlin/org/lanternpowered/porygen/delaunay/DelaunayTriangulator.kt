@@ -33,7 +33,7 @@
 package org.lanternpowered.porygen.delaunay
 
 import org.lanternpowered.porygen.math.geom.Triangle2d
-import org.spongepowered.math.vector.Vector2d
+import org.lanternpowered.porygen.math.vector.Vector2d
 import kotlin.math.max
 
 /**

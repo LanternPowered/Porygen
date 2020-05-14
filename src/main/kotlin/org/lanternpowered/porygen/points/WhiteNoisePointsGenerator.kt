@@ -9,7 +9,7 @@
  */
 package org.lanternpowered.porygen.points
 
-import org.spongepowered.math.vector.Vector2d
+import org.lanternpowered.porygen.math.vector.Vector2d
 import kotlin.random.Random
 import kotlin.random.nextInt
 

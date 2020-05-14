@@ -11,7 +11,7 @@ package org.lanternpowered.porygen.map.polygon
 
 import org.lanternpowered.porygen.math.geom.Polygond
 import org.lanternpowered.porygen.points.PointsGenerator
-import org.spongepowered.math.vector.Vector2d
+import org.lanternpowered.porygen.math.vector.Vector2d
 
 /**
  * Represents a [Polygond] with its center point [Vector2d].
@@ -26,8 +26,8 @@ data class CellPolygon(
 ) {
 
   fun scale(scale: Vector2d): CellPolygon =
-      CellPolygon(this.center.mul(scale), this.polygon.scale(scale))
+      CellPolygon(this.center * scale, this.polygon.scale(scale))
 
   fun translate(translation: Vector2d): CellPolygon =
-      CellPolygon(this.center.add(translation), this.polygon.translate(translation))
+      CellPolygon(this.center + translation, this.polygon.translate(translation))
 }

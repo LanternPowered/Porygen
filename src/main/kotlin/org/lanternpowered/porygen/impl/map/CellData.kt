@@ -17,7 +17,7 @@ import org.lanternpowered.porygen.math.geom.Rectanglei
 import org.lanternpowered.porygen.math.ceilToInt
 import org.lanternpowered.porygen.math.floorToInt
 import org.lanternpowered.porygen.util.pair.packIntPair
-import org.spongepowered.math.vector.Vector2i
+import org.lanternpowered.porygen.math.vector.Vector2i
 import kotlin.math.max
 import kotlin.math.min
 

@@ -12,7 +12,7 @@ package org.lanternpowered.porygen.impl.map
 import org.lanternpowered.porygen.map.Cell
 import org.lanternpowered.porygen.map.Corner
 import org.lanternpowered.porygen.map.Edge
-import org.spongepowered.math.vector.Vector2i
+import org.lanternpowered.porygen.math.vector.Vector2i
 
 val Corner.delegate: Corner
   get() = if (this is CornerView) delegate else this

@@ -22,8 +22,8 @@ import org.lanternpowered.porygen.points.GridBasedPointsGenerator
 import org.lanternpowered.porygen.points.PointsGenerator
 import org.lanternpowered.porygen.points.ZoomPointsGenerator
 import org.lanternpowered.porygen.util.random.Xor128Random
-import org.spongepowered.math.vector.Vector2d
-import org.spongepowered.math.vector.Vector2i
+import org.lanternpowered.porygen.math.vector.Vector2d
+import org.lanternpowered.porygen.math.vector.Vector2i
 import org.spongepowered.noise.module.modifier.ScalePoint
 import org.spongepowered.noise.module.source.Perlin
 import java.awt.BorderLayout

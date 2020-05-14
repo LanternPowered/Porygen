@@ -12,8 +12,8 @@ package org.lanternpowered.porygen.impl.map
 import org.lanternpowered.porygen.map.Cell
 import org.lanternpowered.porygen.math.geom.Polygond
 import org.lanternpowered.porygen.util.pair.packIntPair
-import org.spongepowered.math.vector.Vector2d
-import org.spongepowered.math.vector.Vector2i
+import org.lanternpowered.porygen.math.vector.Vector2d
+import org.lanternpowered.porygen.math.vector.Vector2i
 
 class CellImpl internal constructor(
     override val id: Long,

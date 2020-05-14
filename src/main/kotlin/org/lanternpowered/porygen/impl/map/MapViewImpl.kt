@@ -58,15 +58,13 @@ open class MapViewImpl(
 
   override fun getSubView(rectangle: Rectanglei): CellMapView {
     check(this.viewRectangle.contains(rectangle)) {
-      "The target rectangle $rectangle must be inside this map view rectangle $viewRectangle"
-    }
+      "The target rectangle $rectangle must be inside this map view rectangle $viewRectangle" }
     return this.map.getSubView(rectangle)
   }
 
   override fun getCell(x: Int, z: Int): Cell {
     check(this.viewRectangle.contains(x, z)) {
-      "The target block coordinates ($x, $z) must be inside this map view rectangle $viewRectangle"
-    }
+      "The target block coordinates ($x, $z) must be inside this map view rectangle $viewRectangle" }
     return this.map.getCell(x, z)
   }
 

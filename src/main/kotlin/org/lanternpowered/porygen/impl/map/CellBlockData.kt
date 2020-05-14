@@ -14,8 +14,8 @@ package org.lanternpowered.porygen.impl.map
 import org.lanternpowered.porygen.map.Cell
 import org.lanternpowered.porygen.util.BitHelper
 import org.lanternpowered.porygen.util.VariableValueArray
-import org.spongepowered.math.vector.Vector2d
-import org.spongepowered.math.vector.Vector2i
+import org.lanternpowered.porygen.math.vector.Vector2d
+import org.lanternpowered.porygen.math.vector.Vector2i
 
 interface CellBlockData {
 

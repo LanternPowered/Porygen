@@ -14,7 +14,7 @@ import org.lanternpowered.porygen.map.CellMapBuilder
 import org.lanternpowered.porygen.map.polygon.CellPolygonGenerator
 import org.lanternpowered.porygen.map.processor.CellMapProcessor
 import org.lanternpowered.porygen.points.PointsGenerator
-import org.spongepowered.math.vector.Vector2i
+import org.lanternpowered.porygen.math.vector.Vector2i
 import kotlin.random.Random
 
 class CellMapBuilderImpl : CellMapBuilder {

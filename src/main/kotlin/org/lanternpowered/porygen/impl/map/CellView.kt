@@ -13,7 +13,7 @@ import org.lanternpowered.porygen.map.Cell
 import org.lanternpowered.porygen.map.Corner
 import org.lanternpowered.porygen.map.Edge
 import org.lanternpowered.porygen.math.geom.Polygond
-import org.spongepowered.math.vector.Vector2i
+import org.lanternpowered.porygen.math.vector.Vector2i
 
 val Cell.delegate: Cell
   get() = if (this is CellView) delegate else this

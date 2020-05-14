@@ -14,8 +14,8 @@ import org.lanternpowered.porygen.map.polygon.CellPolygonGenerator
 import org.lanternpowered.porygen.math.ceilToInt
 import org.lanternpowered.porygen.points.PointsGenerator
 import org.lanternpowered.porygen.util.random.Xor128Random
-import org.spongepowered.math.vector.Vector2d
-import org.spongepowered.math.vector.Vector2i
+import org.lanternpowered.porygen.math.vector.Vector2d
+import org.lanternpowered.porygen.math.vector.Vector2i
 
 /**
  * This generator generates polygons for a specified world, the polygons are generated
@@ -73,7 +73,7 @@ class SectionPolygonGenerator(
             (globalSectionX.toLong() * 341873128712L + globalSectionY.toLong() * 132897987541L) xor seed)
 
         var localPoints = pointsGenerator.generate(sectionRandom).asSequence()
-            .map { point -> point.add(localSectionOffset) }
+            .map { point -> point + localSectionOffset }
         if (localSectionX == localMinSectionX || localSectionY == localMinSectionY ||
             localSectionX == localMaxSectionX || localSectionY == localMaxSectionY) {
           localPoints = localPoints.filter { point -> point.x in localMinX..localMaxX && point.y in localMinY..localMaxY }

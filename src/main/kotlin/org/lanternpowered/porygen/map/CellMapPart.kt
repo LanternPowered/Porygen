@@ -10,7 +10,7 @@
 package org.lanternpowered.porygen.map
 
 import org.lanternpowered.porygen.math.geom.Rectanglei
-import org.spongepowered.math.vector.Vector2i
+import org.lanternpowered.porygen.math.vector.Vector2i
 
 /**
  * Represents a view of a [CellMap].

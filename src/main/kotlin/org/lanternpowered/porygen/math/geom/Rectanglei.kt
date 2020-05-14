@@ -11,7 +11,7 @@ package org.lanternpowered.porygen.math.geom
 
 import org.lanternpowered.porygen.math.vector.max
 import org.lanternpowered.porygen.math.vector.min
-import org.spongepowered.math.vector.Vector2i
+import org.lanternpowered.porygen.math.vector.Vector2i
 import java.awt.Polygon
 import kotlin.math.max
 import kotlin.math.min
@@ -21,7 +21,7 @@ import kotlin.math.min
  */
 class Rectanglei : AbstractRectangle<Vector2i> {
 
-  override val size: Vector2i by lazy { max.sub(min) }
+  override val size: Vector2i by lazy { max - min }
 
   constructor(min: Vector2i, max: Vector2i) :
       super(min(min, max), max(min, max))
@@ -41,7 +41,7 @@ class Rectanglei : AbstractRectangle<Vector2i> {
       Rectangled(min.x.toDouble(), min.y.toDouble(), max.x.toDouble(), max.y.toDouble())
 
   fun translate(offset: Vector2i): Rectanglei =
-      Rectanglei(min.add(offset), max.add(offset))
+      Rectanglei(min + offset, max + offset)
 
   /**
    * Converts this [Rectangled] into

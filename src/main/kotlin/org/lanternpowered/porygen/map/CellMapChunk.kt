@@ -9,7 +9,7 @@
  */
 package org.lanternpowered.porygen.map
 
-import org.spongepowered.math.vector.Vector2i
+import org.lanternpowered.porygen.math.vector.Vector2i
 
 /**
  * Represents a chunk on a map. A chunk consists of

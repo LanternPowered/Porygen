@@ -11,7 +11,7 @@ package org.lanternpowered.porygen.map.polygon
 
 import org.lanternpowered.porygen.delaunay.DelaunayTriangulator
 import org.lanternpowered.porygen.math.geom.Polygond
-import org.spongepowered.math.vector.Vector2d
+import org.lanternpowered.porygen.math.vector.Vector2d
 import kotlin.math.atan2
 
 /**

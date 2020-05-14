@@ -11,9 +11,7 @@ package org.lanternpowered.porygen.math.geom
 
 import org.lanternpowered.porygen.delaunay.Edge2d
 import org.lanternpowered.porygen.delaunay.EdgeDistancePack
-import org.lanternpowered.porygen.math.vector.cross
-import org.spongepowered.math.vector.Vector2d
-import kotlin.math.abs
+import org.lanternpowered.porygen.math.vector.Vector2d
 import kotlin.math.sign
 import kotlin.math.sqrt
 
@@ -48,8 +46,8 @@ data class Triangle2d(
   val incenter: Vector2d by lazy { getIncenter0() }
 
   private fun getCircumcenter0(): Vector2d {
-    val abCenter = a.add(b).mul(0.5)
-    val bcCenter = b.add(c).mul(0.5)
+    val abCenter = (a + b) * 0.5
+    val bcCenter = (b + c) * 0.5
 
     val abSlope = -1.0 / ((b.y - a.y) / (b.x - a.x))
     val bcSlope = -1.0 / ((c.y - b.y) / (c.x - b.x))
@@ -172,7 +170,7 @@ data class Triangle2d(
    * @return The edge of this triangle that is nearest to the specified point
    */
   fun findNearestEdge(point: Vector2d): EdgeDistancePack {
-    fun distanceSquared(edge: Edge2d) = computeClosestPoint(edge, point).sub(point).lengthSquared()
+    fun distanceSquared(edge: Edge2d) = (computeClosestPoint(edge, point) - point).lengthSquared
 
     val ab = Edge2d(a, b)
     val bc = Edge2d(b, c)
@@ -197,14 +195,14 @@ data class Triangle2d(
    * @return The closest point on the given edge to the specified point
    */
   private fun computeClosestPoint(edge: Edge2d, point: Vector2d): Vector2d {
-    val ab = edge.b.sub(edge.a)
-    var t = point.sub(edge.a).dot(ab) / ab.dot(ab)
+    val ab = edge.b - edge.a
+    var t = (point - edge.a).dot(ab) / ab.dot(ab)
     if (t < 0.0) {
       t = 0.0
     } else if (t > 1.0) {
       t = 1.0
     }
-    return edge.a.add(ab.mul(t))
+    return edge.a + (ab * t)
   }
 
   /**
@@ -241,12 +239,12 @@ data class Triangle2d(
 
   override fun contains(point: Vector2d): Boolean {
     // See Real-Time Collision Detection, chap. 5, p. 206.
-    val pab = point.sub(a).cross(b.sub(a))
-    val pbc = point.sub(b).cross(c.sub(b))
+    val pab = (point - a).cross(b - a)
+    val pbc = (point - b).cross(c - b)
     val signPab = sign(pab)
     if (signPab != sign(pbc))
       return false
-    val pca = point.sub(c).cross(a.sub(c))
+    val pca = (point - c).cross(a - c)
     return signPab == sign(pca)
   }
 }

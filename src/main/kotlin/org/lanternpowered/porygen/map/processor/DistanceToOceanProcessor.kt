@@ -12,8 +12,7 @@ package org.lanternpowered.porygen.map.processor
 import org.lanternpowered.porygen.map.Cell
 import org.lanternpowered.porygen.map.CellMapView
 import org.lanternpowered.porygen.map.Corner
-import org.spongepowered.math.GenericMath
-import org.spongepowered.math.vector.Vector2d
+import org.lanternpowered.porygen.math.vector.Vector2d
 import kotlin.math.abs
 
 /**
@@ -71,7 +70,7 @@ class DistanceToOceanProcessor(
           .filterNotNull()
           .sortedBy { abs(it) } // Find the closest distance to 0
           .firstOrNull()
-      return if (value != null) GenericMath.clamp(value, -allowedDistance, allowedDistance) else null
+      return value?.coerceIn(-allowedDistance, allowedDistance)
     }
 
     val type = element.getType()
@@ -119,7 +118,7 @@ class DistanceToOceanProcessor(
           .filterNotNull()
           .sortedBy { abs(it) } // Find the closest distance to 0
           .firstOrNull()
-      return if (value != null) GenericMath.clamp(value, -allowedDistance, allowedDistance) else null
+      return value?.coerceIn(-allowedDistance, allowedDistance)
     }
 
     // Check if the cell is at the coastline

@@ -27,9 +27,10 @@ import org.lanternpowered.porygen.points.ZoomPointsGenerator
 import org.lanternpowered.porygen.util.graphics.draw
 import org.lanternpowered.porygen.util.graphics.showGraphics
 import org.lanternpowered.porygen.util.graphics.with
-import org.spongepowered.math.vector.Vector2d
-import org.spongepowered.math.vector.Vector2i
+import org.lanternpowered.porygen.math.vector.Vector2d
+import org.lanternpowered.porygen.math.vector.Vector2i
 import org.spongepowered.noise.module.combiner.Add
+import org.spongepowered.noise.module.combiner.Multiply
 import org.spongepowered.noise.module.modifier.ScalePoint
 import org.spongepowered.noise.module.source.Const
 import java.awt.BasicStroke
@@ -76,41 +77,43 @@ object MapGeneratorTest {
     temperatureScalePoint.zScale = 0.04
 
     val moistureModifierPerlin = Perlin(
-        frequency = 0.05,
-        persistence = 0.5,
-        octaves = 5,
-        seed = HashCommon.murmurHash3(seed).hashCode()
+        frequency = 0.01,
+        persistence = 0.3,
+        octaves = 2,
+        seed = HashCommon.murmurHash3(seed + 2).hashCode()
     )
 
-    val moistureModifierScalePoint = ScalePoint()
-    moistureModifierScalePoint.setSourceModule(0, moistureModifierPerlin)
-    moistureModifierScalePoint.xScale = 0.04
-    moistureModifierScalePoint.yScale = 0.3
-    moistureModifierScalePoint.zScale = 0.04
+    val moistureScalePoint = ScalePoint()
+    moistureScalePoint.setSourceModule(0, moistureModifierPerlin)
+    moistureScalePoint.xScale = 0.3
+    moistureScalePoint.zScale = 0.3
 
-    /*
+    val moistureMultiply = Multiply()
+    moistureMultiply.setSourceModule(0, moistureScalePoint)
+    moistureMultiply.setSourceModule(1, Constant(0.6))
+
+    val moistureModifier = Add()
+    moistureModifier.setSourceModule(0, moistureMultiply)
+    moistureModifier.setSourceModule(1, Constant(1.0))
+
+    val moistureBaseMultiply = Multiply()
+    moistureBaseMultiply.setSourceModule(0, moistureScalePoint)
+    moistureBaseMultiply.setSourceModule(1, Constant(0.4))
+
+    val moistureBase = Add()
+    moistureBase.setSourceModule(0, moistureBaseMultiply)
+    moistureBase.setSourceModule(1, Constant(0.2))
+
     showGraphics { bounds, graphics ->
-      var maxValue = temperaturePerlin.maxValue
-      println("MAX: $maxValue")
       for (x in 0 until bounds.x) {
         for (y in 0 until bounds.y) {
-          val value = temperatureScalePoint.getValue(x.toDouble(), 0.0, y.toDouble())
-          maxValue = max(maxValue, value)
-          /*
-          if (value < 0) {
-            graphics.color = Color.blue
-          } else {
-            graphics.color = Color.gray
-          }
-          */
-          val c = ((value / 2.2) * 255).toInt()
+          val value = moistureScalePoint.getValue(x.toDouble(), 0.0, y.toDouble())
+          val c = ((value.coerceIn(0.0, 2.2) / 2.2) * 255).toInt()
           graphics.color = Color(c, c, c)
           graphics.fillRect(x, y, 1, 1)
         }
       }
-      println(maxValue)
     }
-    */
 
     val sectionSize = Vector2i(512, 512)
     val maxOceanCellDistance = 5
@@ -127,7 +130,7 @@ object MapGeneratorTest {
       addProcessor(OceanLandProcessor(terrainHeight))
       addProcessor(DistanceToOceanProcessor(maxOceanCellDistance = maxOceanCellDistance))
       addProcessor(RiverProcessor())
-      addProcessor(MoistureProcessor(base = Constant(0.0)))
+      addProcessor(MoistureProcessor(base = moistureBase, modifier = moistureModifier))
     }
 
     val boundsOffset = Vector2i(-0, -0)
@@ -136,7 +139,7 @@ object MapGeneratorTest {
       val viewRectangle = Rectanglei(Vector2i.ZERO, bounds).translate(boundsOffset)
       val view = map.getSubView(viewRectangle)
       for (cell in view.cells) {
-        val drawable = cell.polygon.translate(boundsOffset.negate().toDouble()).toDrawable()
+        val drawable = cell.polygon.translate(-boundsOffset.toDouble()).toDrawable()
         val distance = cell[DataKeys.DISTANCE_TO_OCEAN]
         var color = if (cell[DataKeys.IS_OCEAN] == true) Color.blue else Color.yellow
         if (distance != null) {
@@ -156,14 +159,14 @@ object MapGeneratorTest {
       graphics.with(stroke = BasicStroke(4f), color = Color.green) {
         for (edge in view.edges) {
           if (edge[DataKeys.IS_RIVER] == true) {
-            graphics.draw(edge.line.translate(boundsOffset.negate()))
+            graphics.draw(edge.line.translate(-boundsOffset))
           }
         }
       }
       graphics.with(color = Color.red) {
         for (corner in view.corners) {
           if (corner[DataKeys.DISTANCE_TO_RIVER_START] == 0) {
-            val point = corner.point.add(boundsOffset.negate())
+            val point = corner.point + -boundsOffset
             graphics.fillRect(point.x - 2, point.y - 2, 4, 4)
           }
         }
@@ -174,7 +177,7 @@ object MapGeneratorTest {
       val viewRectangle = Rectanglei(Vector2i.ZERO, bounds).translate(boundsOffset)
       val view = map.getSubView(viewRectangle)
       for (cell in view.cells) {
-        val drawable = cell.polygon.translate(boundsOffset.negate().toDouble()).toDrawable()
+        val drawable = cell.polygon.translate(-boundsOffset.toDouble()).toDrawable()
         val moisture = cell.require(DataKeys.MOISTURE)
         var color: Color
         if (cell[DataKeys.IS_OCEAN] != true) {
@@ -195,7 +198,7 @@ object MapGeneratorTest {
       graphics.with(stroke = BasicStroke(4f), color = Color.green) {
         for (edge in view.edges) {
           if (edge[DataKeys.IS_RIVER] == true) {
-            graphics.draw(edge.line.translate(boundsOffset.negate()))
+            graphics.draw(edge.line.translate(-boundsOffset))
           }
         }
       }

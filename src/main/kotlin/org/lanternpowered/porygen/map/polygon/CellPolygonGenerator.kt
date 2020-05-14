@@ -10,7 +10,7 @@
 package org.lanternpowered.porygen.map.polygon
 
 import org.lanternpowered.porygen.map.Cell
-import org.spongepowered.math.vector.Vector2d
+import org.lanternpowered.porygen.math.vector.Vector2d
 import kotlin.random.Random
 
 /**

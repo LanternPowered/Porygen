@@ -10,7 +10,7 @@
 package org.lanternpowered.porygen.map.polygon
 
 import org.lanternpowered.porygen.math.geom.Triangle2d
-import org.spongepowered.math.vector.Vector2d
+import org.lanternpowered.porygen.math.vector.Vector2d
 
 /**
  * Represents a provider for the center point of a [Triangle2d].
@@ -54,7 +54,7 @@ class TriangleCenterProvider(
       val function = { triangle: Triangle2d ->
         val fromPoint = from.function(triangle)
         val toPoint = from.function(triangle)
-        fromPoint.add(toPoint.sub(fromPoint).mul(fraction))
+        fromPoint + ((toPoint - fromPoint) * fraction)
       }
       return TriangleCenterProvider(function,
           from.alwaysConvexPolygons && to.alwaysConvexPolygons)

@@ -11,8 +11,8 @@ package org.lanternpowered.porygen.math.geom
 
 import org.lanternpowered.porygen.util.ToStringHelper
 import org.lanternpowered.porygen.math.floorToInt
-import org.spongepowered.math.vector.Vector2d
-import org.spongepowered.math.vector.Vector2i
+import org.lanternpowered.porygen.math.vector.Vector2d
+import org.lanternpowered.porygen.math.vector.Vector2i
 import java.awt.Polygon
 import kotlin.math.max
 import kotlin.math.min
@@ -27,7 +27,7 @@ class Rectangled : AbstractRectangle<Vector2d> {
         Vector2d(min.x, max.y))
   }
 
-  override val size: Vector2d by lazy { max.sub(min) }
+  override val size: Vector2d by lazy { max - min }
 
   constructor(minX: Double, minY: Double, maxX: Double, maxY: Double) :
       super(Vector2d(min(minX, maxX), min(minY, maxY)), Vector2d(max(minX, maxX), max(minY, maxY)))

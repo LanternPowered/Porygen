@@ -10,7 +10,7 @@
 package org.lanternpowered.porygen.map.processor
 
 import org.lanternpowered.porygen.map.CellMapView
-import org.spongepowered.math.vector.Vector2d
+import org.lanternpowered.porygen.math.vector.Vector2d
 
 /**
  * A processor which will handle the given section [CellMapView].

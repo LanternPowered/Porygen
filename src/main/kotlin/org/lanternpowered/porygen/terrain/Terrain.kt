@@ -9,7 +9,7 @@
  */
 package org.lanternpowered.porygen.terrain
 
-import org.spongepowered.math.vector.Vector3i
+import org.lanternpowered.porygen.math.vector.Vector3i
 
 /**
  * Represents a terrain of blocks.

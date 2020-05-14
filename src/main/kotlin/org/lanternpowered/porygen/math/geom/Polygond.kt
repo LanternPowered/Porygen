@@ -9,7 +9,7 @@
  */
 package org.lanternpowered.porygen.math.geom
 
-import org.spongepowered.math.vector.Vector2d
+import org.lanternpowered.porygen.math.vector.Vector2d
 import java.awt.Polygon
 
 /**
@@ -266,7 +266,7 @@ class Polygond : AbstractShape {
    * [Polygond].
    */
   fun scale(vector: Vector2d): Polygond {
-    val vertices = vertices.map { it.mul(vector) }
+    val vertices = vertices.map { vertex -> vertex * vector }
     val polygon = Polygond(vertices)
     polygon.isConvexState = this.isConvexState
     return polygon
@@ -278,7 +278,7 @@ class Polygond : AbstractShape {
    * [Polygond].
    */
   fun translate(vector: Vector2d): Polygond {
-    val vertices = vertices.map { it.add(vector) }
+    val vertices = vertices.map { vertex -> vertex + vector }
     val polygon = Polygond(vertices)
     polygon.isConvexState = this.isConvexState
     return polygon

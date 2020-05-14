@@ -14,7 +14,7 @@ import org.lanternpowered.porygen.map.CellMapView
 import org.lanternpowered.porygen.map.Corner
 import org.lanternpowered.porygen.map.Edge
 import org.lanternpowered.porygen.util.random.Xor128Random
-import org.spongepowered.math.vector.Vector2d
+import org.lanternpowered.porygen.math.vector.Vector2d
 import kotlin.random.Random
 import kotlin.random.nextInt
 

@@ -11,7 +11,7 @@ package org.lanternpowered.porygen.util.graphics
 
 import org.lanternpowered.porygen.math.geom.Line2i
 import org.lanternpowered.porygen.math.geom.Rectanglei
-import org.spongepowered.math.vector.Vector2i
+import org.lanternpowered.porygen.math.vector.Vector2i
 import java.awt.BorderLayout
 import java.awt.Color
 import java.awt.Graphics

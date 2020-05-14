@@ -9,8 +9,8 @@
  */
 package org.lanternpowered.porygen.math.geom
 
-import org.spongepowered.math.vector.Vector2d
-import org.spongepowered.math.vector.Vector2i
+import org.lanternpowered.porygen.math.vector.Vector2d
+import org.lanternpowered.porygen.math.vector.Vector2i
 
 interface Line2<P> {
 
