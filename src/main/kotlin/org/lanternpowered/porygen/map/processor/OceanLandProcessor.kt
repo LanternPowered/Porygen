@@ -10,10 +10,12 @@
 package org.lanternpowered.porygen.map.processor
 
 import org.lanternpowered.porygen.map.CellMapView
+import org.spongepowered.math.vector.Vector2d
 import org.spongepowered.noise.module.Module
 
 class OceanLandProcessor(
-    private val terrainHeightModule: Module
+    private val terrainHeightModule: Module,
+    override val areaOffset: Vector2d = Vector2d(0.3, 0.3)
 ) : CellMapProcessor {
 
   override fun process(view: CellMapView) {

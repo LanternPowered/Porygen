@@ -31,23 +31,27 @@ class CellView private constructor(
 
   override val neighbors: Collection<Cell> by lazy {
     delegate.neighbors.asSequence()
-        .filter { neighbor -> view.contains(neighbor) }
-        .map { neighbor -> CellView(neighbor, view) }
+        .map { neighbor -> view.viewOf(neighbor) }
+        .filterNotNull()
         .toList()
   }
 
   override val edges: Collection<Edge> by lazy {
     delegate.edges.asSequence()
-        .filter { edge -> view.contains(edge) }
-        .map { edge -> EdgeView.of(edge, view) }
+        .map { edge -> view.viewOf(edge) }
+        .filterNotNull()
         .toList()
   }
 
   override val corners: Collection<Corner> by lazy {
     delegate.corners.asSequence()
-        .filter { corner -> view.contains(corner) }
-        .map { corner -> CornerView.of(corner, view) }
+        .map { corner -> view.viewOf(corner) }
+        .filterNotNull()
         .toList()
+  }
+
+  override val isPartial: Boolean by lazy {
+    corners.size != delegate.corners.size || neighbors.size != delegate.neighbors.size || edges.size != delegate.edges.size
   }
 
   override fun contains(x: Int, y: Int): Boolean =

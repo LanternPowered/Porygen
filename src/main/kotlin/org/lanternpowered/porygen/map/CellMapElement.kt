@@ -26,4 +26,10 @@ interface CellMapElement : DataHolder {
    * The [CellMap] this element is located in.
    */
   val map: CellMap
+
+  /**
+   * Whether this is partial, because its surrounding
+   * data is unavailable.
+   */
+  val isPartial: Boolean
 }

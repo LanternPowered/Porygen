@@ -27,23 +27,27 @@ class CornerView private constructor(
 
   override val cells: Collection<Cell> by lazy {
     delegate.cells.asSequence()
-        .filter { cell -> view.contains(cell) }
-        .map { cell -> CellView.of(cell, view) }
+        .map { cell -> view.viewOf(cell) }
+        .filterNotNull()
         .toList()
   }
 
   override val neighbors: Collection<Corner> by lazy {
     delegate.neighbors.asSequence()
-        .filter { corner -> view.contains(corner) }
-        .map { corner -> of(corner, view) }
+        .map { corner -> view.viewOf(corner) }
+        .filterNotNull()
         .toList()
   }
 
   override val edges: Collection<Edge> by lazy {
     delegate.edges.asSequence()
-        .filter { edge -> view.contains(edge) }
-        .map { edge -> EdgeView.of(edge, view) }
+        .map { edge -> view.viewOf(edge) }
+        .filterNotNull()
         .toList()
+  }
+
+  override val isPartial: Boolean by lazy {
+    cells.size != delegate.cells.size || neighbors.size != delegate.neighbors.size || edges.size != delegate.edges.size
   }
 
   override fun equals(other: Any?): Boolean {

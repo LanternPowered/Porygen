@@ -27,6 +27,8 @@ class MapChunkImpl(
     private val cellBlockData: CellBlockData
 ) : SimpleDataHolder(), CellMapChunk {
 
+  override val isPartial: Boolean get() = false // TODO
+
   override val cells get() = this.cellBlockData.cells
   override fun getCell(localX: Int, localY: Int) = this.cellBlockData.getCell(localX, localY)
 

@@ -86,11 +86,12 @@ class MapImpl(
 
     println("Started processing: $position")
 
-    fun CellMapProcessor.getProcessorView(left: Int, right: Int, top: Int, down: Int): CellMapView {
-      val offset = sectionSize.toDouble().mul(areaOffset).floorToInt()
+    fun CellMapProcessor.getProcessorView(sectionX: Int, sectionY: Int, left: Int, right: Int, top: Int, down: Int): CellMapView {
+      val offset = sectionSize.mul(sectionX, sectionY)
+      val extend = sectionSize.toDouble().mul(areaOffset).floorToInt()
 
-      val processorRectangleMin = sectionRectangleMin.sub(offset.mul(left, top))
-      val processorRectangleMax = sectionRectangleMax.add(offset.mul(right, down))
+      val processorRectangleMin = sectionRectangleMin.add(offset).sub(extend.mul(left, top))
+      val processorRectangleMax = sectionRectangleMax.add(offset).add(extend.mul(right, down))
       val processorRectangle = Rectanglei(processorRectangleMin, processorRectangleMax)
 
       return processorViews.computeIfAbsent(processorRectangle) {
@@ -102,31 +103,36 @@ class MapImpl(
       }
     }
 
-    for (i in processors.indices) {
-      // Run the last processor for surrounding areas
-      if (i > 0) {
-        val processor = processors[i - 1]
-        for (x in -1..1) {
-          for (y in -1..1) {
-            if (x == 0 && y == 0)
-              continue
+    fun runSurroundingProcessor(index: Int) {
+      val processor = processors[index]
+      for (x in -1..1) {
+        for (y in -1..1) {
+          if (x == 0 && y == 0)
+            continue
 
-            val view = processor.getProcessorView(
-                left = if (x > -1) 1 else 0,
-                right = if (x < 1) 1 else 0,
-                top = if (y > -1) 1 else 0,
-                down = if (y < 1) 1 else 0)
-            processor.process(view)
-          }
+          val view = processor.getProcessorView(x, y,
+              left = if (x > -1) 1 else 0,
+              right = if (x < 1) 1 else 0,
+              top = if (y > -1) 1 else 0,
+              down = if (y < 1) 1 else 0)
+          processor.process(view)
         }
       }
+    }
+
+    for (i in processors.indices) {
+      // Run the last processor for surrounding areas
+      /*if (i > 0)
+        runSurroundingProcessor(i - 1)*/
 
       val processor = processors[i]
       println("Started process: " + processor.javaClass.name)
 
-      val view = processor.getProcessorView(1, 1, 1, 1)
+      val view = processor.getProcessorView(0, 0, 1, 1, 1, 1)
       processor.process(view)
     }
+
+    // runSurroundingProcessor(processors.lastIndex)
 
     for (view in processorViews.values)
       view.release()
@@ -219,8 +225,8 @@ class MapImpl(
     // Get the sections that are required for this sub view
     val minSectionX = floorToInt(rectangle.min.x.toDouble() / sectionSize.x)
     val minSectionY = floorToInt(rectangle.min.y.toDouble() / sectionSize.y)
-    val maxSectionX = floorToInt(rectangle.max.x.toDouble() / sectionSize.x)
-    val maxSectionY = floorToInt(rectangle.max.y.toDouble() / sectionSize.y)
+    val maxSectionX = floorToInt((rectangle.max.x - 1.toDouble()) / sectionSize.x)
+    val maxSectionY = floorToInt((rectangle.max.y - 1.toDouble()) / sectionSize.y)
 
     val sectionReferences = mutableSetOf<MapSectionReference>()
     for (sectionX in minSectionX..maxSectionX) {

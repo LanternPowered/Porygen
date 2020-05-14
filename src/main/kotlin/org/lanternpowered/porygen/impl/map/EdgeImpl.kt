@@ -25,6 +25,8 @@ class EdgeImpl(
   internal val mutableCells = mapElementSetOf<CellImpl>()
   internal val mutableCorners = mapElementSetOf<CornerImpl>()
 
+  override val isPartial: Boolean get() = false // TODO
+
   override fun other(cell: Cell): CellImpl {
     check(cell in mutableCells)
     return mutableCells.first { it != cell }
@@ -42,7 +44,7 @@ class EdgeImpl(
 
   override fun hashCode(): Int {
     if (hashCode == 0)
-      hashCode = arrayOf(this.id, Edge::class).hashCode()
+      hashCode = arrayOf(this.id, Edge::class).contentHashCode()
     return hashCode
   }
 }

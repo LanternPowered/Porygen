@@ -24,14 +24,22 @@ import org.lanternpowered.porygen.math.geom.Rectanglei
 open class MapViewImpl(
     val sections: Set<MapSectionReference>,
     override val viewRectangle: Rectanglei,
-    val cells0: Sequence<Cell>,
-    val corners0: Sequence<Corner>,
-    val edges0: Sequence<Edge>
+    cells: Sequence<Cell>,
+    corners: Sequence<Corner>,
+    edges: Sequence<Edge>
 ) : SimpleDataHolder(), CellMapView {
 
-  override val cells: Collection<Cell> by lazy { cells0.map { cell -> CellView.of(cell, this) }.toSet() }
-  override val corners: Collection<Corner> by lazy { corners0.map { corner -> CornerView.of(corner, this) }.toSet() }
-  override val edges: Collection<Edge> by lazy { edges0.map { edge -> EdgeView.of(edge, this) }.toSet() }
+  private val cellsMap = cells.map { cell -> CellView.of(cell, this) }.toMapElementMap()
+  private val cornersMap = corners.map { corner -> CornerView.of(corner, this) }.toMapElementMap()
+  private val edgesMap = edges.map { edge -> EdgeView.of(edge, this) }.toMapElementMap()
+
+  override val cells: Collection<Cell> = cellsMap.values
+  override val corners: Collection<Corner> = cornersMap.values
+  override val edges: Collection<Edge> = edgesMap.values
+
+  fun viewOf(cell: Cell): CellView? = this.cellsMap[cell.id]
+  fun viewOf(corner: Corner): CornerView? = this.cornersMap[corner.id]
+  fun viewOf(edge: Edge): EdgeView? = this.edgesMap[edge.id]
 
   override val map: CellMap = this.sections.first().get().map
 

@@ -27,9 +27,16 @@ class EdgeView private constructor(
 
   override val cells: Collection<CellView> by lazy {
     delegate.cells.asSequence()
-        .filter { cell -> view.contains(cell) }
-        .map { cell -> CellView.of(cell, view) }
-        .toList()
+        .map { cell -> view.viewOf(cell) }
+        .filterNotNull()
+        .toMapElementSet()
+  }
+
+  override val corners: Collection<Corner> by lazy {
+    delegate.corners.asSequence()
+        .map { corner -> view.viewOf(corner) }
+        .filterNotNull()
+        .toMapElementSet()
   }
 
   override fun other(cell: Cell): Cell {
@@ -38,12 +45,7 @@ class EdgeView private constructor(
     return cells.first { it.delegate != delegateCell }
   }
 
-  override val corners: Collection<Corner> by lazy {
-    delegate.corners.asSequence()
-        .filter { corner -> view.contains(corner) }
-        .map { corner -> CornerView.of(corner, view) }
-        .toList()
-  }
+  override val isPartial: Boolean by lazy { cells.size != delegate.cells.size || corners.size != delegate.corners.size }
 
   override fun equals(other: Any?): Boolean {
     if (other !is Edge)

@@ -16,3 +16,6 @@ import org.lanternpowered.porygen.map.CellMapElement
  * in the same order, this is important for the processors.
  */
 fun <E : CellMapElement> mapElementSetOf(): MutableSet<E> = sortedSetOf(Comparator.comparing { element: E -> element.id })
+
+fun <E : CellMapElement> Sequence<E>.toMapElementSet(): MutableSet<E> = toSortedSet(Comparator.comparing { element: E -> element.id })
+fun <E : CellMapElement> Sequence<E>.toMapElementMap(): MutableMap<Long, E> = associateBy { it.id }.toSortedMap()
