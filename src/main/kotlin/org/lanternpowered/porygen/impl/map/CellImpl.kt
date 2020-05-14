@@ -22,12 +22,14 @@ class CellImpl internal constructor(
     override val polygon: Polygond
 ) : MapElementImpl(), Cell {
 
+  private var hashCode: Int = 0
+
   // A set with all the chunk coordinates this cell is located in
   //val chunks = data.chunks
 
-  internal val mutableNeighbors = mutableSetOf<CellImpl>()
-  internal val mutableEdges = mutableSetOf<EdgeImpl>()
-  internal val mutableCorners = mutableSetOf<CornerImpl>()
+  internal val mutableNeighbors = mapElementSetOf<CellImpl>()
+  internal val mutableEdges = mapElementSetOf<EdgeImpl>()
+  internal val mutableCorners = mapElementSetOf<CornerImpl>()
 
   override val neighbors: Collection<CellImpl> get() = mutableNeighbors
   override val edges: Collection<EdgeImpl> get() = mutableEdges
@@ -44,5 +46,18 @@ class CellImpl internal constructor(
       return chunk.getCell(x and 0xf, y and 0xf) == this
     // Don't even perform any calculations if the chunk pos isn't in this cell
     return /*this.chunks.contains(chunkPos) && */ this.polygon.contains(Vector2d(x + 0.5, y + 0.5)) // Use block center as check pos
+  }
+
+  override fun equals(other: Any?): Boolean {
+    if (other !is Cell)
+      return false
+    val delegate = other.delegate
+    return delegate.id == this.id && delegate.map == this.map
+  }
+
+  override fun hashCode(): Int {
+    if (hashCode == 0)
+      hashCode = arrayOf(this.id, Cell::class).hashCode()
+    return hashCode
   }
 }

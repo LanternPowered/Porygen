@@ -9,6 +9,7 @@
  */
 package org.lanternpowered.porygen.impl.map
 
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import org.lanternpowered.porygen.data.SimpleDataHolder
 import org.lanternpowered.porygen.map.Cell
@@ -62,12 +63,16 @@ class MapImpl(
     if (section != null)
       return MapSectionReference(section)
 
+    val cornersById = Long2ObjectOpenHashMap<CornerImpl>()
+    val cellsById = Long2ObjectOpenHashMap<CellImpl>()
+    val edgesById = Long2ObjectOpenHashMap<EdgeImpl>()
+
     // Processing area sections
     val areaSections = Long2ObjectOpenHashMap<MapSection>()
     for (x in -1..1) {
       for (y in -1..1) {
         val added = position.offset(x, y)
-        areaSections[added.packed] = generateSectionData(added)
+        areaSections[added.packed] = generateSectionData(added, cornersById, cellsById, edgesById)
       }
     }
 
@@ -130,7 +135,12 @@ class MapImpl(
     return MapSectionReference(section)
   }
 
-  private fun generateSectionData(position: SectionPosition): MapSection {
+  private fun generateSectionData(
+      position: SectionPosition,
+      cornersById: Long2ObjectMap<CornerImpl>,
+      cellsById: Long2ObjectMap<CellImpl>,
+      edgesById: Long2ObjectMap<EdgeImpl>
+  ): MapSection {
     val viewRectangleMin = Vector2i(position.x, position.y).mul(sectionSize)
     val viewRectangleMax = viewRectangleMin.add(sectionSize)
     val viewRectangle = Rectanglei(viewRectangleMin, viewRectangleMax)
@@ -174,6 +184,8 @@ class MapImpl(
         val edgeId = packIntPair(edgeCenter.x, edgeCenter.y)
         val edge = edgesById.computeIfAbsent(edgeId) { EdgeImpl(edgeId, edgeLine, this) }
         edges += edge
+
+        cell.mutableEdges += edge
 
         edge.mutableCells += cell
         edge.mutableCorners += corneri
@@ -237,7 +249,6 @@ class MapImpl(
           }
         }
         .flatten()
-        .toSet()
     val corners = sections
         .map { section ->
           if (isEdgeSection(section)) {
@@ -247,7 +258,6 @@ class MapImpl(
           }
         }
         .flatten()
-        .toSet()
     val cells = sections
         .map { section ->
           if (isEdgeSection(section)) {
@@ -259,7 +269,6 @@ class MapImpl(
           }
         }
         .flatten()
-        .toSet()
 
     return MapViewImpl(sectionReferences, rectangle, cells, corners, edges)
   }

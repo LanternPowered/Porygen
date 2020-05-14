@@ -24,10 +24,14 @@ import org.lanternpowered.porygen.math.geom.Rectanglei
 open class MapViewImpl(
     val sections: Set<MapSectionReference>,
     override val viewRectangle: Rectanglei,
-    override val cells: Collection<Cell>,
-    override val corners: Collection<Corner>,
-    override val edges: Collection<Edge>
+    val cells0: Sequence<Cell>,
+    val corners0: Sequence<Corner>,
+    val edges0: Sequence<Edge>
 ) : SimpleDataHolder(), CellMapView {
+
+  override val cells: Collection<Cell> by lazy { cells0.map { cell -> CellView.of(cell, this) }.toSet() }
+  override val corners: Collection<Corner> by lazy { corners0.map { corner -> CornerView.of(corner, this) }.toSet() }
+  override val edges: Collection<Edge> by lazy { edges0.map { edge -> EdgeView.of(edge, this) }.toSet() }
 
   override val map: CellMap = this.sections.first().get().map
 

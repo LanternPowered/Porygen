@@ -14,6 +14,9 @@ import org.lanternpowered.porygen.map.Corner
 import org.lanternpowered.porygen.map.Edge
 import org.spongepowered.math.vector.Vector2i
 
+val Corner.delegate: Corner
+  get() = if (this is CornerView) delegate else this
+
 class CornerView private constructor(
     override val delegate: Corner,
     override val view: MapViewImpl
@@ -42,9 +45,6 @@ class CornerView private constructor(
         .map { edge -> EdgeView.of(edge, view) }
         .toList()
   }
-
-  private val Corner.delegate: Corner
-    get() = if (this is CornerView) delegate else this
 
   override fun equals(other: Any?): Boolean {
     if (other !is Corner)

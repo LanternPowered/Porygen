@@ -40,6 +40,9 @@ class Rectanglei : AbstractRectangle<Vector2i> {
   override fun toDouble(): Rectangled =
       Rectangled(min.x.toDouble(), min.y.toDouble(), max.x.toDouble(), max.y.toDouble())
 
+  fun translate(offset: Vector2i): Rectanglei =
+      Rectanglei(min.add(offset), max.add(offset))
+
   /**
    * Converts this [Rectangled] into
    * a drawable [Polygon].

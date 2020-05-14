@@ -42,16 +42,21 @@ class RiverProcessor(
 
       // Was successful, apply the data to the elements
       if (riverData != null) {
-        for (riverCorner in riverData.corners)
+        for ((distance, riverCorner) in riverData.corners.withIndex()) {
           riverCorner[DataKeys.IS_RIVER] = true
-        for (riverEdge in riverData.edges)
+          riverCorner[DataKeys.DISTANCE_TO_RIVER_START] = distance
+        }
+
+        for ((distance, riverEdge) in riverData.edges.withIndex()) {
           riverEdge[DataKeys.IS_RIVER] = true
+          riverEdge[DataKeys.DISTANCE_TO_RIVER_START] = distance
+        }
       }
     }
   }
 
   private fun traverse(corner: Corner, random: Random, data: RiverData): RiverData? {
-    if (corner in data.corners || corner[DataKeys.IS_OCEAN] == true)
+    if (corner in data.corners)
       return null
     val lastCorner = data.corners.lastOrNull()
     // The river can't go back to the ocean
@@ -60,7 +65,7 @@ class RiverProcessor(
       // River can only go land inwards
       if (distance <= 0)
         return null
-      val lastDistance = corner.require(DataKeys.DISTANCE_TO_OCEAN)
+      val lastDistance = lastCorner.require(DataKeys.DISTANCE_TO_OCEAN)
       // Rivers can only go up hill, or stay on the same level
       if (lastDistance > distance)
         return null
@@ -81,8 +86,7 @@ class RiverProcessor(
         .sortedBy { neighbor -> -(neighbor[DataKeys.DISTANCE_TO_OCEAN] ?: 0) }
         .map { neighbor -> traverse(neighbor, random, data) }
         .filterNotNull()
-        // The longest river comes first
-        .sortedBy { neighborData -> -neighborData.edges.size }
+        .sortedBy { -(it.corners.lastOrNull()?.get(DataKeys.DISTANCE_TO_OCEAN) ?: 0) }
         .firstOrNull()
     if (neighborData != null)
       return neighborData

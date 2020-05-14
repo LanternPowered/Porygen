@@ -20,8 +20,10 @@ class EdgeImpl(
     override val map: MapImpl
 ) : SimpleDataHolder(), Edge {
 
-  internal val mutableCells = mutableSetOf<CellImpl>()
-  internal val mutableCorners = mutableSetOf<CornerImpl>()
+  private var hashCode: Int = 0
+
+  internal val mutableCells = mapElementSetOf<CellImpl>()
+  internal val mutableCorners = mapElementSetOf<CornerImpl>()
 
   override fun other(cell: Cell): CellImpl {
     check(cell in mutableCells)
@@ -30,4 +32,17 @@ class EdgeImpl(
 
   override val cells: Collection<CellImpl> = mutableCells
   override val corners: Collection<CornerImpl> = mutableCorners
+
+  override fun equals(other: Any?): Boolean {
+    if (other !is Edge)
+      return false
+    val delegate = other.delegate
+    return delegate.id == this.id && delegate.map == this.map
+  }
+
+  override fun hashCode(): Int {
+    if (hashCode == 0)
+      hashCode = arrayOf(this.id, Edge::class).hashCode()
+    return hashCode
+  }
 }

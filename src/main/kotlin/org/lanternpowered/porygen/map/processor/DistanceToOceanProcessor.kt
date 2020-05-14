@@ -10,7 +10,6 @@
 package org.lanternpowered.porygen.map.processor
 
 import org.lanternpowered.porygen.map.Cell
-import org.lanternpowered.porygen.map.CellMapElement
 import org.lanternpowered.porygen.map.CellMapView
 import org.lanternpowered.porygen.map.Corner
 import org.spongepowered.math.GenericMath
@@ -26,29 +25,84 @@ class DistanceToOceanProcessor(
 ) : CellMapProcessor {
 
   override fun process(view: CellMapView) {
-    fun Cell.isOcean(): Boolean =
-        this[DataKeys.IS_OCEAN] == true
-
     for (cell in view.cells)
-      updateOceanDistance(cell, view, Cell::neighbors, Cell::isOcean, maxOceanCellDistance)
-
-    // Corners at the coastline are considered "ocean",
-    // so they get a 0 distance in output
-    fun Corner.isOcean(): Boolean =
-        cells.any { cell -> cell.isOcean() }
+      updateCellOceanDistance(cell, maxOceanCellDistance)
 
     for (corner in view.corners)
-      updateOceanDistance(corner, view, Corner::neighbors, Corner::isOcean, maxOceanCornerDistance)
+      updateCornerOceanDistance(corner, maxOceanCornerDistance)
   }
 
-  private fun <T : CellMapElement> updateOceanDistance(
-      element: T,
-      view: CellMapView,
-      neighbors: T.() -> Collection<T>,
-      isOcean: T.() -> Boolean,
-      allowedDistance: Int,
-      processStack: Set<T> = setOf()
-  ): Int? {
+  private fun Cell.isOcean(): Boolean =
+      this[DataKeys.IS_OCEAN] == true
+
+  private fun Corner.getType(): CornerType {
+    val count = cells.count { cell -> cell.isOcean() }
+    return when {
+      count == 0 -> CornerType.Land
+      count < cells.size -> CornerType.Coast
+      else -> CornerType.Ocean
+    }
+  }
+
+  private enum class CornerType {
+    Land,
+    Coast,
+    Ocean
+  }
+
+  private fun updateCornerOceanDistance(element: Corner, allowedDistance: Int, processStack: Set<Corner> = setOf()): Int? {
+    val stored = element[DataKeys.DISTANCE_TO_OCEAN]
+    if (stored == 0 || stored == 1 || stored == -1)
+      return stored
+
+    // We reached the maximum allowed distance (complexity)
+    if (processStack.size == allowedDistance)
+      return null
+
+    fun findNeighborDistance(): Int? {
+      // Try to scan for neighbor corners
+      val newProcessed = processStack + element
+      // Find the shortest distance
+      val value = element.neighbors.asSequence()
+          .filter { neighbor -> neighbor !in processStack } // Prevent infinite loops
+          .map { neighbor -> updateCornerOceanDistance(neighbor, allowedDistance, newProcessed) }
+          .filterNotNull()
+          .sortedBy { abs(it) } // Find the closest distance to 0
+          .firstOrNull()
+      return if (value != null) GenericMath.clamp(value, -allowedDistance, allowedDistance) else null
+    }
+
+    val type = element.getType()
+    val distance = when (type) {
+      CornerType.Land -> {
+        val value = findNeighborDistance()
+        if (value == null) null else value + 1
+      }
+      CornerType.Ocean -> {
+        val value = findNeighborDistance()
+        if (value == null) null else value - 1
+      }
+      CornerType.Coast -> 0
+    }
+
+    if (stored != null && (distance == null || abs(stored) <= abs(distance)))
+      return stored
+
+    if (distance != null) {
+      element[DataKeys.DISTANCE_TO_OCEAN] = distance
+    } else if (stored == null) {
+      // Insert a fallback value, can be overwritten later
+      element[DataKeys.DISTANCE_TO_OCEAN] = when (type) {
+        CornerType.Land -> allowedDistance
+        CornerType.Ocean -> -allowedDistance
+        CornerType.Coast -> throw IllegalStateException()
+      }
+    }
+
+    return distance
+  }
+
+  private fun updateCellOceanDistance(element: Cell, allowedDistance: Int, processStack: Set<Cell> = setOf()): Int? {
     // We reached the maximum allowed distance (complexity)
     if (processStack.size == allowedDistance)
       return null
@@ -57,9 +111,9 @@ class DistanceToOceanProcessor(
       // Try to scan for neighbor cells
       val newProcessed = processStack + element
       // Find the shortest distance
-      val value = element.neighbors().asSequence()
+      val value = element.neighbors.asSequence()
           .filter { neighbor -> neighbor !in processStack } // Prevent infinite loops
-          .map { neighbor -> updateOceanDistance(neighbor, view, neighbors, isOcean, allowedDistance, newProcessed) }
+          .map { neighbor -> updateCellOceanDistance(neighbor, allowedDistance, newProcessed) }
           .filterNotNull()
           .sortedBy { abs(it) } // Find the closest distance to 0
           .firstOrNull()
@@ -70,7 +124,7 @@ class DistanceToOceanProcessor(
     val distance = if (element.isOcean()) {
       // If any neighbor is land, this is next to the coastline,
       // cells next to the coastline get a distance of 0
-      if (element.neighbors().any { neighbor -> !neighbor.isOcean() }) {
+      if (element.neighbors.any { neighbor -> !neighbor.isOcean() }) {
         0
       } else {
         // Find the shortest distance
@@ -80,7 +134,7 @@ class DistanceToOceanProcessor(
     } else {
       // If any neighbor is ocean, this is the coastline, the
       // coastline cells get a distance of 1
-      if (element.neighbors().any { neighbor -> neighbor.isOcean() }) {
+      if (element.neighbors.any { neighbor -> neighbor.isOcean() }) {
         1
       } else {
         // Find the shortest distance

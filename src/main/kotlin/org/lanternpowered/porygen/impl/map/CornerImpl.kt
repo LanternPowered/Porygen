@@ -20,9 +20,11 @@ class CornerImpl(
     override val map: MapImpl
 ) : SimpleDataHolder(), Corner {
 
-  internal val mutableEdges = mutableSetOf<EdgeImpl>()
-  internal val mutableCells = mutableSetOf<CellImpl>()
-  internal val mutableNeighbors = mutableSetOf<CornerImpl>()
+  private var hashCode: Int = 0
+
+  internal val mutableCells = mapElementSetOf<CellImpl>()
+  internal val mutableEdges = mapElementSetOf<EdgeImpl>()
+  internal val mutableNeighbors = mapElementSetOf<CornerImpl>()
 
   override val edges: Collection<EdgeImpl> get() = mutableEdges
   override val cells: Collection<CellImpl> get() = mutableCells
@@ -32,4 +34,17 @@ class CornerImpl(
       .add("id", id)
       .add("point", point)
       .toString()
+
+  override fun equals(other: Any?): Boolean {
+    if (other !is Corner)
+      return false
+    val delegate = other.delegate
+    return delegate.id == this.id && delegate.map == this.map
+  }
+
+  override fun hashCode(): Int {
+    if (hashCode == 0)
+      hashCode = arrayOf(this.id, Corner::class).hashCode()
+    return hashCode
+  }
 }

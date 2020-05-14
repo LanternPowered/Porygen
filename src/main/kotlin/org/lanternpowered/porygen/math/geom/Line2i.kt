@@ -22,4 +22,7 @@ class Line2i(start: Vector2i, end: Vector2i) : AbstractLine2<Vector2i>(start, en
 
   override fun toInt() = this
   override fun toDouble() = Line2d(start.toDouble(), end.toDouble())
+
+  fun translate(offset: Vector2i): Line2i =
+      Line2i(start.add(offset), end.add(offset))
 }

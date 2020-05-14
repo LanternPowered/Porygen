@@ -10,6 +10,7 @@
 package org.lanternpowered.porygen.util.graphics
 
 import org.lanternpowered.porygen.math.geom.Line2i
+import org.lanternpowered.porygen.math.geom.Rectanglei
 import org.spongepowered.math.vector.Vector2i
 import java.awt.BorderLayout
 import java.awt.Color
@@ -21,10 +22,40 @@ import javax.swing.JFrame
 import javax.swing.JPanel
 
 /**
- * Draws the line.
+ * Draws a line.
  */
-fun Graphics.drawLine(line: Line2i): Unit =
-    drawLine(line.start.x, line.start.y, line.end.x, line.end.y)
+fun Graphics.draw(line: Line2i): Unit =
+    drawLine(line.start, line.end)
+
+/**
+ * Draws a line.
+ */
+fun Graphics.drawLine(min: Vector2i, max: Vector2i): Unit =
+    drawLine(min.x, min.y, max.x, max.y)
+
+/**
+ * Draws a rectangle.
+ */
+fun Graphics.draw(rectangle: Rectanglei): Unit =
+    drawRect(rectangle.min, rectangle.max)
+
+/**
+ * Draws a rectangle.
+ */
+fun Graphics.fill(rectangle: Rectanglei): Unit =
+    drawRect(rectangle.min, rectangle.max)
+
+/**
+ * Draws a rectangle.
+ */
+fun Graphics.drawRect(min: Vector2i, max: Vector2i): Unit =
+    drawRect(min.x, min.y, max.x, max.y)
+
+/**
+ * Draws a rectangle.
+ */
+fun Graphics.fillRect(min: Vector2i, max: Vector2i): Unit =
+    fillRect(min.x, min.y, max.x, max.y)
 
 /**
  * Applies the given stroke during the given [block].
