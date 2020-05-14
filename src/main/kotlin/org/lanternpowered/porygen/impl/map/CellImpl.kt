@@ -52,12 +52,12 @@ class CellImpl internal constructor(
     if (other !is Cell)
       return false
     val delegate = other.delegate
-    return delegate.id == this.id && delegate.map == this.map
+    return delegate.id == id && delegate.map == map
   }
 
   override fun hashCode(): Int {
     if (hashCode == 0)
-      hashCode = arrayOf(this.id, Cell::class).contentHashCode()
+      hashCode = arrayOf(id, map, Cell::class).contentHashCode()
     return hashCode
   }
 }

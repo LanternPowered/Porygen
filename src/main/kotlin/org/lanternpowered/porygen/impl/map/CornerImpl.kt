@@ -39,12 +39,12 @@ class CornerImpl(
     if (other !is Corner)
       return false
     val delegate = other.delegate
-    return delegate.id == this.id && delegate.map == this.map
+    return delegate.id == id && delegate.map == map
   }
 
   override fun hashCode(): Int {
     if (hashCode == 0)
-      hashCode = arrayOf(this.id, Corner::class).contentHashCode()
+      hashCode = arrayOf(id, map, Corner::class).contentHashCode()
     return hashCode
   }
 }

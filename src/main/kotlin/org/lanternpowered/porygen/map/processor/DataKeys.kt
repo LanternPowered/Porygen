@@ -45,4 +45,9 @@ object DataKeys {
    * in the ocean start at -1.
    */
   val DISTANCE_TO_OCEAN = DataKey<Int>("distance_to_ocean")
+
+  /**
+   * A key to represent the moisture. From 0 to 1.
+   */
+  val MOISTURE = DataKey<Double>("moisture")
 }

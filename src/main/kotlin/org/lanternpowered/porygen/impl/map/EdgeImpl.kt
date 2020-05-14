@@ -13,6 +13,7 @@ import org.lanternpowered.porygen.data.SimpleDataHolder
 import org.lanternpowered.porygen.map.Cell
 import org.lanternpowered.porygen.map.Edge
 import org.lanternpowered.porygen.math.geom.Line2i
+import org.lanternpowered.porygen.util.ToStringHelper
 
 class EdgeImpl(
     override val id: Long,
@@ -42,7 +43,13 @@ class EdgeImpl(
 
   override fun hashCode(): Int {
     if (hashCode == 0)
-      hashCode = arrayOf(this.id, Edge::class).contentHashCode()
+      hashCode = arrayOf(id, map, Edge::class).contentHashCode()
     return hashCode
   }
+
+  override fun toString(): String = ToStringHelper(this)
+      .add("id", id)
+      .add("line", line)
+      .add("center", line.center)
+      .toString()
 }
