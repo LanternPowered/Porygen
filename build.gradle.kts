@@ -13,101 +13,141 @@ allprojects {
 }
 
 subprojects {
-  apply(plugin = "org.jetbrains.kotlin.multiplatform")
-  apply(plugin = "net.minecrell.licenser")
+  // Execute after the individual gradle build files are evaluated
+  afterEvaluate {
+    apply(plugin = "net.minecrell.licenser")
 
-  // Must be applied, otherwise the npm resolver will break the build
-  // https://youtrack.jetbrains.com/issue/KT-34389
-  // project.plugins.apply(org.jetbrains.kotlin.gradle.targets.js.npm.NpmResolverPlugin::class.java)
+    fun setupKotlinSettings(
+        languageVersion: (name: String) -> Unit,
+        enableLanguageFeature: (name: String) -> Unit,
+        useExperimentalAnnotation: (name: String) -> Unit
+    ) {
+      languageVersion("1.3")
 
-  kotlin {
-    jvm()
-    js()
+      enableLanguageFeature("InlineClasses")
+      enableLanguageFeature("NewInference")
+      enableLanguageFeature("NonParenthesizedAnnotationsOnFunctionalTypes")
 
-    // val coroutinesVersion = "1.3.6"
-
-    sourceSets {
-      val commonMain by getting {
-        dependencies {
-          implementation(kotlin("stdlib-common"))
-          // implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-common:$coroutinesVersion")
-        }
-      }
-
-      val commonTest by getting {
-        dependencies {
-          implementation(kotlin("test-common"))
-          implementation(kotlin("test-annotations-common"))
-        }
-      }
-
-      val jvmMain by getting {
-        dependencies {
-          implementation(kotlin("stdlib"))
-          implementation("it.unimi.dsi:fastutil:8.2.2")
-          // implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
-        }
-      }
-
-      val jvmTest by getting {
-        dependencies {
-          implementation(kotlin("test-junit"))
-        }
-      }
-
-      val jsMain by getting {
-        dependencies {
-          implementation(kotlin("stdlib-js"))
-          // implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:$coroutinesVersion")
-        }
-      }
-
-      val jsTest by getting {
-        dependencies {
-          implementation(kotlin("test-js"))
-        }
-      }
-
-      all {
-        languageSettings.apply {
-          languageVersion = "1.3"
-          apiVersion = "1.3"
-          progressiveMode = true
-
-          enableLanguageFeature("InlineClasses")
-          enableLanguageFeature("NewInference")
-          enableLanguageFeature("NonParenthesizedAnnotationsOnFunctionalTypes")
-
-          useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")
-          useExperimentalAnnotation("kotlin.contracts.ExperimentalContracts")
-          useExperimentalAnnotation("kotlin.ExperimentalStdlibApi")
-          useExperimentalAnnotation("kotlin.experimental.ExperimentalTypeInference")
-        }
-      }
+      useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")
+      useExperimentalAnnotation("kotlin.contracts.ExperimentalContracts")
+      useExperimentalAnnotation("kotlin.ExperimentalStdlibApi")
+      useExperimentalAnnotation("kotlin.experimental.ExperimentalTypeInference")
     }
-  }
 
-  license {
-    header = rootProject.file("HEADER.txt")
-    newLine = false
-    ignoreFailures = false
+    val multiplatform = extensions.findByType<org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension>()
 
-    // Map the kotlin source sets to normal source sets
-    // so that they work in the license plugin.
-    sourceSets {
-      for ((name, kotlinSourceSet) in kotlin.sourceSets.asMap) {
-        create(project.name + "_" + name) {
-          allSource.source(kotlinSourceSet.kotlin)
+    multiplatform?.apply {
+      sourceSets {
+        val commonMain by getting {
+          dependencies {
+            implementation(kotlin("stdlib-common"))
+          }
+        }
+
+        val commonTest by getting {
+          dependencies {
+            implementation(kotlin("test-common"))
+            implementation(kotlin("test-annotations-common"))
+          }
+        }
+
+        findByName("jvmMain")?.apply {
+          dependencies {
+            implementation(kotlin("stdlib-jdk8"))
+          }
+        }
+
+        findByName("jvmTest")?.apply {
+          dependencies {
+            implementation(kotlin("test-junit"))
+          }
+        }
+
+        findByName("jsMain")?.apply {
+          dependencies {
+            implementation(kotlin("stdlib-js"))
+          }
+        }
+
+        findByName("jsTest")?.apply {
+          dependencies {
+            implementation(kotlin("test-js"))
+          }
+        }
+
+        all {
+          languageSettings.apply {
+            fun languageVersion(version: String) {
+              apiVersion = version
+              languageVersion = version
+            }
+            setupKotlinSettings(::languageVersion, ::enableLanguageFeature, ::useExperimentalAnnotation)
+          }
         }
       }
     }
 
-    include("**/*.kt")
+    if (multiplatform == null) {
+      dependencies {
+        add("implementation", kotlin("stdlib-jdk8"))
+      }
+    }
 
-    ext {
-      set("name", rootProject.name)
-      set("url", "https://www.lanternpowered.org")
-      set("organization", "LanternPowered")
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().forEach {
+      it.kotlinOptions.apply {
+        jvmTarget = "1.8"
+
+        val args = mutableListOf<String>()
+        args += "-Xjvm-default=enable"
+        args += "-Xallow-result-return-type"
+
+        fun useExperimentalAnnotation(name: String) {
+          args += "-Xuse-experimental=$name"
+        }
+
+        fun enableLanguageFeature(name: String) {
+          args += "-XXLanguage:+$name"
+        }
+
+        fun languageVersion(version: String) {
+          apiVersion = version
+          languageVersion = version
+        }
+
+        setupKotlinSettings(::languageVersion, ::enableLanguageFeature, ::useExperimentalAnnotation)
+
+        freeCompilerArgs = args
+      }
+    }
+
+    license {
+      header = rootProject.file("HEADER.txt")
+      newLine = false
+      ignoreFailures = false
+
+      if (multiplatform != null) {
+        sourceSets {
+          val temp = mutableListOf<SourceSet>()
+          for ((name, kotlinSourceSet) in multiplatform.sourceSets.asMap) {
+            temp += create(project.name + "_" + name) {
+              allSource.source(kotlinSourceSet.kotlin)
+            }
+          }
+          gradle.taskGraph.whenReady {
+            // Remove them when the license plugin has detected them
+            // so the dev environment doesn't get polluted
+            removeAll(temp)
+          }
+        }
+      }
+
+      include("**/*.kt")
+
+      ext {
+        set("name", rootProject.name)
+        set("url", "https://www.lanternpowered.org")
+        set("organization", "LanternPowered")
+      }
     }
   }
 }

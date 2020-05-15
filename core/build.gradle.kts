@@ -4,11 +4,12 @@ plugins {
 
 kotlin {
   jvm()
+  js()
 
   sourceSets {
-    val commonMain by getting {
+    val jvmMain by getting {
       dependencies {
-        implementation(project(":porygen-core"))
+        implementation("it.unimi.dsi:fastutil:8.2.2")
       }
     }
   }
