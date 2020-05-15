@@ -11,7 +11,7 @@
 
 package org.lanternpowered.porygen.util.collections
 
-actual fun <K, V> MutableMap<K, V>.getOrPutUnboxed(key: K, fn: (key: K) -> V): V = computeIfAbsent(key, fn)
+actual fun <K, V> MutableMap<K, V>.getOrPut(key: K, fn: (key: K) -> V): V = computeIfAbsent(key, fn)
 
 inline fun <K, V> MutableMap<K, V>.computeIfAbsent(key: K, crossinline fn: (key: K) -> V): V {
   var value = get(key)

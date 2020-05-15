@@ -16,13 +16,11 @@ open class SimpleDataHolder : DataHolder {
   // Data values stored within this cell
   private val dataValues = mutableMapOf<DataKey<*>, Any?>()
 
-  override fun <T> get(key: DataKey<T>): T? = this.dataValues[key].uncheckedCast()
+  override fun <T> get(key: DataKey<T>): T? = dataValues[key].uncheckedCast()
 
   override fun <T> set(key: DataKey<T>, value: T) {
-    this.dataValues[key] = value as Any?
+    dataValues[key] = value as Any?
   }
 
-  override fun <T> remove(key: DataKey<T>): T? {
-    return this.dataValues.remove(key).uncheckedCast()
-  }
+  override fun <T> remove(key: DataKey<T>): T? = dataValues.remove(key).uncheckedCast()
 }

@@ -20,17 +20,17 @@ import org.lanternpowered.porygen.map.processor.CellMapProcessor
 import org.lanternpowered.porygen.math.floorToInt
 import org.lanternpowered.porygen.math.geom.Line2i
 import org.lanternpowered.porygen.math.geom.Rectanglei
-import org.lanternpowered.porygen.math.vector.max
-import org.lanternpowered.porygen.points.PointsGenerator
-import org.lanternpowered.porygen.util.pair.packIntPair
-import org.lanternpowered.porygen.util.pair.unpackIntPairFirst
-import org.lanternpowered.porygen.util.pair.unpackIntPairSecond
 import org.lanternpowered.porygen.math.vector.Vector2d
 import org.lanternpowered.porygen.math.vector.Vector2i
+import org.lanternpowered.porygen.math.vector.max
+import org.lanternpowered.porygen.points.PointsGenerator
 import org.lanternpowered.porygen.util.collections.Long2ObjectMap
 import org.lanternpowered.porygen.util.collections.getOrPutUnboxed
 import org.lanternpowered.porygen.util.collections.getUnboxed
 import org.lanternpowered.porygen.util.collections.long2ObjectMapOf
+import org.lanternpowered.porygen.util.pair.packIntPair
+import org.lanternpowered.porygen.util.pair.unpackIntPairFirst
+import org.lanternpowered.porygen.util.pair.unpackIntPairSecond
 
 class MapImpl(
     override val seed: Long,
@@ -39,9 +39,6 @@ class MapImpl(
     private val pointsGenerator: PointsGenerator,
     private val processors: List<CellMapProcessor>
 ) : SimpleDataHolder(), CellMap {
-
-  // All the cells mapped by their center coordinates
-  private val cellsByCenter = HashMap<Vector2i, CellImpl>()
 
   // All the cells mapped by chunk coordinates
   private val cellsByChunk = long2ObjectMapOf<MutableSet<CellImpl>>()
@@ -85,8 +82,6 @@ class MapImpl(
     val sectionRectangleMin = Vector2i(position.x, position.y) * sectionSize
     val sectionRectangleMax = sectionRectangleMin + sectionSize
 
-    val processorViews = mutableMapOf<Rectanglei, CellMapView>()
-
     println("Started processing: $position")
 
     // Find the biggest required area
@@ -94,29 +89,24 @@ class MapImpl(
     for (processor in processors)
       offsetFactor = max(offsetFactor, processor.areaOffset)
 
-    for (i in processors.indices) {
-      val processor = processors[i]
+    val offset = (sectionSize * offsetFactor).floorToInt()
+
+    val processorRectangleMin = sectionRectangleMin - offset
+    val processorRectangleMax = sectionRectangleMax + offset
+    val processorRectangle = Rectanglei(processorRectangleMin, processorRectangleMax)
+
+    val view = getSubView(processorRectangle) { areaSectionPosition ->
+      val areaSection = areaSections[areaSectionPosition.packed]
+          ?: throw IllegalStateException("Requested an area that's too big.")
+      MapSectionReference(areaSection)
+    }
+
+    for (processor in processors) {
       println("Started process: " + (processor::class.simpleName ?: "unknown"))
-
-      val offset = (sectionSize * offsetFactor).floorToInt()
-
-      val processorRectangleMin = sectionRectangleMin - offset
-      val processorRectangleMax = sectionRectangleMax + offset
-      val processorRectangle = Rectanglei(processorRectangleMin, processorRectangleMax)
-
-      val view = processorViews.getOrPutUnboxed(processorRectangle) {
-        getSubView(processorRectangle) { areaSectionPosition ->
-          val areaSection = areaSections[areaSectionPosition.packed]
-              ?: throw IllegalStateException("Requested an area that's too big.")
-          MapSectionReference(areaSection)
-        }
-      }
-
       processor.process(view)
     }
 
-    for (view in processorViews.values)
-      view.release()
+    view.release()
 
     sections[section.position.packed] = section
     return MapSectionReference(section)

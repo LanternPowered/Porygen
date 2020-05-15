@@ -9,4 +9,4 @@
  */
 package org.lanternpowered.porygen.util.collections
 
-expect fun <K, V> MutableMap<K, V>.getOrPutUnboxed(key: K, fn: (key: K) -> V): V
+expect fun <K, V> MutableMap<K, V>.getOrPut(key: K, fn: (key: K) -> V): V
