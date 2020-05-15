@@ -10,7 +10,6 @@ repositories {
 }
 
 dependencies {
-  // implementation(kotlin("stdlib-jdk8"))
   implementation(project(":porygen-core"))
   implementation("org.spongepowered:spongeapi:7.1.0-SNAPSHOT")
 }

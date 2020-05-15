@@ -75,6 +75,32 @@ subprojects {
           }
         }
 
+        val nativeCommonMain = findByName("nativeCommonMain")
+        nativeCommonMain?.apply {
+          dependsOn(commonMain)
+        }
+        val nativeCommonTest = findByName("nativeCommonTest")
+        nativeCommonTest?.apply {
+          dependsOn(commonTest)
+        }
+
+        fun applyNativeCommon(target: String) {
+          findByName("${target}Main")?.apply {
+            if (nativeCommonMain != null)
+              dependsOn(nativeCommonMain)
+          }
+          findByName("${target}Test")?.apply {
+            if (nativeCommonTest != null)
+              dependsOn(nativeCommonTest)
+          }
+        }
+
+        arrayOf(
+            "androidNativeArm32", "androidNativeArm64", "iosArm32", "iosArm64", "iosX64",
+            "linuxArm64", "linuxArm32Hfp", "linuxMips32", "linuxMipsel32", "linuxX64", "macosX64",
+            "mingwX64", "mingwX86", "wasm32"
+        ).forEach(::applyNativeCommon)
+
         all {
           languageSettings.apply {
             fun languageVersion(version: String) {
