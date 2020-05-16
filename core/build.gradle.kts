@@ -4,7 +4,10 @@ plugins {
 
 kotlin {
   jvm()
-  js()
+  js {
+    browser()
+    nodejs()
+  }
   mingwX64()
 
   sourceSets {
