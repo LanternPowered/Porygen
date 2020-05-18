@@ -36,10 +36,10 @@
  */
 package org.lanternpowered.porygen.noise
 
-interface NoiseModule {
+import org.lanternpowered.porygen.value.Value2
+import org.lanternpowered.porygen.value.Value3
 
-  /**
-   * Gets the value for the given x, y and z coordinates.
-   */
-  operator fun get(x: Double, y: Double, z: Double): Double
+interface NoiseModule : Value2, Value3 {
+
+  override fun get(x: Double, y: Double): Double = get(x, 0.0, y)
 }

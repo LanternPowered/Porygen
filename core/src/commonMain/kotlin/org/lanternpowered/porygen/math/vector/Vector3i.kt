@@ -9,9 +9,11 @@
  */
 package org.lanternpowered.porygen.math.vector
 
+import kotlinx.serialization.Serializable
 import kotlin.math.sign
 import kotlin.math.sqrt
 
+@Serializable
 data class Vector3i(
     val x: Int,
     val y: Int,

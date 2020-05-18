@@ -9,10 +9,12 @@
  */
 package org.lanternpowered.porygen.math.vector
 
+import kotlinx.serialization.Serializable
 import org.lanternpowered.porygen.math.floorToInt
 import kotlin.math.sign
 import kotlin.math.sqrt
 
+@Serializable
 data class Vector2d(
     val x: Double,
     val y: Double

@@ -2,6 +2,8 @@ plugins {
   kotlin("multiplatform")
 }
 
+ext.set("serialization", true)
+
 kotlin {
   js {
     browser {}
@@ -14,6 +16,7 @@ kotlin {
   sourceSets {
     val jsMain by getting {
       dependencies {
+        implementation(project(":porygen-graph"))
         implementation(project(":porygen-core"))
 
         val reactVersion = "16.13.1"

@@ -14,9 +14,9 @@ kotlin {
   mingwX64()
 
   sourceSets {
-    val jvmMain by getting {
+    val commonMain by getting {
       dependencies {
-        implementation("it.unimi.dsi:fastutil:8.2.2")
+        implementation(project(":porygen-core"))
       }
     }
 

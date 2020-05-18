@@ -1,5 +1,6 @@
 plugins {
   kotlin("multiplatform") version "1.3.72"
+  kotlin("plugin.serialization") version "1.3.72"
   id("net.minecrell.licenser") version "0.4.1"
 }
 
@@ -9,6 +10,7 @@ allprojects {
 
   repositories {
     mavenCentral()
+    maven("https://dl.bintray.com/kotlin/kotlinx")
   }
 }
 
@@ -32,15 +34,22 @@ subprojects {
       useExperimentalAnnotation("kotlin.contracts.ExperimentalContracts")
       useExperimentalAnnotation("kotlin.ExperimentalStdlibApi")
       useExperimentalAnnotation("kotlin.experimental.ExperimentalTypeInference")
+      useExperimentalAnnotation("kotlinx.serialization.UnstableDefault")
     }
 
     val multiplatform = extensions.findByType<org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension>()
+    val serialization = if (ext.has("serialization")) ext.get("serialization") as? Boolean ?: false else false
+
+    fun serialization(module: String) =
+        "org.jetbrains.kotlinx:kotlinx-serialization-runtime${if (module.isEmpty()) "" else "-$module" }:0.20.0"
 
     multiplatform?.apply {
       sourceSets {
         val commonMain by getting {
           dependencies {
             implementation(kotlin("stdlib-common"))
+            if (serialization)
+              implementation(serialization("common"))
           }
         }
 
@@ -54,6 +63,8 @@ subprojects {
         findByName("jvmMain")?.apply {
           dependencies {
             implementation(kotlin("stdlib-jdk8"))
+            if (serialization)
+              implementation(serialization(""))
           }
         }
 
@@ -66,6 +77,8 @@ subprojects {
         findByName("jsMain")?.apply {
           dependencies {
             implementation(kotlin("stdlib-js"))
+            if (serialization)
+              implementation(serialization("js"))
           }
         }
 
@@ -78,6 +91,10 @@ subprojects {
         val nativeCommonMain = findByName("nativeCommonMain")
         nativeCommonMain?.apply {
           dependsOn(commonMain)
+          dependencies {
+            if (serialization)
+              implementation(serialization("native"))
+          }
         }
         val nativeCommonTest = findByName("nativeCommonTest")
         nativeCommonTest?.apply {
