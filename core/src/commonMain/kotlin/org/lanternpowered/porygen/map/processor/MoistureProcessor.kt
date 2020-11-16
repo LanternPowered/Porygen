@@ -11,16 +11,16 @@ package org.lanternpowered.porygen.map.processor
 
 import org.lanternpowered.porygen.map.Cell
 import org.lanternpowered.porygen.map.CellMapView
-import org.lanternpowered.porygen.noise.NoiseModule
-import org.lanternpowered.porygen.noise.module.source.Constant
+import org.lanternpowered.porygen.value.Constant
+import org.lanternpowered.porygen.value.Value2
 import kotlin.math.min
 
 /**
  * @property modifier The moisture modifier
  */
 class MoistureProcessor(
-    private val base: NoiseModule = Constant(0.0),
-    private val modifier: NoiseModule = Constant(1.0),
+    private val base: Value2 = Constant(0.0),
+    private val modifier: Value2 = Constant(1.0),
     private val maximum: Double = 2.0,
     private val oceanNeighborFactor: Double = 0.3,
     private val oceanMaxNeighbors: Int = 1,
@@ -47,8 +47,8 @@ class MoistureProcessor(
     val center = cell.centerPoint
     val x = center.x.toDouble()
     val y = center.y.toDouble()
-    val base = base[x, 0.0, y]
-    val modifier = modifier[x, 0.0, y]
+    val base = base[x, y]
+    val modifier = modifier[x, y]
     moisture = (base + moisture) * modifier
     moisture = moisture.coerceIn(0.0, maximum)
     moisture /= maximum

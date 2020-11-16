@@ -24,15 +24,15 @@ import org.lanternpowered.porygen.map.processor.RiverProcessor
 import org.lanternpowered.porygen.math.geom.Rectanglei
 import org.lanternpowered.porygen.math.vector.Vector2d
 import org.lanternpowered.porygen.math.vector.Vector2i
-import org.lanternpowered.porygen.noise.module.minus
-import org.lanternpowered.porygen.noise.module.plus
-import org.lanternpowered.porygen.noise.module.scalePoint
 import org.lanternpowered.porygen.noise.module.source.Perlin
-import org.lanternpowered.porygen.noise.module.times
 import org.lanternpowered.porygen.points.BlueNoisePointsGenerator
 import org.lanternpowered.porygen.points.PointsGenerator
 import org.lanternpowered.porygen.points.ZoomPointsGenerator
 import org.lanternpowered.porygen.util.murmurHash3
+import org.lanternpowered.porygen.value.minus
+import org.lanternpowered.porygen.value.plus
+import org.lanternpowered.porygen.value.scalePoint
+import org.lanternpowered.porygen.value.times
 import java.awt.BasicStroke
 import java.awt.Color
 import kotlin.math.abs
@@ -50,7 +50,7 @@ object MapGeneratorTest {
         seed = seed.hashCode()
     )
 
-    val terrainScalePoint = terrainPerlin.scalePoint(x = 0.07, z = 0.07)
+    val terrainScalePoint = terrainPerlin.scalePoint(xScale = 0.07, zScale = 0.07)
     val terrainHeight = terrainScalePoint - 1.0
 
     val temperaturePerlin = Perlin(
@@ -59,7 +59,7 @@ object MapGeneratorTest {
         octaves = 10,
         seed = murmurHash3(seed).hashCode()
     )
-    val temperatureScalePoint = temperaturePerlin.scalePoint(x = 0.04, z = 0.04)
+    val temperatureScalePoint = temperaturePerlin.scalePoint(xScale = 0.04, zScale = 0.04)
 
     val moisturePerlin = Perlin(
         frequency = 0.01,
@@ -67,7 +67,7 @@ object MapGeneratorTest {
         octaves = 2,
         seed = murmurHash3(seed + 2).hashCode()
     )
-    val moistureScalePoint = moisturePerlin.scalePoint(x = 0.3, z = 0.3)
+    val moistureScalePoint = moisturePerlin.scalePoint(xScale = 0.3, zScale = 0.3)
     val moistureModifier = (moistureScalePoint * 0.6) + 1.0
     val moistureBase = (moistureScalePoint * 0.4) + 0.2
 

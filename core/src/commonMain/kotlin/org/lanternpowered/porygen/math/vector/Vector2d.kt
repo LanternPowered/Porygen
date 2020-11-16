@@ -118,6 +118,8 @@ data class Vector2d(
   override fun compareTo(other: Vector2d): Int =
       sign(lengthSquared - other.lengthSquared).toInt()
 
+  override fun toString(): String = "($x, $y)"
+
   companion object {
 
     val ONE = Vector2d(1.0, 1.0)

@@ -13,7 +13,7 @@ import org.lanternpowered.porygen.util.takeUpperBits
 import kotlin.random.Random
 
 /**
- * A random number generator implementing the "xor128" algorithm.
+ * A random number generator implementing the "xor192" algorithm.
  *
  * Has a period of 2^192 - 1.
  */

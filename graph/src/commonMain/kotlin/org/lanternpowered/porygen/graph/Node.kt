@@ -36,7 +36,7 @@ class Node(val id: Int, val type: NodeType) {
   /**
    * Gets the link that is made to the target input.
    */
-  fun <T : Any> getLink(input: NodeInput<T>): InputLink<T>? {
+  fun <T : Any> getLinks(input: NodeInput<T>): Collection<InputLink<T>> {
     TODO()
   }
 

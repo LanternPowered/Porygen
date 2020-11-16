@@ -11,7 +11,9 @@ package org.lanternpowered.porygen.graph
 
 import org.lanternpowered.porygen.value.Constant
 import org.lanternpowered.porygen.value.ConstantInt
+import org.lanternpowered.porygen.value.ConstantLong
 import org.lanternpowered.porygen.value.IntValue
+import org.lanternpowered.porygen.value.LongValue
 import org.lanternpowered.porygen.value.Value
 import kotlin.reflect.KClass
 
@@ -22,6 +24,9 @@ abstract class NodeType(val id: String, val title: String = id) {
 
   fun input(name: String, default: Int): DefaultedNodeInput<IntValue> =
       input(name, IntValue::class) { ConstantInt(default) }
+
+  fun input(name: String, default: Long): DefaultedNodeInput<LongValue> =
+      input(name, LongValue::class) { ConstantLong(default) }
 
   inline fun <reified E : Enum<E>> input(name: String, default: E): DefaultedNodeInput<E> =
       input(name, E::class) { default }
@@ -40,7 +45,7 @@ abstract class NodeType(val id: String, val title: String = id) {
     TODO()
   }
 
-  inline fun <reified T : Any> output(name: String, noinline factory: (node: Node) -> T): NodeOutput<T> =
+  inline fun <reified T : Any> output(name: String, noinline factory: (node: Node) -> T?): NodeOutput<T> =
       output(name, T::class, factory)
 
   fun <T : Any> output(name: String, type: KClass<T>, factory: (node: Node) -> T?): NodeOutput<T> {
@@ -60,7 +65,23 @@ abstract class NodeType(val id: String, val title: String = id) {
 
 class Property<T : Any>(val type: KClass<T>)
 
-open class NodeInput<T : Any>(val type: KClass<T>)
+open class NodeInput<T : Any>(val type: KClass<T>) {
+
+  /**
+   * Converts this input into an input that accepts multiple nodes.
+   */
+  fun multiple(): DefaultedNodeInput<Collection<T>> = TODO()
+
+  /**
+   * Converts this input into an input that accepts multiple nodes.
+   *
+   * The difference with normal [multiple] is that the order of
+   * the entries retained, and that some entries may be null. In
+   * the editor you'll see multiple dots which can be connected to,
+   * each representing the index its connected to.
+   */
+  fun multipleIndexed(): DefaultedNodeInput<Collection<T?>> = TODO()
+}
 
 class DefaultedNodeInput<T : Any>(type: KClass<T>) : NodeInput<T>(type)
 

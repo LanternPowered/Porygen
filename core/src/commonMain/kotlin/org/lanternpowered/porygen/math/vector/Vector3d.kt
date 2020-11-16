@@ -89,6 +89,8 @@ data class Vector3d(
   override fun compareTo(other: Vector3d): Int =
       sign(this.lengthSquared - other.lengthSquared).toInt()
 
+  override fun toString(): String = "($x, $y, $z)"
+
   companion object {
 
     val ONE = Vector3d(1.0, 1.0, 1.0)

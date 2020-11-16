@@ -15,7 +15,7 @@ import org.lanternpowered.porygen.graph.type.AddType
 import org.lanternpowered.porygen.graph.type.Multiply2Type
 import org.lanternpowered.porygen.graph.type.Multiply3Type
 import org.lanternpowered.porygen.graph.type.MultiplyType
-import org.lanternpowered.porygen.graph.type.PerlinType
+import org.lanternpowered.porygen.graph.type.noise.PerlinType
 import org.lanternpowered.porygen.graph.type.Subtract2Type
 import org.lanternpowered.porygen.graph.type.Subtract3Type
 import org.lanternpowered.porygen.graph.type.SubtractType

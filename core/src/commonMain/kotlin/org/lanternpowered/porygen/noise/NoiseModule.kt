@@ -43,3 +43,12 @@ interface NoiseModule : Value2, Value3 {
 
   override fun get(x: Double, y: Double): Double = get(x, 0.0, y)
 }
+
+fun Value3.asNoiseModule(): NoiseModule =
+    if (this is NoiseModule) this else Value3AsNoiseModule(this)
+
+private class Value3AsNoiseModule(
+    private val source: Value3
+) : NoiseModule {
+  override fun get(x: Double, y: Double, z: Double): Double = source[x, y, z]
+}

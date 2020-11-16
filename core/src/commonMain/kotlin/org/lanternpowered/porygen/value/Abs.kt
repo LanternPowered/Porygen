@@ -9,6 +9,8 @@
  */
 package org.lanternpowered.porygen.value
 
+import org.lanternpowered.porygen.noise.NoiseModule
+import org.lanternpowered.porygen.noise.asNoiseModule
 import kotlin.math.abs
 
 data class Abs(val source: Value) : Value {
@@ -22,3 +24,8 @@ data class Abs2(val source: Value2) : Value2 {
 data class Abs3(val source: Value3) : Value3 {
   override fun get(x: Double, y: Double, z: Double): Double = abs(source[x, y, z])
 }
+
+fun abs(source: Value): Value = Abs(source)
+fun abs(source: Value2): Value2 = Abs2(source)
+fun abs(source: Value3): Value3 = Abs3(source)
+fun abs(source: NoiseModule): NoiseModule = Abs3(source).asNoiseModule()

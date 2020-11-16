@@ -7,7 +7,7 @@
  * This work is licensed under the terms of the MIT License (MIT). For
  * a copy, see 'LICENSE.txt' or <https://opensource.org/licenses/MIT>.
  */
-package org.lanternpowered.porygen.graph.type
+package org.lanternpowered.porygen.graph.type.noise
 
 import org.lanternpowered.porygen.graph.NodeType
 import org.lanternpowered.porygen.noise.module.source.Perlin

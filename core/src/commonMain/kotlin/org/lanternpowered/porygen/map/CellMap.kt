@@ -83,18 +83,11 @@ interface CellMapBuilder {
   fun sectionSize(size: Vector2i)
 
   /**
-   * Adds a [CellMapPreProcessor].
+   * Adds a [CellMapProcessor].
    *
    * The order processors are added matters, they
    * will be executed in the same order they were
    * added.
-   *
-   * Each processor will be executed in a "state",
-   * during this state, it is possible to retrieve
-   * information from elements that are outside the
-   * current view. Only data up to the previous state
-   * is guaranteed to be available. This is done to
-   * prevent circular dependencies.
    */
   fun addProcessor(processor: CellMapProcessor)
 }
