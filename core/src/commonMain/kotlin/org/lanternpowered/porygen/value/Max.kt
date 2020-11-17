@@ -37,7 +37,7 @@ private data class Max3(
 fun max(source1: Value, source2: Value): Value = Max(source1, source2)
 fun max(source1: Value2, source2: Value2): Value2 = Max2(source1, source2)
 fun max(source1: Value3, source2: Value3): Value3 = Max3(source1, source2)
-fun max(source1: NoiseModule, source2: NoiseModule): Value3 = Max3(source1, source2).asNoiseModule()
+fun max(source1: NoiseModule, source2: NoiseModule): NoiseModule = Max3(source1, source2).asNoiseModule()
 
 fun max(source1: Value, value2: Double): Value = max(source1, Constant(value2))
 fun max(value1: Double, source2: Value): Value = max(source2, value1)

@@ -1,34 +1,31 @@
+import org.jetbrains.compose.compose
+import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+
 plugins {
-  kotlin("multiplatform")
+  java
+  idea
+  kotlin("jvm")
+  kotlin("plugin.serialization")
+  id("org.jetbrains.compose") version "0.1.0-build113"
 }
 
 ext.set("serialization", true)
 
-kotlin {
-  js {
-    browser {}
-  }
-  repositories {
-    maven("https://dl.bintray.com/kotlin/kotlinx")
-    maven("https://kotlin.bintray.com/js-externals")
-    maven("https://kotlin.bintray.com/kotlin-js-wrappers")
-  }
-  sourceSets {
-    val jsMain by getting {
-      dependencies {
-        implementation(project(":porygen-graph"))
-        implementation(project(":porygen-core"))
+repositories {
+  maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+}
 
-        val reactVersion = "16.13.1"
-        val kotlinReactVersion = "$reactVersion-pre.105-kotlin-1.3.72"
+dependencies {
+  implementation(project(":porygen-core"))
+  implementation(compose.desktop.all)
+}
 
-        implementation("org.jetbrains:kotlin-react:$kotlinReactVersion")
-        implementation("org.jetbrains:kotlin-react-dom:$kotlinReactVersion")
-        implementation(npm("react", reactVersion))
-        implementation(npm("react-dom", reactVersion))
+compose.desktop {
+  application {
+    mainClass = "org.lanternpowered.porygen.EditorKt"
 
-        implementation(npm("litegraph.js", "0.7.8"))
-      }
+    nativeDistributions {
+      targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
     }
   }
 }

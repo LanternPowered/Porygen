@@ -1,6 +1,6 @@
 plugins {
-  kotlin("multiplatform") version "1.3.72"
-  kotlin("plugin.serialization") version "1.3.72"
+  kotlin("multiplatform") version "1.4.10" apply false
+  kotlin("plugin.serialization") version "1.4.10" apply false
   id("net.minecrell.licenser") version "0.4.1"
 }
 
@@ -24,7 +24,7 @@ subprojects {
         enableLanguageFeature: (name: String) -> Unit,
         useExperimentalAnnotation: (name: String) -> Unit
     ) {
-      languageVersion("1.3")
+      languageVersion("1.4")
 
       enableLanguageFeature("InlineClasses")
       enableLanguageFeature("NewInference")
@@ -41,7 +41,7 @@ subprojects {
     val serialization = if (ext.has("serialization")) ext.get("serialization") as? Boolean ?: false else false
 
     fun serialization(module: String) =
-        "org.jetbrains.kotlinx:kotlinx-serialization-runtime${if (module.isEmpty()) "" else "-$module" }:0.20.0"
+        "org.jetbrains.kotlinx:kotlinx-serialization-core${if (module.isEmpty()) "" else "-$module" }:1.0.1"
 
     multiplatform?.apply {
       sourceSets {
@@ -49,7 +49,7 @@ subprojects {
           dependencies {
             implementation(kotlin("stdlib-common"))
             if (serialization)
-              implementation(serialization("common"))
+              implementation(serialization(""))
           }
         }
 
@@ -64,7 +64,7 @@ subprojects {
           dependencies {
             implementation(kotlin("stdlib-jdk8"))
             if (serialization)
-              implementation(serialization(""))
+              implementation(serialization("jvm"))
           }
         }
 
@@ -91,10 +91,6 @@ subprojects {
         val nativeCommonMain = findByName("nativeCommonMain")
         nativeCommonMain?.apply {
           dependsOn(commonMain)
-          dependencies {
-            if (serialization)
-              implementation(serialization("native"))
-          }
         }
         val nativeCommonTest = findByName("nativeCommonTest")
         nativeCommonTest?.apply {
@@ -133,6 +129,9 @@ subprojects {
     if (multiplatform == null) {
       dependencies {
         add("implementation", kotlin("stdlib-jdk8"))
+        if (serialization) {
+          add("implementation", serialization("jvm"))
+        }
       }
     }
 
@@ -141,8 +140,9 @@ subprojects {
         jvmTarget = "1.8"
 
         val args = mutableListOf<String>()
-        args += "-Xjvm-default=enable"
+        args += "-Xjvm-default=all"
         args += "-Xallow-result-return-type"
+        args += "-Xemit-jvm-type-annotations"
 
         fun useExperimentalAnnotation(name: String) {
           args += "-Xuse-experimental=$name"
@@ -168,19 +168,19 @@ subprojects {
       newLine = false
       ignoreFailures = false
 
+      val sourceSetContainer = project.the<SourceSetContainer>()
+
       if (multiplatform != null) {
-        sourceSets {
-          val temp = mutableListOf<SourceSet>()
-          for ((name, kotlinSourceSet) in multiplatform.sourceSets.asMap) {
-            temp += create(project.name + "_" + name) {
-              allSource.source(kotlinSourceSet.kotlin)
-            }
+        val temp = mutableListOf<SourceSet>()
+        for ((name, kotlinSourceSet) in multiplatform.sourceSets.asMap) {
+          temp += sourceSetContainer.create(project.name + "_" + name) {
+            allSource.source(kotlinSourceSet.kotlin)
           }
-          gradle.taskGraph.whenReady {
-            // Remove them when the license plugin has detected them
-            // so the dev environment doesn't get polluted
-            removeAll(temp)
-          }
+        }
+        gradle.taskGraph.whenReady {
+          // Remove them when the license plugin has detected them
+          // so the dev environment doesn't get polluted
+          sourceSetContainer.removeAll(temp)
         }
       }
 

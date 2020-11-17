@@ -37,7 +37,7 @@ private data class Min3(
 fun min(source1: Value, source2: Value): Value = Min(source1, source2)
 fun min(source1: Value2, source2: Value2): Value2 = Min2(source1, source2)
 fun min(source1: Value3, source2: Value3): Value3 = Min3(source1, source2)
-fun min(source1: NoiseModule, source2: NoiseModule): Value3 = Min3(source1, source2).asNoiseModule()
+fun min(source1: NoiseModule, source2: NoiseModule): NoiseModule = Min3(source1, source2).asNoiseModule()
 
 fun min(source1: Value, value2: Double): Value = min(source1, Constant(value2))
 fun min(value1: Double, source2: Value): Value = min(source2, value1)

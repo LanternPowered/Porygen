@@ -43,6 +43,6 @@ class MwcRandom private constructor(
 
   companion object {
 
-    const val A = 916905990
+    private const val A = 916905990
   }
 }

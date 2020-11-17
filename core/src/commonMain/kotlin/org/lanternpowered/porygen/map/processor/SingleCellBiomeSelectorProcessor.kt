@@ -10,7 +10,7 @@
 package org.lanternpowered.porygen.map.processor
 
 import org.lanternpowered.porygen.map.CellMapView
-import org.lanternpowered.porygen.noise.NoiseModule
+import org.lanternpowered.porygen.value.Value2
 
 /**
  * @property terrainHeightModule The module that provides the terrain height,
@@ -22,8 +22,8 @@ import org.lanternpowered.porygen.noise.NoiseModule
  *                             < 0.2 is cold, < 1.0 is medium, >= 1.0 is warm
  */
 class SingleCellBiomeSelectorProcessor<Biome>(
-    val terrainHeightModule: NoiseModule,
-    val temperatureModule: NoiseModule,
+    val terrainHeightModule: Value2,
+    val temperatureModule: Value2,
     val oceanBiomeTypes: List<Biome>,
     val landBiomeTypes: List<Biome>,
     val hillBiomeTypes: List<Biome>
@@ -77,10 +77,10 @@ class SingleCellBiomeSelectorProcessor<Biome>(
       // val cellRandom = XorWowRandom(context.seed xor cell.id)
 
       val x = cell.centerPoint.x.toDouble()
-      val z = cell.centerPoint.y.toDouble()
+      val y = cell.centerPoint.y.toDouble()
 
-      val terrainHeight = this.terrainHeightModule[x, 0.0, z]
-      val temperature = this.temperatureModule[x, 0.0, z]
+      val terrainHeight = this.terrainHeightModule[x, y]
+      val temperature = this.temperatureModule[x, y]
 
       val biomesByTemperature = when {
         terrainHeight < 0 -> this.oceanBiomesByTemperature

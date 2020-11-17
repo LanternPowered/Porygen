@@ -17,11 +17,11 @@ import org.lanternpowered.porygen.map.polygon.TriangleCenterProvider
 import org.lanternpowered.porygen.map.polygon.VoronoiPolygonGenerator
 import org.lanternpowered.porygen.math.vector.Vector2d
 import org.lanternpowered.porygen.math.vector.Vector2i
-import org.lanternpowered.porygen.noise.module.scalePoint
 import org.lanternpowered.porygen.noise.module.source.Perlin
 import org.lanternpowered.porygen.points.BlueNoisePointsGenerator
 import org.lanternpowered.porygen.points.PointsGenerator
 import org.lanternpowered.porygen.points.ZoomPointsGenerator
+import org.lanternpowered.porygen.value.scalePoint
 import kotlin.jvm.JvmStatic
 
 object PointsGeneratorTest {
@@ -40,7 +40,7 @@ object PointsGeneratorTest {
         persistence = 0.5,
         seed = seed.hashCode(),
         octaves = 10
-    ).scalePoint(x = 0.07, z = 0.07)
+    ).scalePoint(xScale = 0.07, zScale = 0.07)
 
     var polygonGenerator: CellPolygonGenerator
     polygonGenerator = VoronoiPolygonGenerator(TriangleCenterProvider.Circumcenter)
