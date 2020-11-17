@@ -1,6 +1,9 @@
 plugins {
   kotlin("multiplatform")
+  kotlin("plugin.serialization")
 }
+
+ext.set("serialization", true)
 
 kotlin {
   jvm()

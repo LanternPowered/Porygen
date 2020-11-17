@@ -2,8 +2,11 @@ plugins {
   java
   idea
   kotlin("jvm")
+  kotlin("plugin.serialization")
   id("org.spongepowered.plugin") version "0.8.1"
 }
+
+ext.set("serialization", true)
 
 repositories {
   maven("http://repo.spongepowered.org/maven")

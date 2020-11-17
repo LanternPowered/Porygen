@@ -101,6 +101,10 @@ subprojects {
           findByName("${target}Main")?.apply {
             if (nativeCommonMain != null)
               dependsOn(nativeCommonMain)
+            dependencies {
+              if (serialization)
+                implementation(serialization(target.toLowerCase()))
+            }
           }
           findByName("${target}Test")?.apply {
             if (nativeCommonTest != null)

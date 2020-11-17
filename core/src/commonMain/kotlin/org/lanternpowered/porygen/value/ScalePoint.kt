@@ -35,7 +35,7 @@ private class ScalePoint3(
   override fun get(x: Double, y: Double, z: Double): Double {
     val ox = x * xScale
     val oy = y * yScale
-    val oz = y * zScale
+    val oz = z * zScale
     return source[ox, oy, oz]
   }
 }

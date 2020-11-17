@@ -22,8 +22,8 @@ import org.lanternpowered.porygen.map.processor.MoistureProcessor
 import org.lanternpowered.porygen.map.processor.OceanLandProcessor
 import org.lanternpowered.porygen.map.processor.RiverProcessor
 import org.lanternpowered.porygen.math.geom.Rectanglei
-import org.lanternpowered.porygen.math.vector.Vector2d
 import org.lanternpowered.porygen.math.vector.Vector2i
+import org.lanternpowered.porygen.math.vector.Vector2d
 import org.lanternpowered.porygen.noise.module.source.Perlin
 import org.lanternpowered.porygen.points.BlueNoisePointsGenerator
 import org.lanternpowered.porygen.points.PointsGenerator
@@ -33,6 +33,7 @@ import org.lanternpowered.porygen.value.minus
 import org.lanternpowered.porygen.value.plus
 import org.lanternpowered.porygen.value.scalePoint
 import org.lanternpowered.porygen.value.times
+import org.lanternpowered.porygen.value.translatePoint
 import java.awt.BasicStroke
 import java.awt.Color
 import kotlin.math.abs
@@ -51,7 +52,7 @@ object MapGeneratorTest {
     )
 
     val terrainScalePoint = terrainPerlin.scalePoint(xScale = 0.07, zScale = 0.07)
-    val terrainHeight = terrainScalePoint - 1.0
+    val terrainHeight = (terrainScalePoint - 1.0).translatePoint(yTranslation = 1.0)
 
     val temperaturePerlin = Perlin(
         frequency = 0.05,
