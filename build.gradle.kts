@@ -35,21 +35,24 @@ subprojects {
       useExperimentalAnnotation("kotlin.ExperimentalStdlibApi")
       useExperimentalAnnotation("kotlin.experimental.ExperimentalTypeInference")
       useExperimentalAnnotation("kotlinx.serialization.UnstableDefault")
+      useExperimentalAnnotation("kotlinx.serialization.ExperimentalSerializationApi")
     }
 
     val multiplatform = extensions.findByType<org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension>()
     val serialization = if (ext.has("serialization")) ext.get("serialization") as? Boolean ?: false else false
 
     fun serialization(module: String) =
-        "org.jetbrains.kotlinx:kotlinx-serialization-core${if (module.isEmpty()) "" else "-$module" }:1.0.1"
+        "org.jetbrains.kotlinx:kotlinx-serialization-$module:1.0.1"
 
     multiplatform?.apply {
       sourceSets {
         val commonMain by getting {
           dependencies {
             implementation(kotlin("stdlib-common"))
-            if (serialization)
-              implementation(serialization(""))
+            if (serialization) {
+              implementation(serialization("core"))
+              implementation(serialization("json"))
+            }
           }
         }
 
@@ -63,8 +66,6 @@ subprojects {
         findByName("jvmMain")?.apply {
           dependencies {
             implementation(kotlin("stdlib-jdk8"))
-            if (serialization)
-              implementation(serialization("jvm"))
           }
         }
 
@@ -77,8 +78,6 @@ subprojects {
         findByName("jsMain")?.apply {
           dependencies {
             implementation(kotlin("stdlib-js"))
-            if (serialization)
-              implementation(serialization("js"))
           }
         }
 
@@ -101,10 +100,6 @@ subprojects {
           findByName("${target}Main")?.apply {
             if (nativeCommonMain != null)
               dependsOn(nativeCommonMain)
-            dependencies {
-              if (serialization)
-                implementation(serialization(target.toLowerCase()))
-            }
           }
           findByName("${target}Test")?.apply {
             if (nativeCommonTest != null)
@@ -134,7 +129,7 @@ subprojects {
       dependencies {
         add("implementation", kotlin("stdlib-jdk8"))
         if (serialization) {
-          add("implementation", serialization("jvm"))
+          add("implementation", serialization("core-jvm"))
         }
       }
     }
