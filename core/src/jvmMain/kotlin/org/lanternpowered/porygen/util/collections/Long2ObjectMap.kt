@@ -11,14 +11,22 @@
 
 package org.lanternpowered.porygen.util.collections
 
-actual typealias Long2ObjectMap<V> = it.unimi.dsi.fastutil.longs.Long2ObjectMap<V>
+typealias FuLong2ObjectMap<V> = it.unimi.dsi.fastutil.longs.Long2ObjectMap<V>
+typealias FuLong2ObjectOpenHashMap<V> = it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap<V>
 
-actual inline fun <V> long2ObjectMapOf(): Long2ObjectMap<V> = it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap()
+actual interface Long2ObjectMap<V> : FuLong2ObjectMap<V>, MutableMap<Long, V> {
+  actual operator fun set(key: Long, value: V)
+}
 
-actual inline fun <V> Long2ObjectMap<V>.putUnboxed(key: Long, value: V): V? = put(key, value)
-
-actual inline fun <V> Long2ObjectMap<V>.getUnboxed(key: Long): V? = get(key)
-
-actual inline fun <V> Long2ObjectMap<V>.getOrPutUnboxed(key: Long, crossinline fn: (key: Long) -> V): V = computeIfAbsent(key) { fn(it) }
-
-actual inline fun <V> Long2ObjectMap<V>.removeUnboxed(key: Long): V? = remove(key)
+actual class Long2ObjectOpenHashMap<V>(
+    @PublishedApi internal val backing: FuLong2ObjectMap<V>
+) : FuLong2ObjectMap<V> by backing, Long2ObjectMap<V> {
+  actual constructor() : this(FuLong2ObjectOpenHashMap())
+  actual override fun set(key: Long, value: V) {
+    @Suppress("ReplacePutWithAssignment")
+    backing.put(key, value)
+  }
+  actual inline fun getOrPut(key: Long, crossinline defaultValue: () -> V): V =
+      backing.computeIfAbsent(key) { defaultValue() }
+  override fun getOrDefault(key: Long, defaultValue: V): V = backing.getOrDefault(key, defaultValue)
+}

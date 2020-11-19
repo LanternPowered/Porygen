@@ -9,14 +9,11 @@
  */
 package org.lanternpowered.porygen.util.collections
 
-expect interface Long2ObjectMap<V> : MutableMap<Long, V>
+expect interface Long2ObjectMap<V> : MutableMap<Long, V> {
+  operator fun set(key: Long, value: V)
+}
 
-expect fun <V> long2ObjectMapOf(): Long2ObjectMap<V>
-
-expect fun <V> Long2ObjectMap<V>.putUnboxed(key: Long, value: V): V?
-
-expect fun <V> Long2ObjectMap<V>.getUnboxed(key: Long): V?
-
-expect fun <V> Long2ObjectMap<V>.removeUnboxed(key: Long): V?
-
-expect inline fun <V> Long2ObjectMap<V>.getOrPutUnboxed(key: Long, crossinline fn: (key: Long) -> V): V
+expect class Long2ObjectOpenHashMap<V>() : Long2ObjectMap<V> {
+  override operator fun set(key: Long, value: V)
+  inline fun getOrPut(key: Long, crossinline defaultValue: () -> V): V
+}

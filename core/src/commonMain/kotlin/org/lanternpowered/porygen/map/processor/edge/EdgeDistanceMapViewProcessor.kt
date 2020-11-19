@@ -12,7 +12,6 @@ package org.lanternpowered.porygen.map.processor.edge
 import org.lanternpowered.porygen.data.DataKey
 import org.lanternpowered.porygen.map.CellMapView
 import org.lanternpowered.porygen.map.processor.CellMapProcessor
-import org.lanternpowered.porygen.util.collections.getOrPutUnboxed
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
@@ -64,7 +63,7 @@ class EdgeDistanceMapViewProcessor(
         } else {
           val chunkIndex = (chunkZ - startChunkZ) * chunksX + (chunkX - startChunkX)
           val chunkEdgeData = chunkCache[chunkIndex] ?: EdgeDistanceChunkData().apply { chunkCache[chunkIndex] = this }
-          chunkEdgeData.distanceData.getOrPutUnboxed(edgeId) { ByteArray(16 * 16) }
+          chunkEdgeData.distanceData.getOrPut(edgeId) { ByteArray(16 * 16) }
         }
 
         lastChunkX = chunkX

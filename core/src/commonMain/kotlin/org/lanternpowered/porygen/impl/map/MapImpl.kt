@@ -24,10 +24,7 @@ import org.lanternpowered.porygen.math.vector.Vector2d
 import org.lanternpowered.porygen.math.vector.Vector2i
 import org.lanternpowered.porygen.math.vector.max
 import org.lanternpowered.porygen.points.PointsGenerator
-import org.lanternpowered.porygen.util.collections.Long2ObjectMap
-import org.lanternpowered.porygen.util.collections.getOrPutUnboxed
-import org.lanternpowered.porygen.util.collections.getUnboxed
-import org.lanternpowered.porygen.util.collections.long2ObjectMapOf
+import org.lanternpowered.porygen.util.collections.Long2ObjectOpenHashMap
 import org.lanternpowered.porygen.util.pair.packIntPair
 import org.lanternpowered.porygen.util.pair.unpackIntPairFirst
 import org.lanternpowered.porygen.util.pair.unpackIntPairSecond
@@ -41,12 +38,12 @@ class MapImpl(
 ) : SimpleDataHolder(), CellMap {
 
   // All the cells mapped by chunk coordinates
-  private val cellsByChunk = long2ObjectMapOf<MutableSet<CellImpl>>()
+  private val cellsByChunk = Long2ObjectOpenHashMap<MutableSet<CellImpl>>()
 
-  private val chunksById = long2ObjectMapOf<MapChunkImpl>()
-  private val cornersById = long2ObjectMapOf<CornerImpl>()
-  private val cellsById = long2ObjectMapOf<CellImpl>()
-  private val edgesById = long2ObjectMapOf<EdgeImpl>()
+  private val chunksById = Long2ObjectOpenHashMap<MapChunkImpl>()
+  private val cornersById = Long2ObjectOpenHashMap<CornerImpl>()
+  private val cellsById = Long2ObjectOpenHashMap<CellImpl>()
+  private val edgesById = Long2ObjectOpenHashMap<EdgeImpl>()
 
   /**
    * The polygon generator of sections.
@@ -56,19 +53,19 @@ class MapImpl(
   /**
    * All the sections that are currently loaded.
    */
-  private val sections = long2ObjectMapOf<MapSection>()
+  private val sections = Long2ObjectOpenHashMap<MapSection>()
 
   fun getSection(position: SectionPosition): MapSectionReference {
-    var section = sections.getUnboxed(position.packed)
+    var section = sections[position.packed]
     if (section != null)
       return MapSectionReference(section)
 
-    val cornersById = long2ObjectMapOf<CornerImpl>()
-    val cellsById = long2ObjectMapOf<CellImpl>()
-    val edgesById = long2ObjectMapOf<EdgeImpl>()
+    val cornersById = Long2ObjectOpenHashMap<CornerImpl>()
+    val cellsById = Long2ObjectOpenHashMap<CellImpl>()
+    val edgesById = Long2ObjectOpenHashMap<EdgeImpl>()
 
     // Processing area sections
-    val areaSections = long2ObjectMapOf<MapSection>()
+    val areaSections = Long2ObjectOpenHashMap<MapSection>()
     for (x in -1..1) {
       for (y in -1..1) {
         val added = position.offset(x, y)
@@ -114,9 +111,9 @@ class MapImpl(
 
   private fun generateSectionData(
       position: SectionPosition,
-      cornersById: Long2ObjectMap<CornerImpl>,
-      cellsById: Long2ObjectMap<CellImpl>,
-      edgesById: Long2ObjectMap<EdgeImpl>
+      cornersById: Long2ObjectOpenHashMap<CornerImpl>,
+      cellsById: Long2ObjectOpenHashMap<CellImpl>,
+      edgesById: Long2ObjectOpenHashMap<EdgeImpl>
   ): MapSection {
     val viewRectangleMin = Vector2i(position.x, position.y) * sectionSize
     val viewRectangleMax = viewRectangleMin + sectionSize
@@ -131,14 +128,14 @@ class MapImpl(
     for (cellPolygon in cellPolygons) {
       val center = cellPolygon.center.floorToInt()
       val cellId = packIntPair(center.x, center.y)
-      val cell = cellsById.getOrPutUnboxed(cellId) {
+      val cell = cellsById.getOrPut(cellId) {
         CellImpl(cellId, this, center, cellPolygon.polygon)
       }
       cells += cell
 
       fun getCorner(point: Vector2i): CornerImpl {
         val cornerId = packIntPair(point.x, point.y)
-        return cornersById.getOrPutUnboxed(cornerId) { CornerImpl(cornerId, point, this) }
+        return cornersById.getOrPut(cornerId) { CornerImpl(cornerId, point, this) }
       }
 
       val vertices = cellPolygon.polygon.vertices
@@ -159,7 +156,7 @@ class MapImpl(
         val edgeLine = Line2i(vi, vj)
         val edgeCenter = edgeLine.center
         val edgeId = packIntPair(edgeCenter.x, edgeCenter.y)
-        val edge = edgesById.getOrPutUnboxed(edgeId) { EdgeImpl(edgeId, edgeLine, this) }
+        val edge = edgesById.getOrPut(edgeId) { EdgeImpl(edgeId, edgeLine, this) }
         edges += edge
 
         cell.mutableEdges += edge
@@ -289,9 +286,9 @@ class MapImpl(
 
   override fun getCell(x: Int, z: Int): Cell = getChunk(x shr 4, z shr 4).getCell(x and 0xf, z and 0xf)
 
-  override fun getCorner(id: Long): CornerImpl? = this.cornersById.getUnboxed(id)
-  override fun getCell(id: Long): CellImpl? = this.cellsById.getUnboxed(id)
-  override fun getEdge(id: Long): EdgeImpl? = this.edgesById.getUnboxed(id)
+  override fun getCorner(id: Long): CornerImpl? = this.cornersById[id]
+  override fun getCell(id: Long): CellImpl? = this.cellsById[id]
+  override fun getEdge(id: Long): EdgeImpl? = this.edgesById[id]
 
   override fun contains(element: CellMapElement): Boolean = element.map == this
 

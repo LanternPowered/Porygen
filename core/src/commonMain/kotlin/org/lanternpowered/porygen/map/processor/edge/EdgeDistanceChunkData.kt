@@ -10,12 +10,11 @@
 package org.lanternpowered.porygen.map.processor.edge
 
 import org.lanternpowered.porygen.map.Edge
-import org.lanternpowered.porygen.util.collections.Long2ObjectMap
-import org.lanternpowered.porygen.util.collections.long2ObjectMapOf
+import org.lanternpowered.porygen.util.collections.Long2ObjectOpenHashMap
 
 class EdgeDistanceChunkData {
 
-  internal val distanceData: Long2ObjectMap<ByteArray> = long2ObjectMapOf()
+  internal val distanceData = Long2ObjectOpenHashMap<ByteArray>()
 
   /**
    * Attempts to get the distance to the given [Edge] or -1 if too far away.

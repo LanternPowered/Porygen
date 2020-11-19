@@ -19,6 +19,10 @@ ij_wrap_on_typing = false
 ij_kotlin_name_count_to_use_star_import = 100
 ij_kotlin_name_count_to_use_star_import_for_members = 100
 
+# Reduce the number of indents when using Composable components
+[{graph-editor/*/**.kts, graph-editor/*/**.kt}]
+ij_continuation_indent_size = 2
+
 # [{*.kts,*.kt}]
 # ij_kotlin_align_in_columns_case_branch = false
 # ij_kotlin_align_multiline_binary_operation = false
