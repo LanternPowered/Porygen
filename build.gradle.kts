@@ -36,6 +36,9 @@ subprojects {
       useExperimentalAnnotation("kotlin.experimental.ExperimentalTypeInference")
       useExperimentalAnnotation("kotlinx.serialization.UnstableDefault")
       useExperimentalAnnotation("kotlinx.serialization.ExperimentalSerializationApi")
+
+      // Compose
+      useExperimentalAnnotation("androidx.compose.foundation.layout.ExperimentalLayout")
     }
 
     val multiplatform = extensions.findByType<org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension>()
