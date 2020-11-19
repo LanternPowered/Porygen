@@ -12,6 +12,6 @@ package org.lanternpowered.porygen.editor
 import androidx.compose.desktop.Window
 import androidx.compose.ui.unit.IntSize
 
-fun main() = Window(title = "Porygen", size = IntSize(300, 300)) {
-
+fun main() = Window(title = "Porygen", size = IntSize(600, 1000)) {
+  Root()
 }

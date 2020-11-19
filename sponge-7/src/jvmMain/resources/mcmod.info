@@ -1,0 +1,11 @@
+[
+  {
+    "modid": "porygen",
+    "name": "Porygen",
+    "version": "1.0-SNAPSHOT",
+    "description": "A polygonal world generator. This is the official world generator for Lantern.",
+    "authorList": [
+      "Cybermaxke"
+    ]
+  }
+]

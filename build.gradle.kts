@@ -134,9 +134,11 @@ subprojects {
       }
     }
 
+    val javaTarget: Int = (if (ext.has("javaTarget")) ext.get("javaTarget") as? Int else null) ?: 8
+
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().forEach {
       it.kotlinOptions.apply {
-        jvmTarget = "1.8"
+        jvmTarget = if (javaTarget > 8) javaTarget.toString() else "1.$javaTarget"
 
         val args = mutableListOf<String>()
         args += "-Xjvm-default=all"

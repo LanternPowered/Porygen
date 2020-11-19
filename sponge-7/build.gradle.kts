@@ -1,9 +1,9 @@
 plugins {
   java
   idea
-  kotlin("jvm")
+  kotlin("multiplatform")
   kotlin("plugin.serialization")
-  id("org.spongepowered.plugin") version "0.8.1"
+  // id("org.spongepowered.plugin") version "0.8.1"
 }
 
 ext.set("serialization", true)
@@ -12,11 +12,21 @@ repositories {
   maven("http://repo.spongepowered.org/maven")
 }
 
-dependencies {
-  implementation(project(":porygen-core"))
-  implementation("org.spongepowered:spongeapi:7.1.0-SNAPSHOT")
+kotlin {
+  jvm()
+
+  sourceSets {
+    val jvmMain by getting {
+      dependencies {
+        implementation(project(":porygen-core"))
+        implementation(project(":porygen-graph"))
+        implementation("org.spongepowered:spongeapi:7.1.0-SNAPSHOT")
+      }
+    }
+  }
 }
 
+/*
 sponge {
   plugin.apply {
     id = rootProject.name.toLowerCase()
@@ -28,3 +38,4 @@ sponge {
     }
   }
 }
+*/

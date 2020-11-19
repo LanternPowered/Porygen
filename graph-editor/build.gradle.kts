@@ -4,20 +4,35 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 plugins {
   java
   idea
-  kotlin("jvm")
+  kotlin("multiplatform")
   kotlin("plugin.serialization")
-  id("org.jetbrains.compose") version "0.1.0-build113"
+  id("org.jetbrains.compose") version "0.2.0-build124"
 }
 
 ext.set("serialization", true)
+ext.set("javaTarget", 13)
 
 repositories {
   maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
 }
 
-dependencies {
-  implementation(project(":porygen-core"))
-  implementation(compose.desktop.all)
+kotlin {
+  jvm()
+
+  sourceSets {
+    val commonMain by getting {
+      dependencies {
+        implementation(project(":porygen-core"))
+        implementation(project(":porygen-graph"))
+        implementation(compose.desktop.common)
+      }
+    }
+    val jvmMain by getting {
+      dependencies {
+        implementation(compose.desktop.all)
+      }
+    }
+  }
 }
 
 compose.desktop {
