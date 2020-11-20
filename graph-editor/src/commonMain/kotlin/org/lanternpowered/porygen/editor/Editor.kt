@@ -15,7 +15,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.zoomable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -40,7 +39,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.drawLayer
 import androidx.compose.ui.geometry.Offset
@@ -122,12 +120,10 @@ fun NodeArea() {
   var translate by remember { mutableStateOf(Offset.Zero) }
   val dragLock by remember { mutableStateOf(DragLock()) }
 
-  Column(
-    verticalArrangement = Arrangement.Center,
-    horizontalAlignment = Alignment.CenterHorizontally,
+  Box(
     modifier = Modifier
       .mouseScroll { delta, _ ->
-        scale = (scale + delta * -0.006f).coerceAtLeast(0f)
+        scale *= 1f + (-delta * 0.006f)
         true
       }
       .zoomable(onZoomDelta = { scale *= it })
@@ -143,34 +139,31 @@ fun NodeArea() {
         translate = Offset.Zero
       }
       .background(EditorColors.Background),
-    children = {
-      Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier
-          .fillMaxSize()
-          .drawLayer(
-            scaleX = scale,
-            scaleY = scale,
-            translationX = translate.x,
-            translationY = translate.y
-          ),
-        children = {
-          for (i in 1..2) {
-            var position by remember { mutableStateOf(Offset.Zero) }
-            var title by remember { mutableStateOf("Title $i") }
-            Node(
-              title = title,
-              dragLock = dragLock,
-              position = position,
-              onUpdateTitle = { title = it },
-              onUpdatePosition = { position = it }
-            )
-          }
-        }
-      )
+  ) {
+    Box(
+      modifier = Modifier
+        .fillMaxSize()
+        .drawLayer(
+          scaleX = scale,
+          scaleY = scale,
+          translationX = translate.x,
+          translationY = translate.y
+        ),
+    ) {
+      for (i in 1..2) {
+        var position by remember { mutableStateOf(Offset.Zero) }
+        var title by remember { mutableStateOf("Title $i") }
+        Node(
+          title = title,
+          dragLock = dragLock,
+          position = position,
+          onUpdateTitle = { title = it },
+          onUpdatePosition = { position = it },
+          scale = scale
+        )
+      }
     }
-  )
+  }
 }
 
 object EditorColors {
@@ -191,7 +184,8 @@ fun Node(
   title: String = "Title",
   onUpdateTitle: (String) -> Unit,
   position: Offset = Offset.Zero,
-  onUpdatePosition: (Offset) -> Unit
+  onUpdatePosition: (Offset) -> Unit,
+  scale: Float
 ) {
   val textStyle = TextStyle(color = EditorColors.NodeText)
 
@@ -222,7 +216,7 @@ fun Node(
           }
           override fun onDrag(dragDistance: Offset): Offset {
             if (hasLock)
-              onUpdatePosition(position + Offset(dragDistance.x, dragDistance.y))
+              onUpdatePosition(position + Offset(dragDistance.x, dragDistance.y) / scale)
             return Offset.Zero
           }
         })
