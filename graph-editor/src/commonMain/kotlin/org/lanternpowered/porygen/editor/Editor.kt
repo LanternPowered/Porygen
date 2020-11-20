@@ -13,6 +13,7 @@ package org.lanternpowered.porygen.editor
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.zoomable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -52,6 +53,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 
 expect fun Modifier.mouseScroll(onMouseScroll: (delta: Float, bounds: IntSize) -> Boolean): Modifier
 
@@ -70,7 +72,10 @@ fun Root() {
 @Composable
 fun Menu() {
   var active by remember { mutableStateOf(false) }
-  TopAppBar {
+  TopAppBar(
+    modifier = Modifier
+      .zIndex(1f)
+  ) {
     DropdownMenu(
       toggle = {
         Button(
@@ -92,6 +97,22 @@ fun Menu() {
         )
       }
     )
+  }
+}
+
+class DragLock {
+  var isLocked: Boolean = false
+    private set
+
+  fun lock(): Boolean {
+    if (isLocked)
+      return false
+    isLocked = true
+    return true
+  }
+
+  fun unlock() {
+    isLocked = false
   }
 }
 
@@ -126,12 +147,14 @@ fun NodeArea() {
       Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxSize().drawLayer(
-          scaleX = scale,
-          scaleY = scale,
-          translationX = translate.x,
-          translationY = translate.y
-        ),
+        modifier = Modifier
+          .fillMaxSize()
+          .drawLayer(
+            scaleX = scale,
+            scaleY = scale,
+            translationX = translate.x,
+            translationY = translate.y
+          ),
         children = {
           for (i in 1..2) {
             var position by remember { mutableStateOf(Offset.Zero) }
@@ -162,19 +185,6 @@ object EditorColors {
   val NodeText = Color(195, 195, 195)
 }
 
-class DragLock {
-  var isLocked: Boolean = false
-    private set
-
-  fun lock() {
-    isLocked = true
-  }
-
-  fun unlock() {
-    isLocked = false
-  }
-}
-
 @Composable
 fun Node(
   dragLock: DragLock,
@@ -198,17 +208,21 @@ fun Node(
       .preferredHeight(IntrinsicSize.Min)
       .preferredWidth(IntrinsicSize.Min),
   ) {
+    var hasLock by remember { mutableStateOf(false) }
     Column(
       modifier = Modifier
         .rawDragGestureFilter(object : DragObserver {
           override fun onStart(downPosition: Offset) {
-            dragLock.lock()
+            if (dragLock.lock())
+              hasLock = true
           }
           override fun onStop(velocity: Offset) {
-            dragLock.unlock()
+            if (hasLock)
+              dragLock.unlock()
           }
           override fun onDrag(dragDistance: Offset): Offset {
-            onUpdatePosition(position + Offset(dragDistance.x, dragDistance.y))
+            if (hasLock)
+              onUpdatePosition(position + Offset(dragDistance.x, dragDistance.y))
             return Offset.Zero
           }
         })
@@ -236,20 +250,22 @@ fun Node(
           BasicTextField(
             value = title,
             textStyle = textStyle,
-            onValueChange = { onUpdateTitle(title) },
+            onValueChange = { onUpdateTitle(it) },
             singleLine = true,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            onImeActionPerformed = { finishEdit() }
+            onImeActionPerformed = { finishEdit() },
           )
         } else {
           Text(
             text = title,
             color = EditorColors.NodeText,
             modifier = Modifier
+              .clickable(
+                onDoubleClick = { editTitle = true },
+                onClick = { println("Click") })
               .doubleTapGestureFilter {
+                println("Tap")
                 editTitle = true
-                // TODO: Why is this not triggering?
-                println("EDIT")
               }
           )
         }
@@ -269,6 +285,7 @@ fun Node(
         Column(
           modifier = Modifier
             .background(EditorColors.Node)
+            .weight(1f)
         ) {
           Column(
             modifier = Modifier
@@ -285,6 +302,7 @@ fun Node(
         Column(
           modifier = Modifier
             .background(EditorColors.NodeOutputs)
+            .weight(1f)
         ) {
           Column(
             modifier = Modifier
