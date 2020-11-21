@@ -9,11 +9,11 @@
  */
 package org.lanternpowered.porygen.editor
 
-import androidx.compose.desktop.Window
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.key.shortcuts
-import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.geometry.Offset
 
-fun main() = Window(title = "Porygen", size = IntSize(600, 1000)) {
-  Root()
-}
+expect fun Modifier.onHover(
+  onMove: (position: Offset) -> Unit = {},
+  onExit: () -> Unit = {},
+  onEnter: () -> Unit = {},
+): Modifier

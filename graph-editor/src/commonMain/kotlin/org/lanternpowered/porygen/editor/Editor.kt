@@ -20,13 +20,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.preferredHeight
+import androidx.compose.foundation.layout.preferredSize
 import androidx.compose.foundation.layout.preferredWidth
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
@@ -38,7 +41,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.drawLayer
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -50,7 +55,6 @@ import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -175,13 +179,20 @@ fun NodeArea() {
       for (i in 1..2) {
         var position by remember { mutableStateOf(Offset.Zero) }
         var title by remember { mutableStateOf("Title $i") }
+        var hoveredPort: Int? by remember { mutableStateOf(null) }
         Node(
           title = title,
           dragLock = dragLock,
           position = position,
           onUpdateTitle = { title = it },
           onUpdatePosition = { position = it },
-          scale = scale
+          scale = scale,
+          onStopOutputPortDrag = {
+            println("STOP OUTPUT DRAG")
+          },
+          onHoverInputPort = {
+            print("HOVER INPUT")
+          }
         )
       }
     }
@@ -194,182 +205,9 @@ object EditorColors {
 
   val Node = Color(60, 60, 60)
   val NodeBorder = Color(20, 20, 20)
+  val NodeInnerDivider = Color(30, 30, 30)
   val NodeInputs = Node
   val NodeOutputs = Color(45, 45, 45)
 
   val NodeText = Color(195, 195, 195)
-}
-
-@Composable
-fun Node(
-  dragLock: DragLock,
-  title: String = "Title",
-  onUpdateTitle: (String) -> Unit,
-  position: Offset = Offset.Zero,
-  onUpdatePosition: (Offset) -> Unit,
-  scale: Float
-) {
-  val textStyle = TextStyle(color = EditorColors.NodeText)
-  var size by remember { mutableStateOf(Size.Zero) }
-
-  val paddingSize = 12.dp
-  val borderSize = 1.dp
-  val roundedCornerShape = RoundedCornerShape(4.dp)
-
-  Canvas(Modifier) {
-    drawLine(Color.White, start = Offset.Zero, end = position + Offset(0f, size.height / 2f))
-  }
-
-  Column(
-    modifier = Modifier
-      .absoluteOffset(
-        x = { position.x },
-        y = { position.y }
-      )
-      .preferredHeight(IntrinsicSize.Min)
-      .preferredWidth(IntrinsicSize.Min)
-      .onGloballyPositioned { coordinates ->
-        size = coordinates.boundsInParent.size
-      },
-  ) {
-    var hasLock by remember { mutableStateOf(false) }
-    Column(
-      modifier = Modifier
-        .rawDragGestureFilter(object : DragObserver {
-          override fun onStart(downPosition: Offset) {
-            if (dragLock.lock())
-              hasLock = true
-          }
-          override fun onStop(velocity: Offset) {
-            if (hasLock)
-              dragLock.unlock()
-          }
-          override fun onDrag(dragDistance: Offset): Offset {
-            if (hasLock)
-              onUpdatePosition(position + Offset(dragDistance.x, dragDistance.y) / scale)
-            return Offset.Zero
-          }
-        })
-        .background(
-          color = EditorColors.Node,
-          shape = roundedCornerShape
-        )
-        .border(
-          width = borderSize,
-          color = EditorColors.NodeBorder,
-          shape = roundedCornerShape
-        ),
-    ) {
-      Row(
-        modifier = Modifier
-          .padding(paddingSize),
-      ) {
-        var editTitle by remember { mutableStateOf(false) }
-        fun finishEdit() {
-          editTitle = false
-          if (title.isEmpty())
-            onUpdateTitle("Title")
-        }
-        if (editTitle) {
-          BasicTextField(
-            value = title,
-            textStyle = textStyle,
-            onValueChange = { onUpdateTitle(it) },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            onImeActionPerformed = { finishEdit() },
-          )
-        } else {
-          Text(
-            text = title,
-            color = EditorColors.NodeText,
-            softWrap = false,
-            modifier = Modifier
-              .clickable(
-                onDoubleClick = { editTitle = true },
-                onClick = { println("Click") })
-              .doubleTapGestureFilter {
-                println("Tap")
-                editTitle = true
-              }
-          )
-        }
-      }
-
-      HorizontalDivider(
-        thickness = borderSize,
-        color = EditorColors.NodeBorder
-      )
-
-      // Inputs and outputs
-      Row(
-        modifier = Modifier
-          .preferredHeight(IntrinsicSize.Min)
-      ) {
-        // Inputs
-        Column(
-          modifier = Modifier
-            .background(EditorColors.NodeInputs)
-            .weight(1f)
-        ) {
-          Column(
-            modifier = Modifier
-              .padding(paddingSize)
-          ) {
-            Text("Input")
-          }
-        }
-        VerticalDivider(
-          thickness = borderSize,
-          color = EditorColors.NodeBorder
-        )
-        // Outputs
-        Column(
-          modifier = Modifier
-            .background(EditorColors.NodeOutputs)
-            .weight(1f)
-        ) {
-          Column(
-            modifier = Modifier
-              .padding(paddingSize)
-          ) {
-            Text("Output")
-          }
-        }
-      }
-
-      HorizontalDivider(
-        thickness = borderSize,
-        color = EditorColors.NodeBorder
-      )
-
-      Box(Modifier.preferredHeight(6.dp))
-    }
-  }
-}
-
-@Composable
-fun HorizontalDivider(
-  thickness: Dp = 1.dp,
-  color: Color = Color.Black
-) {
-  Box(
-    Modifier
-      .preferredHeight(thickness)
-      .fillMaxWidth()
-      .background(color)
-  )
-}
-
-@Composable
-fun VerticalDivider(
-  thickness: Dp = 1.dp,
-  color: Color = Color.Black
-) {
-  Box(
-    Modifier
-      .preferredWidth(thickness)
-      .fillMaxHeight()
-      .background(color)
-  )
 }
