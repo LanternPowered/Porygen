@@ -145,14 +145,14 @@ private fun InnerMenuBar(
       }
     }
   }
-  if (active != null) {
-    for ((index, menuItem) in items.withIndex()) {
-      if (active == index && menuItem.subItems != null) {
-        InnerMenuBar(
-          items = menuItem.subItems,
-          offset = popupOffsets[index]
-        )
-      }
+  val active0 = active
+  if (active0 != null) {
+    val menuItem = items[active0]
+    if (menuItem.subItems != null) {
+      InnerMenuBar(
+        items = menuItem.subItems,
+        offset = popupOffsets[active0]
+      )
     }
   }
 }
