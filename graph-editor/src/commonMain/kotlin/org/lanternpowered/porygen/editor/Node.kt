@@ -80,6 +80,7 @@ fun NodeTitle(
     if (title.isEmpty())
       onUpdateTitle("Title")
   }
+  val horizontalTextPadding = 4.dp
   if (editTitle) {
     BasicTextField(
       value = title,
@@ -89,7 +90,10 @@ fun NodeTitle(
       keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
       onImeActionPerformed = { finishEdit() },
       modifier = Modifier
-        .padding(start = 4.dp, end = 4.dp)
+        // Without this, content after the text field may
+        // be pushed a bit out of bounds
+        .preferredWidth(IntrinsicSize.Max)
+        .padding(horizontal = horizontalTextPadding)
     )
   } else {
     Box(
@@ -105,7 +109,8 @@ fun NodeTitle(
         style = NodeTextStyle,
         softWrap = false,
         modifier = Modifier
-          .padding(start = 4.dp, end = 4.dp)
+          .padding(horizontal = horizontalTextPadding)
+          // Make sure that the complete text is visible
           .preferredWidth(IntrinsicSize.Max)
       )
     }
