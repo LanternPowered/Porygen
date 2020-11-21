@@ -11,6 +11,7 @@
 
 package org.lanternpowered.porygen.editor
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,9 +30,6 @@ import androidx.compose.foundation.layout.preferredWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Button
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
@@ -42,10 +41,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.drawLayer
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.gesture.DragObserver
 import androidx.compose.ui.gesture.doubleTapGestureFilter
 import androidx.compose.ui.gesture.rawDragGestureFilter
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.boundsInParent
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.Dp
@@ -69,31 +71,47 @@ fun Root() {
 
 @Composable
 fun Menu() {
-  var active by remember { mutableStateOf(false) }
   TopAppBar(
     modifier = Modifier
       .zIndex(1f)
   ) {
-    DropdownMenu(
-      toggle = {
-        Button(
-          onClick = { active = !active },
-          modifier = Modifier.padding(start = 5.dp, top = 10.dp),
-          content = { Text("File") }
+    MenuBar(
+      modifier = Modifier
+        .padding(start = 5.dp, top = 10.dp),
+      items = listOf(
+        MenuItem(
+          content = { Text("File") },
+          subItems = listOf(
+            MenuItem(
+              content = { Text("Save") },
+              onClick = { println("Save") }
+            ),
+            MenuItem(
+              content = { Text("Load") },
+              onClick = { println("Load") },
+              subItems = listOf(
+                MenuItem(
+                  content = { Text("Text") },
+                  onClick = { println("Load Raw") }
+                ),
+                MenuItem(
+                  content = { Text("Local File") },
+                  onClick = { println("Load Local File") }
+                )
+              )
+            )
+          )
+        ),
+        MenuItem(
+          content = { Text("Edit") },
+          subItems = listOf(
+            MenuItem(
+              content = { Text("Copy") },
+              onClick = { println("Copy") }
+            )
+          )
         )
-      },
-      expanded = active,
-      onDismissRequest = { active = false },
-      dropdownContent = {
-        DropdownMenuItem(
-          onClick = {
-            println("Save")
-          },
-          content = {
-            Text("Save")
-          }
-        )
-      }
+      )
     )
   }
 }
@@ -143,11 +161,15 @@ fun NodeArea() {
     Box(
       modifier = Modifier
         .fillMaxSize()
+        .absoluteOffset(
+          x = { translate.x },
+          y = { translate.y }
+        )
         .drawLayer(
+          // https://github.com/JetBrains/compose-jb/issues/127
+          //   scale will currently break tap/clickables
           scaleX = scale,
-          scaleY = scale,
-          translationX = translate.x,
-          translationY = translate.y
+          scaleY = scale
         ),
     ) {
       for (i in 1..2) {
@@ -188,19 +210,27 @@ fun Node(
   scale: Float
 ) {
   val textStyle = TextStyle(color = EditorColors.NodeText)
+  var size by remember { mutableStateOf(Size.Zero) }
 
   val paddingSize = 12.dp
   val borderSize = 1.dp
   val roundedCornerShape = RoundedCornerShape(4.dp)
 
+  Canvas(Modifier) {
+    drawLine(Color.White, start = Offset.Zero, end = position + Offset(0f, size.height / 2f))
+  }
+
   Column(
     modifier = Modifier
-      .drawLayer(
-        translationX = position.x,
-        translationY = position.y
+      .absoluteOffset(
+        x = { position.x },
+        y = { position.y }
       )
       .preferredHeight(IntrinsicSize.Min)
-      .preferredWidth(IntrinsicSize.Min),
+      .preferredWidth(IntrinsicSize.Min)
+      .onGloballyPositioned { coordinates ->
+        size = coordinates.boundsInParent.size
+      },
   ) {
     var hasLock by remember { mutableStateOf(false) }
     Column(
@@ -253,6 +283,7 @@ fun Node(
           Text(
             text = title,
             color = EditorColors.NodeText,
+            softWrap = false,
             modifier = Modifier
               .clickable(
                 onDoubleClick = { editTitle = true },
@@ -278,7 +309,7 @@ fun Node(
         // Inputs
         Column(
           modifier = Modifier
-            .background(EditorColors.Node)
+            .background(EditorColors.NodeInputs)
             .weight(1f)
         ) {
           Column(

@@ -6,7 +6,7 @@ plugins {
   idea
   kotlin("multiplatform")
   kotlin("plugin.serialization")
-  id("org.jetbrains.compose") version "0.2.0-build124"
+  id("org.jetbrains.compose") version "0.2.0-build127"
 }
 
 ext.set("serialization", true)
@@ -29,7 +29,7 @@ kotlin {
     }
     val jvmMain by getting {
       dependencies {
-        implementation(compose.desktop.all)
+        implementation(compose.desktop.currentOs)
       }
     }
   }
