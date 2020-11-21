@@ -37,7 +37,7 @@ kotlin {
 
 compose.desktop {
   application {
-    mainClass = "org.lanternpowered.porygen.EditorKt"
+    mainClass = "org.lanternpowered.porygen.editor.MainKt"
 
     nativeDistributions {
       targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
