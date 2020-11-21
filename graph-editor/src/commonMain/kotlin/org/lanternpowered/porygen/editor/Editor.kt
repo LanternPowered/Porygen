@@ -11,28 +11,14 @@
 
 package org.lanternpowered.porygen.editor
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.zoomable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.absoluteOffset
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.preferredHeight
-import androidx.compose.foundation.layout.preferredSize
-import androidx.compose.foundation.layout.preferredWidth
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
@@ -41,20 +27,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.drawLayer
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.gesture.DragObserver
 import androidx.compose.ui.gesture.doubleTapGestureFilter
-import androidx.compose.ui.gesture.rawDragGestureFilter
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.boundsInParent
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -120,22 +97,6 @@ fun Menu() {
   }
 }
 
-class DragLock {
-  var isLocked: Boolean = false
-    private set
-
-  fun lock(): Boolean {
-    if (isLocked)
-      return false
-    isLocked = true
-    return true
-  }
-
-  fun unlock() {
-    isLocked = false
-  }
-}
-
 @Composable
 fun NodeArea() {
   var scale by remember { mutableStateOf(1f) }
@@ -149,13 +110,9 @@ fun NodeArea() {
         true
       }
       .zoomable(onZoomDelta = { scale *= it })
-      .rawDragGestureFilter(object : DragObserver {
-        override fun onDrag(dragDistance: Offset): Offset {
-          if (!dragLock.isLocked)
-            translate += dragDistance
-          return Offset.Zero
-        }
-      })
+      .onDrag(dragLock) { dragDistance ->
+        translate += dragDistance
+      }
       .doubleTapGestureFilter {
         // Re-center
         translate = Offset.Zero
@@ -179,7 +136,6 @@ fun NodeArea() {
       for (i in 1..2) {
         var position by remember { mutableStateOf(Offset.Zero) }
         var title by remember { mutableStateOf("Title $i") }
-        var hoveredPort: Int? by remember { mutableStateOf(null) }
         Node(
           title = title,
           dragLock = dragLock,

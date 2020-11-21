@@ -166,7 +166,7 @@ fun Node(
     drawLine(Color.White, start = Offset.Zero, end = position + Offset(0f, size.height / 2f))
   }
 
-  Column(
+  Box(
     modifier = Modifier
       .absoluteOffset(
         x = { position.x },
@@ -179,29 +179,10 @@ fun Node(
       },
   ) {
     var expanded by remember { mutableStateOf(true) }
-    var hasLock by remember { mutableStateOf(false) }
+
     Column(
       modifier = Modifier
         .fillMaxWidth()
-        .rawDragGestureFilter(object : DragObserver {
-          override fun onStart(downPosition: Offset) {
-            println("START A")
-            if (dragLock.lock())
-              hasLock = true
-          }
-
-          override fun onStop(velocity: Offset) {
-            if (hasLock)
-              dragLock.unlock()
-            hasLock = false
-          }
-
-          override fun onDrag(dragDistance: Offset): Offset {
-            if (hasLock)
-              onUpdatePosition(position + Offset(dragDistance.x, dragDistance.y) / scale)
-            return Offset.Zero
-          }
-        })
         .background(
           color = EditorColors.Node,
           shape = roundedCornerShape
@@ -210,14 +191,23 @@ fun Node(
           width = borderSize,
           color = EditorColors.NodeBorder,
           shape = roundedCornerShape
-        ),
+        )
+        // This just holds the lock so the node area
+        // can't acquire the lock when dragging
+        .onDrag(dragLock),
     ) {
-      NodeHeader(
-        title = title,
-        onUpdateTitle = onUpdateTitle,
-        expanded = expanded,
-        onUpdateExpanded = { expanded = it }
-      )
+      Box(modifier = Modifier
+        .onDrag(dragLock) { dragDistance ->
+          onUpdatePosition(position + Offset(dragDistance.x, dragDistance.y) / scale)
+        }
+      ) {
+        NodeHeader(
+          title = title,
+          onUpdateTitle = onUpdateTitle,
+          expanded = expanded,
+          onUpdateExpanded = { expanded = it }
+        )
+      }
 
       if (expanded) {
         HorizontalDivider(
