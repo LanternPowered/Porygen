@@ -28,6 +28,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.preferredHeight
 import androidx.compose.foundation.layout.preferredSize
 import androidx.compose.foundation.layout.preferredWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -37,6 +38,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -60,7 +62,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-private val NodeHeaderPadding = 12.dp
+private val NodeHeaderPadding = 8.dp
 private val NodeTextStyle = TextStyle(
   color = EditorColors.NodeText,
   fontSize = 16.sp
@@ -86,42 +88,53 @@ fun NodeTitle(
       singleLine = true,
       keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
       onImeActionPerformed = { finishEdit() },
+      modifier = Modifier
+        .padding(start = 4.dp, end = 4.dp)
     )
   } else {
-    BasicText(
-      text = title,
-      style = NodeTextStyle,
-      softWrap = false,
+    Box(
       modifier = Modifier
         .clickable(
           onDoubleClick = { editTitle = true },
           onClick = {}
         )
         .doubleTapGestureFilter { editTitle = true }
-    )
+    ) {
+      BasicText(
+        text = title,
+        style = NodeTextStyle,
+        softWrap = false,
+        modifier = Modifier
+          .padding(start = 4.dp, end = 4.dp)
+          .preferredWidth(IntrinsicSize.Max)
+      )
+    }
   }
 }
 
 @Composable
 fun NodeHeader(
   title: String,
-  onUpdateTitle: (String) -> Unit
+  onUpdateTitle: (String) -> Unit,
+  expanded: Boolean,
+  onUpdateExpanded: (Boolean) -> Unit
 ) {
   Row(
     modifier = Modifier
-      .padding(
-        start = NodeHeaderPadding,
-        top = NodeHeaderPadding,
-        bottom = NodeHeaderPadding,
-        end = NodeHeaderPadding - 6.dp
-      )
+      .padding(NodeHeaderPadding)
       .fillMaxWidth(),
-    horizontalArrangement = Arrangement.SpaceBetween
+    horizontalArrangement = Arrangement.SpaceBetween,
+    verticalAlignment = Alignment.CenterVertically
   ) {
     NodeTitle(title, onUpdateTitle)
 
     Icon(
-      imageVector = Icons.Default.KeyboardArrowLeft,
+      modifier = Modifier
+        .size(24.dp)
+        .clickable(onClick = {
+          onUpdateExpanded(!expanded)
+        }),
+      imageVector = if (expanded) Icons.Default.KeyboardArrowDown else Icons.Default.KeyboardArrowLeft,
       tint = EditorColors.NodeText
     )
   }
@@ -138,7 +151,6 @@ fun Node(
   onHoverInputPort: (Int) -> Unit,
   onStopOutputPortDrag: (Int) -> Unit
 ) {
-  val textStyle = TextStyle(color = EditorColors.NodeText)
   var size by remember { mutableStateOf(Size.Zero) }
 
   val paddingSize = 12.dp
@@ -161,20 +173,24 @@ fun Node(
         size = coordinates.boundsInParent.size
       },
   ) {
+    var expanded by remember { mutableStateOf(true) }
     var hasLock by remember { mutableStateOf(false) }
     Column(
       modifier = Modifier
+        .fillMaxWidth()
         .rawDragGestureFilter(object : DragObserver {
           override fun onStart(downPosition: Offset) {
             println("START A")
             if (dragLock.lock())
               hasLock = true
           }
+
           override fun onStop(velocity: Offset) {
             if (hasLock)
               dragLock.unlock()
             hasLock = false
           }
+
           override fun onDrag(dragDistance: Offset): Offset {
             if (hasLock)
               onUpdatePosition(position + Offset(dragDistance.x, dragDistance.y) / scale)
@@ -191,97 +207,105 @@ fun Node(
           shape = roundedCornerShape
         ),
     ) {
-      NodeHeader(title, onUpdateTitle)
-
-      HorizontalDivider(
-        thickness = borderSize,
-        color = EditorColors.NodeInnerDivider
+      NodeHeader(
+        title = title,
+        onUpdateTitle = onUpdateTitle,
+        expanded = expanded,
+        onUpdateExpanded = { expanded = it }
       )
 
-      // Inputs and outputs
-      Row(
-        modifier = Modifier
-          .preferredHeight(IntrinsicSize.Min)
-      ) {
-        // Inputs
-        Column(
-          modifier = Modifier
-            .background(EditorColors.NodeInputs)
-            .weight(1f)
-            .fillMaxHeight()
-        ) {
-          Column(
-            modifier = Modifier
-              .padding(7.dp)
-          ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-              Box(modifier = Modifier.preferredSize(10.dp).clip(CircleShape).background(Color.Red))
-              Spacer(Modifier.width(5.dp))
-              Text("in1")
-            }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-              var isHovering by remember { mutableStateOf(false) }
-              var hasDrawLock by remember { mutableStateOf(false) }
-              Box(
-                modifier = Modifier
-                  .preferredSize(10.dp)
-                  .clip(CircleShape)
-                  .background(if (isHovering) Color.Blue else Color.Red)
-                  .onHover(
-                    onEnter = {
-                      isHovering = true
-                      onHoverInputPort(1)
-                    },
-                    onExit = {
-                      isHovering = false
-                    }
-                  )
-                  .rawDragGestureFilter(object : DragObserver {
-                    override fun onStart(downPosition: Offset) {
-                      println("START B")
-                      if (dragLock.lock())
-                        hasDrawLock = true
-                    }
-                    override fun onStop(velocity: Offset) {
-                      if (!hasDrawLock)
-                        return
-                      dragLock.unlock()
-                      hasDrawLock = false
-                      onStopOutputPortDrag(0)
-                    }
-                  })
-              )
-              Spacer(Modifier.width(5.dp))
-              Text("in2")
-            }
-          }
-        }
-        VerticalDivider(
+      if (expanded) {
+        HorizontalDivider(
           thickness = borderSize,
           color = EditorColors.NodeInnerDivider
         )
-        // Outputs
-        Column(
+
+        // Inputs and outputs
+        Row(
           modifier = Modifier
-            .background(EditorColors.NodeOutputs)
-            .weight(1f)
-            .fillMaxHeight()
+            .preferredHeight(IntrinsicSize.Min)
         ) {
+          // Inputs
           Column(
             modifier = Modifier
-              .padding(paddingSize)
+              .background(EditorColors.NodeInputs)
+              .weight(1f)
+              .fillMaxHeight()
           ) {
-            Text("Output")
+            Column(
+              modifier = Modifier
+                .padding(7.dp)
+            ) {
+              Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(modifier = Modifier.preferredSize(10.dp).clip(CircleShape).background(Color.Red))
+                Spacer(Modifier.width(5.dp))
+                Text("in1")
+              }
+              Row(verticalAlignment = Alignment.CenterVertically) {
+                var isHovering by remember { mutableStateOf(false) }
+                var hasDrawLock by remember { mutableStateOf(false) }
+                Box(
+                  modifier = Modifier
+                    .preferredSize(10.dp)
+                    .clip(CircleShape)
+                    .background(if (isHovering) Color.Blue else Color.Red)
+                    .onHover(
+                      onEnter = {
+                        isHovering = true
+                        onHoverInputPort(1)
+                      },
+                      onExit = {
+                        isHovering = false
+                      }
+                    )
+                    .rawDragGestureFilter(object : DragObserver {
+                      override fun onStart(downPosition: Offset) {
+                        println("START B")
+                        if (dragLock.lock())
+                          hasDrawLock = true
+                      }
+
+                      override fun onStop(velocity: Offset) {
+                        if (!hasDrawLock)
+                          return
+                        dragLock.unlock()
+                        hasDrawLock = false
+                        onStopOutputPortDrag(0)
+                      }
+                    })
+                )
+                Spacer(Modifier.width(5.dp))
+                Text("in2")
+              }
+            }
+          }
+          VerticalDivider(
+            thickness = borderSize,
+            color = EditorColors.NodeInnerDivider
+          )
+          // Outputs
+          Column(
+            modifier = Modifier
+              .background(EditorColors.NodeOutputs)
+              .weight(1f)
+              .fillMaxHeight()
+          ) {
+            Column(
+              modifier = Modifier
+                .padding(paddingSize)
+            ) {
+              Text("Output")
+            }
           }
         }
+
+        HorizontalDivider(
+          thickness = borderSize,
+          color = EditorColors.NodeInnerDivider
+        )
+
+        Box(Modifier.preferredHeight(6.dp))
       }
-
-      HorizontalDivider(
-        thickness = borderSize,
-        color = EditorColors.NodeInnerDivider
-      )
-
-      Box(Modifier.preferredHeight(6.dp))
     }
   }
 }
