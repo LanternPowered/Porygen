@@ -198,7 +198,7 @@ fun Node(
     ) {
       Box(modifier = Modifier
         .onDrag(dragLock) { dragDistance ->
-          onUpdatePosition(position + Offset(dragDistance.x, dragDistance.y) / scale)
+          onUpdatePosition(position + dragDistance / scale)
         }
       ) {
         NodeHeader(

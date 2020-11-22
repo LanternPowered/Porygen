@@ -18,7 +18,7 @@ actual fun Modifier.onHover(
   onExit: () -> Unit,
   onEnter: () -> Unit
 ): Modifier = pointerMoveFilter(
-  onMove = { onMove(it); true; },
-  onExit = { onExit(); true; },
-  onEnter = { onEnter(); true; }
+  onMove = { onMove(it); false; },
+  onExit = { onExit(); false; },
+  onEnter = { onEnter(); false; }
 )
