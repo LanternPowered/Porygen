@@ -11,28 +11,28 @@ package org.lanternpowered.porygen.math.geom
 
 import org.lanternpowered.porygen.util.ToStringHelper
 import org.lanternpowered.porygen.math.floorToInt
-import org.lanternpowered.porygen.math.vector.Vector2d
-import org.lanternpowered.porygen.math.vector.Vector2i
+import org.lanternpowered.porygen.math.vector.Vec2d
+import org.lanternpowered.porygen.math.vector.Vec2i
 import kotlin.math.max
 import kotlin.math.min
 
-class Rectangled : AbstractRectangle<Vector2d> {
+class Rectangled : AbstractRectangle<Vec2d> {
 
   private val polygon by lazy {
     Polygond.newConvexPolygon(
-        Vector2d(min.x, min.y),
-        Vector2d(max.x, min.y),
-        Vector2d(max.x, max.y),
-        Vector2d(min.x, max.y))
+        Vec2d(min.x, min.y),
+        Vec2d(max.x, min.y),
+        Vec2d(max.x, max.y),
+        Vec2d(min.x, max.y))
   }
 
-  override val size: Vector2d by lazy { max - min }
+  override val size: Vec2d by lazy { max - min }
 
   constructor(minX: Double, minY: Double, maxX: Double, maxY: Double) :
-      super(Vector2d(min(minX, maxX), min(minY, maxY)), Vector2d(max(minX, maxX), max(minY, maxY)))
+      super(Vec2d(min(minX, maxX), min(minY, maxY)), Vec2d(max(minX, maxX), max(minY, maxY)))
 
-  constructor(min: Vector2d, max: Vector2d) :
-      super(Vector2d(min(min.x, max.x), min(min.y, max.y)), Vector2d(max(min.x, max.x), max(min.y, max.y)))
+  constructor(min: Vec2d, max: Vec2d) :
+      super(Vec2d(min(min.x, max.x), min(min.y, max.y)), Vec2d(max(min.x, max.x), max(min.y, max.y)))
 
   override fun contains(x: Double, y: Double): Boolean =
       x <= max.x && x >= min.x && y <= max.y && y >= min.y
@@ -44,8 +44,8 @@ class Rectangled : AbstractRectangle<Vector2d> {
     val min = min
     val max = max
     return Rectanglei(
-        Vector2i(floorToInt(min.x), floorToInt(min.y)),
-        Vector2i(floorToInt(max.x), floorToInt(max.y)))
+        Vec2i(floorToInt(min.x), floorToInt(min.y)),
+        Vec2i(floorToInt(max.x), floorToInt(max.y)))
   }
 
   override fun toDouble(): Rectangled = this

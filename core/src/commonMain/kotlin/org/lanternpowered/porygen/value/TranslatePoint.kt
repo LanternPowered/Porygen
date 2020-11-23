@@ -13,10 +13,10 @@ import org.lanternpowered.porygen.noise.NoiseModule
 import org.lanternpowered.porygen.noise.asNoiseModule
 
 private class TranslatePoint2(
-    val source: Value2,
-    val xOffset: Value2,
-    val yOffset: Value2
-) : Value2 {
+  val source: Vec2dToDouble,
+  val xOffset: Vec2dToDouble,
+  val yOffset: Vec2dToDouble
+) : Vec2dToDouble {
   override fun get(x: Double, y: Double): Double {
     val ox = x + xOffset[x, y]
     val oy = y + yOffset[x, y]
@@ -25,11 +25,11 @@ private class TranslatePoint2(
 }
 
 private class TranslatePoint3(
-    val source: Value3,
-    val xOffset: Value3,
-    val yOffset: Value3,
-    val zOffset: Value3
-) : Value3 {
+  val source: Vec3dToDouble,
+  val xOffset: Vec3dToDouble,
+  val yOffset: Vec3dToDouble,
+  val zOffset: Vec3dToDouble
+) : Vec3dToDouble {
   override fun get(x: Double, y: Double, z: Double): Double {
     val ox = x + xOffset[x, y, z]
     val oy = y + yOffset[x, y, z]
@@ -38,138 +38,138 @@ private class TranslatePoint3(
   }
 }
 
-fun Value2.translatePoint(
-    xTranslation: Value2,
-    yTranslation: Value2
-): Value2 =
+fun Vec2dToDouble.translatePoint(
+  xTranslation: Vec2dToDouble,
+  yTranslation: Vec2dToDouble
+): Vec2dToDouble =
     TranslatePoint2(this, xTranslation, yTranslation)
 
-fun Value2.translatePoint(
-    xTranslation: Value2,
-    yTranslation: Double = 0.0
-): Value2 =
-    TranslatePoint2(this, xTranslation, Constant(yTranslation))
+fun Vec2dToDouble.translatePoint(
+  xTranslation: Vec2dToDouble,
+  yTranslation: Double = 0.0
+): Vec2dToDouble =
+    TranslatePoint2(this, xTranslation, ConstantDouble(yTranslation))
 
-fun Value2.translatePoint(
+fun Vec2dToDouble.translatePoint(
     xTranslation: Double = 0.0,
-    yTranslation: Value2
-): Value2 =
-    TranslatePoint2(this, Constant(xTranslation), yTranslation)
+    yTranslation: Vec2dToDouble
+): Vec2dToDouble =
+    TranslatePoint2(this, ConstantDouble(xTranslation), yTranslation)
 
-fun Value2.translatePoint(
+fun Vec2dToDouble.translatePoint(
     xTranslation: Double = 0.0,
     yTranslation: Double = 0.0
-): Value2 =
-    TranslatePoint2(this, Constant(xTranslation), Constant(yTranslation))
+): Vec2dToDouble =
+    TranslatePoint2(this, ConstantDouble(xTranslation), ConstantDouble(yTranslation))
 
-fun Value3.translatePoint(
-    xTranslation: Value3,
-    yTranslation: Value3,
-    zTranslation: Value3
-): Value3 =
+fun Vec3dToDouble.translatePoint(
+  xTranslation: Vec3dToDouble,
+  yTranslation: Vec3dToDouble,
+  zTranslation: Vec3dToDouble
+): Vec3dToDouble =
     TranslatePoint3(this, xTranslation, yTranslation, zTranslation)
 
-fun Value3.translatePoint(
-    xTranslation: Double = 0.0,
-    yTranslation: Value3,
-    zTranslation: Value3
-): Value3 =
-    TranslatePoint3(this, Constant(xTranslation), yTranslation, zTranslation)
+fun Vec3dToDouble.translatePoint(
+  xTranslation: Double = 0.0,
+  yTranslation: Vec3dToDouble,
+  zTranslation: Vec3dToDouble
+): Vec3dToDouble =
+    TranslatePoint3(this, ConstantDouble(xTranslation), yTranslation, zTranslation)
 
-fun Value3.translatePoint(
-    xTranslation: Value3,
-    yTranslation: Double = 0.0,
-    zTranslation: Value3
-): Value3 =
-    TranslatePoint3(this, xTranslation, Constant(yTranslation), zTranslation)
+fun Vec3dToDouble.translatePoint(
+  xTranslation: Vec3dToDouble,
+  yTranslation: Double = 0.0,
+  zTranslation: Vec3dToDouble
+): Vec3dToDouble =
+    TranslatePoint3(this, xTranslation, ConstantDouble(yTranslation), zTranslation)
 
-fun Value3.translatePoint(
-    xTranslation: Double = 0.0,
-    yTranslation: Double = 0.0,
-    zTranslation: Value3
-): Value3 =
-    TranslatePoint3(this, Constant(xTranslation), Constant(yTranslation), zTranslation)
-
-fun Value3.translatePoint(
-    xTranslation: Value3,
-    yTranslation: Value3,
-    zTranslation: Double = 0.0
-): Value3 =
-    TranslatePoint3(this, xTranslation, yTranslation, Constant(zTranslation))
-
-fun Value3.translatePoint(
-    xTranslation: Double = 0.0,
-    yTranslation: Value3,
-    zTranslation: Double = 0.0
-): Value3 =
-    TranslatePoint3(this, Constant(xTranslation), yTranslation, Constant(zTranslation))
-
-fun Value3.translatePoint(
+fun Vec3dToDouble.translatePoint(
     xTranslation: Double = 0.0,
     yTranslation: Double = 0.0,
-    zTranslation: Double = 0.0
-): Value3 =
-    TranslatePoint3(this, Constant(xTranslation), Constant(yTranslation), Constant(zTranslation))
+    zTranslation: Vec3dToDouble
+): Vec3dToDouble =
+    TranslatePoint3(this, ConstantDouble(xTranslation), ConstantDouble(yTranslation), zTranslation)
 
-fun Value3.translatePoint(
-    xTranslation: Value3,
+fun Vec3dToDouble.translatePoint(
+  xTranslation: Vec3dToDouble,
+  yTranslation: Vec3dToDouble,
+  zTranslation: Double = 0.0
+): Vec3dToDouble =
+    TranslatePoint3(this, xTranslation, yTranslation, ConstantDouble(zTranslation))
+
+fun Vec3dToDouble.translatePoint(
+  xTranslation: Double = 0.0,
+  yTranslation: Vec3dToDouble,
+  zTranslation: Double = 0.0
+): Vec3dToDouble =
+    TranslatePoint3(this, ConstantDouble(xTranslation), yTranslation, ConstantDouble(zTranslation))
+
+fun Vec3dToDouble.translatePoint(
+    xTranslation: Double = 0.0,
     yTranslation: Double = 0.0,
     zTranslation: Double = 0.0
-): Value3 =
-    TranslatePoint3(this, xTranslation, Constant(yTranslation), Constant(zTranslation))
+): Vec3dToDouble =
+    TranslatePoint3(this, ConstantDouble(xTranslation), ConstantDouble(yTranslation), ConstantDouble(zTranslation))
+
+fun Vec3dToDouble.translatePoint(
+  xTranslation: Vec3dToDouble,
+  yTranslation: Double = 0.0,
+  zTranslation: Double = 0.0
+): Vec3dToDouble =
+    TranslatePoint3(this, xTranslation, ConstantDouble(yTranslation), ConstantDouble(zTranslation))
 
 fun NoiseModule.translatePoint(
-    xTranslation: Value3,
-    yTranslation: Value3,
-    zTranslation: Value3
+  xTranslation: Vec3dToDouble,
+  yTranslation: Vec3dToDouble,
+  zTranslation: Vec3dToDouble
 ): NoiseModule =
     TranslatePoint3(this, xTranslation, yTranslation, zTranslation).asNoiseModule()
 
 fun NoiseModule.translatePoint(
-    xTranslation: Double = 0.0,
-    yTranslation: Value3,
-    zTranslation: Value3
+  xTranslation: Double = 0.0,
+  yTranslation: Vec3dToDouble,
+  zTranslation: Vec3dToDouble
 ): NoiseModule =
-    TranslatePoint3(this, Constant(xTranslation), yTranslation, zTranslation).asNoiseModule()
+    TranslatePoint3(this, ConstantDouble(xTranslation), yTranslation, zTranslation).asNoiseModule()
 
 fun NoiseModule.translatePoint(
-    xTranslation: Value3,
-    yTranslation: Double = 0.0,
-    zTranslation: Value3
+  xTranslation: Vec3dToDouble,
+  yTranslation: Double = 0.0,
+  zTranslation: Vec3dToDouble
 ): NoiseModule =
-    TranslatePoint3(this, xTranslation, Constant(yTranslation), zTranslation).asNoiseModule()
-
-fun NoiseModule.translatePoint(
-    xTranslation: Double = 0.0,
-    yTranslation: Double = 0.0,
-    zTranslation: Value3
-): NoiseModule =
-    TranslatePoint3(this, Constant(xTranslation), Constant(yTranslation), zTranslation).asNoiseModule()
-
-fun NoiseModule.translatePoint(
-    xTranslation: Value3,
-    yTranslation: Value3,
-    zTranslation: Double = 0.0
-): NoiseModule =
-    TranslatePoint3(this, xTranslation, yTranslation, Constant(zTranslation)).asNoiseModule()
-
-fun NoiseModule.translatePoint(
-    xTranslation: Double = 0.0,
-    yTranslation: Value3,
-    zTranslation: Double = 0.0
-): NoiseModule =
-    TranslatePoint3(this, Constant(xTranslation), yTranslation, Constant(zTranslation)).asNoiseModule()
+    TranslatePoint3(this, xTranslation, ConstantDouble(yTranslation), zTranslation).asNoiseModule()
 
 fun NoiseModule.translatePoint(
     xTranslation: Double = 0.0,
     yTranslation: Double = 0.0,
-    zTranslation: Double = 0.0
+    zTranslation: Vec3dToDouble
 ): NoiseModule =
-    TranslatePoint3(this, Constant(xTranslation), Constant(yTranslation), Constant(zTranslation)).asNoiseModule()
+    TranslatePoint3(this, ConstantDouble(xTranslation), ConstantDouble(yTranslation), zTranslation).asNoiseModule()
 
 fun NoiseModule.translatePoint(
-    xTranslation: Value3,
+  xTranslation: Vec3dToDouble,
+  yTranslation: Vec3dToDouble,
+  zTranslation: Double = 0.0
+): NoiseModule =
+    TranslatePoint3(this, xTranslation, yTranslation, ConstantDouble(zTranslation)).asNoiseModule()
+
+fun NoiseModule.translatePoint(
+  xTranslation: Double = 0.0,
+  yTranslation: Vec3dToDouble,
+  zTranslation: Double = 0.0
+): NoiseModule =
+    TranslatePoint3(this, ConstantDouble(xTranslation), yTranslation, ConstantDouble(zTranslation)).asNoiseModule()
+
+fun NoiseModule.translatePoint(
+    xTranslation: Double = 0.0,
     yTranslation: Double = 0.0,
     zTranslation: Double = 0.0
 ): NoiseModule =
-    TranslatePoint3(this, xTranslation, Constant(yTranslation), Constant(zTranslation)).asNoiseModule()
+    TranslatePoint3(this, ConstantDouble(xTranslation), ConstantDouble(yTranslation), ConstantDouble(zTranslation)).asNoiseModule()
+
+fun NoiseModule.translatePoint(
+  xTranslation: Vec3dToDouble,
+  yTranslation: Double = 0.0,
+  zTranslation: Double = 0.0
+): NoiseModule =
+    TranslatePoint3(this, xTranslation, ConstantDouble(yTranslation), ConstantDouble(zTranslation)).asNoiseModule()

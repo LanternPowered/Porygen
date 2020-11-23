@@ -11,7 +11,7 @@ package org.lanternpowered.porygen.math.geom
 
 import org.lanternpowered.porygen.delaunay.Edge2d
 import org.lanternpowered.porygen.delaunay.EdgeDistancePack
-import org.lanternpowered.porygen.math.vector.Vector2d
+import org.lanternpowered.porygen.math.vector.Vec2d
 import kotlin.math.sign
 import kotlin.math.sqrt
 
@@ -21,9 +21,9 @@ import kotlin.math.sqrt
  * @author Johannes Diemke
  */
 data class Triangle2d(
-    val a: Vector2d,
-    val b: Vector2d,
-    val c: Vector2d
+  val a: Vec2d,
+  val b: Vec2d,
+  val c: Vec2d
 ) : AbstractShape() {
 
   private val polygon by lazy {
@@ -33,19 +33,19 @@ data class Triangle2d(
   /**
    * The circumcenter of this triangle.
    */
-  val circumcenter: Vector2d by lazy { getCircumcenter0() }
+  val circumcenter: Vec2d by lazy { getCircumcenter0() }
 
   /**
    * The centroid of this triangle.
    */
-  val centroid: Vector2d by lazy { getCentroid0() }
+  val centroid: Vec2d by lazy { getCentroid0() }
 
   /**
    * The incenter of this triangle.
    */
-  val incenter: Vector2d by lazy { getIncenter0() }
+  val incenter: Vec2d by lazy { getIncenter0() }
 
-  private fun getCircumcenter0(): Vector2d {
+  private fun getCircumcenter0(): Vec2d {
     val abCenter = (a + b) * 0.5
     val bcCenter = (b + c) * 0.5
 
@@ -56,16 +56,16 @@ data class Triangle2d(
     val bBC = bcCenter.y - bcSlope * bcCenter.x
 
     val x = (bAB - bBC) / (bcSlope - abSlope)
-    return Vector2d(x, abSlope * x + bAB)
+    return Vec2d(x, abSlope * x + bAB)
   }
 
-  private fun getCentroid0(): Vector2d {
+  private fun getCentroid0(): Vec2d {
     val x = (a.x + b.x + c.x) / 3.0
     val y = (a.y + b.y + c.y) / 3.0
-    return Vector2d(x, y)
+    return Vec2d(x, y)
   }
 
-  private fun getIncenter0(): Vector2d {
+  private fun getIncenter0(): Vec2d {
     // https://www.mathopenref.com/coordincenter.html
     var dx = b.x - c.x
     var dy = b.y - c.y
@@ -83,7 +83,7 @@ data class Triangle2d(
     val ox = (da * a.x + db * b.x + dc * c.x) / dp
     val oy = (da * a.y + db * b.y + dc * c.y) / dp
 
-    return Vector2d(ox, oy)
+    return Vec2d(ox, oy)
   }
 
   /**
@@ -104,7 +104,7 @@ data class Triangle2d(
    * @return Returns true if the point lies inside the circumcircle through
    *         the three points a, b, and c of the triangle
    */
-  fun isPointInCircumcircle(point: Vector2d): Boolean {
+  fun isPointInCircumcircle(point: Vec2d): Boolean {
     val a11 = a.x - point.x
     val a21 = b.x - point.x
     val a31 = c.x - point.x
@@ -144,7 +144,7 @@ data class Triangle2d(
    * @param vertex The vertex to be tested
    * @return Returns true if the Vertex is one of the vertices describing this triangle
    */
-  fun hasVertex(vertex: Vector2d): Boolean =
+  fun hasVertex(vertex: Vec2d): Boolean =
       a == vertex || b == vertex || c == vertex
 
   /**
@@ -153,7 +153,7 @@ data class Triangle2d(
    * @param edge The edge
    * @return The vertex of this triangle that is not part of the edge
    */
-  fun getNoneEdgeVertex(edge: Edge2d): Vector2d? {
+  fun getNoneEdgeVertex(edge: Edge2d): Vec2d? {
     return when {
       a != edge.a && a != edge.b -> a
       b != edge.a && b != edge.b -> b
@@ -169,7 +169,7 @@ data class Triangle2d(
    * @param point The point the nearest edge is queried for
    * @return The edge of this triangle that is nearest to the specified point
    */
-  fun findNearestEdge(point: Vector2d): EdgeDistancePack {
+  fun findNearestEdge(point: Vec2d): EdgeDistancePack {
     fun distanceSquared(edge: Edge2d) = (computeClosestPoint(edge, point) - point).lengthSquared
 
     val ab = Edge2d(a, b)
@@ -194,7 +194,7 @@ data class Triangle2d(
    * @param point The point to which we search the closest point on the edge
    * @return The closest point on the given edge to the specified point
    */
-  private fun computeClosestPoint(edge: Edge2d, point: Vector2d): Vector2d {
+  private fun computeClosestPoint(edge: Edge2d, point: Vec2d): Vec2d {
     val ab = edge.b - edge.a
     var t = (point - edge.a).dot(ab) / ab.dot(ab)
     if (t < 0.0) {
@@ -235,9 +235,9 @@ data class Triangle2d(
   override fun contains(minX: Double, minY: Double, maxX: Double, maxY: Double): Boolean =
       this.polygon.contains(Rectangled(minX, minY, maxX, maxY))
 
-  override fun contains(x: Double, y: Double): Boolean = contains(Vector2d(x, y))
+  override fun contains(x: Double, y: Double): Boolean = contains(Vec2d(x, y))
 
-  override fun contains(point: Vector2d): Boolean {
+  override fun contains(point: Vec2d): Boolean {
     // See Real-Time Collision Detection, chap. 5, p. 206.
     val pab = (point - a).cross(b - a)
     val pbc = (point - b).cross(c - b)

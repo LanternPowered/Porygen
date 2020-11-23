@@ -44,7 +44,7 @@ enum class LatticeOrientation {
    * differently than the two horizontal directions. There may be subtle diagonal artifacts, similar to
    * classic Simplex.
    */
-  CLASSIC,
+  Classic,
 
   /**
    * Generates simplex-style noise with Y pointing up the main diagonal on the noise lattice. If used
@@ -56,7 +56,7 @@ enum class LatticeOrientation {
    * - If T is time and X/Y or X/Z are horizontal, call noise(x, T, y) or noise(x, T, z), or use mode XY_BEFORE_Z
    * - If only two coordinates are needed for a 2D noise plane, call noise(x, 0, y) or noise(x, 0, z), or use mode XY_BEFORE_Z
    */
-  XZ_BEFORE_Y,
+  XZBeforeY,
 
   /**
    * Generates simplex-style noise with Z pointing up the main diagonal on the noise lattice. If used
@@ -68,5 +68,5 @@ enum class LatticeOrientation {
    * - If T is time and X/Y or X/Z are horizontal, call noise(x, y, T) or noise(x, z, T), or use mode XY_BEFORE_Z
    * - If only two coordinates are needed for a 2D noise plane, call noise(x, y, 0) or noise(x, z, 0), or use mode XZ_BEFORE_Y
    */
-  XY_BEFORE_Z
+  XYBeforeZ
 }

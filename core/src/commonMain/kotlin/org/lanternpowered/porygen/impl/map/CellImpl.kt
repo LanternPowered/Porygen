@@ -12,14 +12,14 @@ package org.lanternpowered.porygen.impl.map
 import org.lanternpowered.porygen.map.Cell
 import org.lanternpowered.porygen.math.geom.Polygond
 import org.lanternpowered.porygen.util.pair.packIntPair
-import org.lanternpowered.porygen.math.vector.Vector2d
-import org.lanternpowered.porygen.math.vector.Vector2i
+import org.lanternpowered.porygen.math.vector.Vec2d
+import org.lanternpowered.porygen.math.vector.Vec2i
 
 class CellImpl internal constructor(
-    override val id: Long,
-    override val map: MapImpl,
-    override val centerPoint: Vector2i,
-    override val polygon: Polygond
+  override val id: Long,
+  override val map: MapImpl,
+  override val centerPoint: Vec2i,
+  override val polygon: Polygond
 ) : MapElementImpl(), Cell {
 
   private var hashCode: Int = 0
@@ -45,7 +45,7 @@ class CellImpl internal constructor(
     if (chunk != null)
       return chunk.getCell(x and 0xf, y and 0xf) == this
     // Don't even perform any calculations if the chunk pos isn't in this cell
-    return /*this.chunks.contains(chunkPos) && */ this.polygon.contains(Vector2d(x + 0.5, y + 0.5)) // Use block center as check pos
+    return /*this.chunks.contains(chunkPos) && */ this.polygon.contains(Vec2d(x + 0.5, y + 0.5)) // Use block center as check pos
   }
 
   override fun equals(other: Any?): Boolean {

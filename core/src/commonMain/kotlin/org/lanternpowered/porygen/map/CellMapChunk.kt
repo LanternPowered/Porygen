@@ -9,7 +9,7 @@
  */
 package org.lanternpowered.porygen.map
 
-import org.lanternpowered.porygen.math.vector.Vector2i
+import org.lanternpowered.porygen.math.vector.Vec2i
 
 /**
  * Represents a chunk on a map. A chunk consists of
@@ -25,12 +25,12 @@ interface CellMapChunk : CellMapElement, Releasable {
    * The chunk size. This should be the same
    * for every section in a map.
    */
-  val chunkSize: Vector2i
+  val chunkSize: Vec2i
 
   /**
    * The chunk position.
    */
-  val chunkPosition: Vector2i
+  val chunkPosition: Vec2i
 
   /**
    * All the different [Cell]s within this chunk.

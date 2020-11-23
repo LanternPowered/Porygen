@@ -10,7 +10,7 @@
 package org.lanternpowered.porygen.map.processor
 
 import org.lanternpowered.porygen.map.CellMapView
-import org.lanternpowered.porygen.math.vector.Vector2d
+import org.lanternpowered.porygen.math.vector.Vec2d
 
 /**
  * A processor which will handle the given section [CellMapView].
@@ -31,8 +31,8 @@ interface CellMapProcessor {
    * the processed area. For example, using (0.2, 0.2) will add
    * 20% more map data on each side.
    */
-  val areaOffset: Vector2d
-    get() = Vector2d.ZERO
+  val areaOffset: Vec2d
+    get() = Vec2d.Zero
 
   /**
    * Processes the given [CellMapView].

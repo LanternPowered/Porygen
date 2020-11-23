@@ -9,8 +9,8 @@
  */
 package org.lanternpowered.porygen.math.geom
 
-import org.lanternpowered.porygen.math.vector.Vector2d
-import org.lanternpowered.porygen.math.vector.Vector2i
+import org.lanternpowered.porygen.math.vector.Vec2d
+import org.lanternpowered.porygen.math.vector.Vec2i
 
 interface Shape {
 
@@ -93,12 +93,12 @@ interface Shape {
   fun intersects(polygon: Polygond): Boolean
 
   /**
-   * Gets whether the given point [Vector2d] is located within this [Shape].
+   * Gets whether the given point [Vec2d] is located within this [Shape].
    *
    * @param point The point
    * @return Whether this 2d shape contains the point
    */
-  operator fun contains(point: Vector2i): Boolean =
+  operator fun contains(point: Vec2i): Boolean =
       contains(point.x, point.y)
 
   /**
@@ -111,12 +111,12 @@ interface Shape {
   fun contains(x: Int, y: Int): Boolean
 
   /**
-   * Gets whether the given point [Vector2d] is located within this [Shape].
+   * Gets whether the given point [Vec2d] is located within this [Shape].
    *
    * @param point The point
    * @return Whether this 2d shape contains the point
    */
-  operator fun contains(point: Vector2d): Boolean =
+  operator fun contains(point: Vec2d): Boolean =
       contains(point.x, point.y)
 
   /**

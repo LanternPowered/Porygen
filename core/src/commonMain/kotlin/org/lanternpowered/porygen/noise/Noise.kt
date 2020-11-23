@@ -78,13 +78,13 @@ object Noise {
     val yr: Double
     val zr: Double
     when {
-      orientation === LatticeOrientation.CLASSIC -> {
+      orientation === LatticeOrientation.Classic -> {
         val r = 2.0 / 3.0 * (x + y + z)
         xr = r - x
         yr = r - y
         zr = r - z
       }
-      orientation === LatticeOrientation.XY_BEFORE_Z -> {
+      orientation === LatticeOrientation.XYBeforeZ -> {
         val xy = x + y
         val s2 = xy * -0.211324865405187
         val zz = z * 0.577350269189626
@@ -177,12 +177,12 @@ object Noise {
     val ys: Double
     val zs: Double
     when (quality) {
-      NoiseQuality.FAST -> {
+      NoiseQuality.Fast -> {
         xs = x - x0.toDouble()
         ys = y - y0.toDouble()
         zs = z - z0.toDouble()
       }
-      NoiseQuality.STANDARD -> {
+      NoiseQuality.Standard -> {
         xs = sCurve3(x - x0.toDouble())
         ys = sCurve3(y - y0.toDouble())
         zs = sCurve3(z - z0.toDouble())
@@ -327,12 +327,12 @@ object Noise {
     val ys: Double
     val zs: Double
     when (quality) {
-      NoiseQuality.FAST -> {
+      NoiseQuality.Fast -> {
         xs = x - x0
         ys = y - y0
         zs = z - z0
       }
-      NoiseQuality.STANDARD -> {
+      NoiseQuality.Standard -> {
         xs = sCurve3(x - x0)
         ys = sCurve3(y - y0)
         zs = sCurve3(z - z0)

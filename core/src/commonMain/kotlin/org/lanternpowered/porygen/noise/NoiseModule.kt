@@ -36,19 +36,19 @@
  */
 package org.lanternpowered.porygen.noise
 
-import org.lanternpowered.porygen.value.Value2
-import org.lanternpowered.porygen.value.Value3
+import org.lanternpowered.porygen.value.Vec2dToDouble
+import org.lanternpowered.porygen.value.Vec3dToDouble
 
-interface NoiseModule : Value2, Value3 {
+interface NoiseModule : Vec2dToDouble, Vec3dToDouble {
 
   override fun get(x: Double, y: Double): Double = get(x, 0.0, y)
 }
 
-fun Value3.asNoiseModule(): NoiseModule =
+fun Vec3dToDouble.asNoiseModule(): NoiseModule =
     if (this is NoiseModule) this else Value3AsNoiseModule(this)
 
 private class Value3AsNoiseModule(
-    private val source: Value3
+    private val source: Vec3dToDouble
 ) : NoiseModule {
   override fun get(x: Double, y: Double, z: Double): Double = source[x, y, z]
 }

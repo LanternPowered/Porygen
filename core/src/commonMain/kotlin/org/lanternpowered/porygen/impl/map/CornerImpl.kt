@@ -12,11 +12,11 @@ package org.lanternpowered.porygen.impl.map
 import org.lanternpowered.porygen.data.SimpleDataHolder
 import org.lanternpowered.porygen.map.Corner
 import org.lanternpowered.porygen.util.ToStringHelper
-import org.lanternpowered.porygen.math.vector.Vector2i
+import org.lanternpowered.porygen.math.vector.Vec2i
 
 class CornerImpl(
     override val id: Long,
-    override val point: Vector2i,
+    override val point: Vec2i,
     override val map: MapImpl
 ) : SimpleDataHolder(), Corner {
 

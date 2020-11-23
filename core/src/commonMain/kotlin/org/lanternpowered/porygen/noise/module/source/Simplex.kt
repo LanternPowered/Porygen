@@ -139,11 +139,11 @@ class Simplex(
     /**
      * The default noise quality.
      */
-    val DEFAULT_QUALITY = SimplexNoiseQuality.SMOOTH
+    val DEFAULT_QUALITY = SimplexNoiseQuality.Smooth
 
     /**
      * The default lattice orientation.
      */
-    val DEFAULT_LATTICE_ORIENTATION = LatticeOrientation.XZ_BEFORE_Y
+    val DEFAULT_LATTICE_ORIENTATION = LatticeOrientation.XZBeforeY
   }
 }

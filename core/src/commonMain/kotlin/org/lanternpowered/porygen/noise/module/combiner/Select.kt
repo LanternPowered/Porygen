@@ -48,12 +48,12 @@ import org.lanternpowered.porygen.noise.Utils
  * @property upperBound The upper bound of the selection range
  */
 class Select(
-    val source1: NoiseModule,
-    val source2: NoiseModule,
-    val control: NoiseModule,
-    edgeFalloff: Double = DEFAULT_EDGE_FALLOFF,
-    val lowerBound: Double = DEFAULT_LOWER_BOUND,
-    val upperBound: Double = DEFAULT_UPPER_BOUND
+  val source1: NoiseModule,
+  val source2: NoiseModule,
+  val control: NoiseModule,
+  edgeFalloff: Double = DefaultEdgeFalloff,
+  val lowerBound: Double = DefaultLowerBound,
+  val upperBound: Double = DefaultUpperBound
 ) : NoiseModule {
 
   val edgeFalloff: Double
@@ -117,16 +117,16 @@ class Select(
     /**
      * The default edge-falloff value.
      */
-    const val DEFAULT_EDGE_FALLOFF = 0.0
+    const val DefaultEdgeFalloff = 0.0
 
     /**
      * The default lower bound of the selection range.
      */
-    const val DEFAULT_LOWER_BOUND = -1.0
+    const val DefaultLowerBound = -1.0
 
     /**
      * The default upper bound of the selection range.
      */
-    const val DEFAULT_UPPER_BOUND = 1.0
+    const val DefaultUpperBound = 1.0
   }
 }

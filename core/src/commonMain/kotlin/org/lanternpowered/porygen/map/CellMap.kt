@@ -14,7 +14,7 @@ import org.lanternpowered.porygen.impl.map.CellMapBuilderImpl
 import org.lanternpowered.porygen.map.polygon.CellPolygonGenerator
 import org.lanternpowered.porygen.map.processor.CellMapProcessor
 import org.lanternpowered.porygen.points.PointsGenerator
-import org.lanternpowered.porygen.math.vector.Vector2i
+import org.lanternpowered.porygen.math.vector.Vec2i
 
 /**
  * Constructs a new [CellMap].
@@ -72,7 +72,7 @@ interface CellMapBuilder {
    *
    * Defaults to (16, 16).
    */
-  fun chunkSize(size: Vector2i)
+  fun chunkSize(size: Vec2i)
 
   /**
    * Sets the section size (in chunks).
@@ -80,7 +80,7 @@ interface CellMapBuilder {
    * Defaults to (512, 512), so
    * (512, 512) * (16, 16) tiles.
    */
-  fun sectionSize(size: Vector2i)
+  fun sectionSize(size: Vec2i)
 
   /**
    * Adds a [CellMapProcessor].

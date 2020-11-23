@@ -10,7 +10,7 @@
 package org.lanternpowered.porygen.map
 
 import org.lanternpowered.porygen.math.geom.Rectanglei
-import org.lanternpowered.porygen.math.vector.Vector2i
+import org.lanternpowered.porygen.math.vector.Vec2i
 
 /**
  * Represents a view of a [CellMap].
@@ -25,7 +25,7 @@ interface CellMapPart {
    * @param max The area maximum coordinate
    * @return The new map view
    */
-  fun getSubView(min: Vector2i, max: Vector2i) = getSubView(Rectanglei(min, max))
+  fun getSubView(min: Vec2i, max: Vec2i) = getSubView(Rectanglei(min, max))
 
   /**
    * Gets a sub [CellMapView] of this map view. The minimum and maximum
@@ -42,7 +42,7 @@ interface CellMapPart {
    * @param point The point
    * @return The cell
    */
-  fun getCell(point: Vector2i) = getCell(point.x, point.y)
+  fun getCell(point: Vec2i) = getCell(point.x, point.y)
 
   /**
    * Gets the [Cell] the specified tile coordinate is located in.

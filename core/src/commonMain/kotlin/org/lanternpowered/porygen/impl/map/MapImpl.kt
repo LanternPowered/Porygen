@@ -20,8 +20,8 @@ import org.lanternpowered.porygen.map.processor.CellMapProcessor
 import org.lanternpowered.porygen.math.floorToInt
 import org.lanternpowered.porygen.math.geom.Line2i
 import org.lanternpowered.porygen.math.geom.Rectanglei
-import org.lanternpowered.porygen.math.vector.Vector2d
-import org.lanternpowered.porygen.math.vector.Vector2i
+import org.lanternpowered.porygen.math.vector.Vec2d
+import org.lanternpowered.porygen.math.vector.Vec2i
 import org.lanternpowered.porygen.math.vector.max
 import org.lanternpowered.porygen.points.PointsGenerator
 import org.lanternpowered.porygen.util.collections.Long2ObjectOpenHashMap
@@ -30,11 +30,11 @@ import org.lanternpowered.porygen.util.pair.unpackIntPairFirst
 import org.lanternpowered.porygen.util.pair.unpackIntPairSecond
 
 class MapImpl(
-    override val seed: Long,
-    private val sectionSize: Vector2i,
-    private val polygonGenerator: CellPolygonGenerator,
-    private val pointsGenerator: PointsGenerator,
-    private val processors: List<CellMapProcessor>
+  override val seed: Long,
+  private val sectionSize: Vec2i,
+  private val polygonGenerator: CellPolygonGenerator,
+  private val pointsGenerator: PointsGenerator,
+  private val processors: List<CellMapProcessor>
 ) : SimpleDataHolder(), CellMap {
 
   // All the cells mapped by chunk coordinates
@@ -76,13 +76,13 @@ class MapImpl(
     // The section that was requested
     section = areaSections[position.packed]!!
 
-    val sectionRectangleMin = Vector2i(position.x, position.y) * sectionSize
+    val sectionRectangleMin = Vec2i(position.x, position.y) * sectionSize
     val sectionRectangleMax = sectionRectangleMin + sectionSize
 
     println("Started processing: $position")
 
     // Find the biggest required area
-    var offsetFactor = Vector2d.ZERO
+    var offsetFactor = Vec2d.Zero
     for (processor in processors)
       offsetFactor = max(offsetFactor, processor.areaOffset)
 
@@ -115,7 +115,7 @@ class MapImpl(
       cellsById: Long2ObjectOpenHashMap<CellImpl>,
       edgesById: Long2ObjectOpenHashMap<EdgeImpl>
   ): MapSection {
-    val viewRectangleMin = Vector2i(position.x, position.y) * sectionSize
+    val viewRectangleMin = Vec2i(position.x, position.y) * sectionSize
     val viewRectangleMax = viewRectangleMin + sectionSize
     val viewRectangle = Rectanglei(viewRectangleMin, viewRectangleMax)
 
@@ -133,7 +133,7 @@ class MapImpl(
       }
       cells += cell
 
-      fun getCorner(point: Vector2i): CornerImpl {
+      fun getCorner(point: Vec2i): CornerImpl {
         val cornerId = packIntPair(point.x, point.y)
         return cornersById.getOrPut(cornerId) { CornerImpl(cornerId, point, this) }
       }
@@ -274,7 +274,7 @@ class MapImpl(
     }
     val chunkX = unpackIntPairFirst(id)
     val chunkZ = unpackIntPairSecond(id)
-    val chunkPos = Vector2i(chunkX, chunkZ)
+    val chunkPos = Vec2i(chunkX, chunkZ)
     val cells = this.cellsByChunk[id]!!
     val cellBlockData = generateCellBlockData(chunkPos, sectionSize, cells.toTypedArray())
     chunk = MapChunkImpl(this, chunkPos, sectionSize, id, cellBlockData)
@@ -298,5 +298,5 @@ class MapImpl(
    * @param point The center point
    * @return The cell, if found
    */
-  fun getCellByCenter(point: Vector2i) = getCell(packIntPair(point.x, point.y))
+  fun getCellByCenter(point: Vec2i) = getCell(packIntPair(point.x, point.y))
 }

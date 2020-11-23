@@ -15,8 +15,8 @@ import org.lanternpowered.porygen.map.polygon.CellPolygon
 import org.lanternpowered.porygen.map.polygon.CellPolygonGenerator
 import org.lanternpowered.porygen.map.polygon.TriangleCenterProvider
 import org.lanternpowered.porygen.map.polygon.VoronoiPolygonGenerator
-import org.lanternpowered.porygen.math.vector.Vector2d
-import org.lanternpowered.porygen.math.vector.Vector2i
+import org.lanternpowered.porygen.math.vector.Vec2d
+import org.lanternpowered.porygen.math.vector.Vec2i
 import org.lanternpowered.porygen.noise.module.source.Perlin
 import org.lanternpowered.porygen.points.BlueNoisePointsGenerator
 import org.lanternpowered.porygen.points.PointsGenerator
@@ -33,7 +33,7 @@ object PointsGeneratorTest {
     // The random points generator
     var generator: PointsGenerator = BlueNoisePointsGenerator(amount = 200..250)
     // generator = GridBasedPointsGenerator(amount = 200..250)
-    generator = ZoomPointsGenerator(generator, Vector2d(1.1, 1.1))
+    generator = ZoomPointsGenerator(generator, Vec2d(1.1, 1.1))
 
     val perlin = Perlin(
         frequency = 0.05,
@@ -46,7 +46,7 @@ object PointsGeneratorTest {
     polygonGenerator = VoronoiPolygonGenerator(TriangleCenterProvider.Circumcenter)
     // polygonGenerator = DelaunayTrianglePolygonGenerator()
 
-    val sectionPolygonGenerator = SectionPolygonGenerator(seed, Vector2i(300, 300), generator, polygonGenerator)
+    val sectionPolygonGenerator = SectionPolygonGenerator(seed, Vec2i(300, 300), generator, polygonGenerator)
     val centeredPolygons = mutableListOf<CellPolygon>()
     centeredPolygons.addAll(sectionPolygonGenerator.generate(SectionPosition(0, 0)))
     centeredPolygons.addAll(sectionPolygonGenerator.generate(SectionPosition(0, 1)))

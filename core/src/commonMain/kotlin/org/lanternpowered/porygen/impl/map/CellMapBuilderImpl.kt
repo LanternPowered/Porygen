@@ -14,7 +14,7 @@ import org.lanternpowered.porygen.map.CellMapBuilder
 import org.lanternpowered.porygen.map.polygon.CellPolygonGenerator
 import org.lanternpowered.porygen.map.processor.CellMapProcessor
 import org.lanternpowered.porygen.points.PointsGenerator
-import org.lanternpowered.porygen.math.vector.Vector2i
+import org.lanternpowered.porygen.math.vector.Vec2i
 import kotlin.random.Random
 
 class CellMapBuilderImpl : CellMapBuilder {
@@ -22,8 +22,8 @@ class CellMapBuilderImpl : CellMapBuilder {
   private var seed = Random.nextLong()
   private lateinit var polygonGenerator: CellPolygonGenerator
   private lateinit var pointsGenerator: PointsGenerator
-  private var chunkSize = Vector2i(512, 512)
-  private var sectionSize = Vector2i(512, 512)
+  private var chunkSize = Vec2i(512, 512)
+  private var sectionSize = Vec2i(512, 512)
   private val processors = mutableListOf<CellMapProcessor>()
 
   override fun seed(seed: Long) {
@@ -38,11 +38,11 @@ class CellMapBuilderImpl : CellMapBuilder {
     this.pointsGenerator = pointsGenerator
   }
 
-  override fun chunkSize(size: Vector2i) {
+  override fun chunkSize(size: Vec2i) {
     this.chunkSize = size
   }
 
-  override fun sectionSize(size: Vector2i) {
+  override fun sectionSize(size: Vec2i) {
     this.sectionSize = size
   }
 

@@ -9,6 +9,6 @@
  */
 package org.lanternpowered.porygen.value
 
-data class ConstantLong(val value: Long) : LongValue {
+data class ConstantLong(val value: Long) : LongSupplier {
   override fun get(): Long = value
 }

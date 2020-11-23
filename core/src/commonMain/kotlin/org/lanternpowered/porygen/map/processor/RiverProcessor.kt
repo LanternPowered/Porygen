@@ -13,7 +13,7 @@ import org.lanternpowered.porygen.map.CellMapView
 import org.lanternpowered.porygen.map.Corner
 import org.lanternpowered.porygen.map.Edge
 import org.lanternpowered.porygen.util.random.Xor128Random
-import org.lanternpowered.porygen.math.vector.Vector2d
+import org.lanternpowered.porygen.math.vector.Vec2d
 import org.lanternpowered.porygen.util.murmurHash3
 import kotlin.random.Random
 import kotlin.random.nextInt
@@ -21,7 +21,7 @@ import kotlin.random.nextInt
 class RiverProcessor(
     private val riverChance: Double = 0.19,
     private val riverLength: IntRange = 3..15,
-    override val areaOffset: Vector2d = Vector2d(0.3, 0.3)
+    override val areaOffset: Vec2d = Vec2d(0.3, 0.3)
 ) : CellMapProcessor {
 
   override fun process(view: CellMapView) {

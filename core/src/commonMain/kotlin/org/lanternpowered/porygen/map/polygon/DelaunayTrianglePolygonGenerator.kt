@@ -11,16 +11,16 @@ package org.lanternpowered.porygen.map.polygon
 
 import org.lanternpowered.porygen.delaunay.DelaunayTriangulator
 import org.lanternpowered.porygen.math.geom.Polygond
-import org.lanternpowered.porygen.math.vector.Vector2d
+import org.lanternpowered.porygen.math.vector.Vec2d
 
 /**
  * Generates [CellPolygon]s that are delaunay triangles.
  */
 class DelaunayTrianglePolygonGenerator(
-    override val areaOffset: Vector2d = Vector2d(0.2, 0.2)
+    override val areaOffset: Vec2d = Vec2d(0.2, 0.2)
 ) : CellPolygonGenerator {
 
-  override fun generate(points: Collection<Vector2d>): Collection<CellPolygon> {
+  override fun generate(points: Collection<Vec2d>): Collection<CellPolygon> {
     if (points.size < 3)
       return emptyList()
     return DelaunayTriangulator.triangulate(points.toList())

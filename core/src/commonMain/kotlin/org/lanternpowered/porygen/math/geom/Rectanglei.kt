@@ -11,22 +11,22 @@ package org.lanternpowered.porygen.math.geom
 
 import org.lanternpowered.porygen.math.vector.max
 import org.lanternpowered.porygen.math.vector.min
-import org.lanternpowered.porygen.math.vector.Vector2i
+import org.lanternpowered.porygen.math.vector.Vec2i
 import kotlin.math.max
 import kotlin.math.min
 
 /**
  * Represents a rectangle.
  */
-class Rectanglei : AbstractRectangle<Vector2i> {
+class Rectanglei : AbstractRectangle<Vec2i> {
 
-  override val size: Vector2i by lazy { max - min }
+  override val size: Vec2i by lazy { max - min }
 
-  constructor(min: Vector2i, max: Vector2i) :
+  constructor(min: Vec2i, max: Vec2i) :
       super(min(min, max), max(min, max))
 
   constructor(minX: Int, minY: Int, maxX: Int, maxY: Int) :
-      super(Vector2i(min(minX, maxX), min(minY, maxY)), Vector2i(max(minX, maxX), max(minY, maxY)))
+      super(Vec2i(min(minX, maxX), min(minY, maxY)), Vec2i(max(minX, maxX), max(minY, maxY)))
 
   override fun contains(x: Double, y: Double): Boolean =
       x <= max.x && x >= min.x && y <= max.y && y >= min.y
@@ -39,6 +39,6 @@ class Rectanglei : AbstractRectangle<Vector2i> {
   override fun toDouble(): Rectangled =
       Rectangled(min.x.toDouble(), min.y.toDouble(), max.x.toDouble(), max.y.toDouble())
 
-  fun translate(offset: Vector2i): Rectanglei =
+  fun translate(offset: Vec2i): Rectanglei =
       Rectanglei(min + offset, max + offset)
 }

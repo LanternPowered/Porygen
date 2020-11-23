@@ -10,7 +10,7 @@
 package org.lanternpowered.porygen.map.polygon
 
 import org.lanternpowered.porygen.math.geom.Triangle2d
-import org.lanternpowered.porygen.math.vector.Vector2d
+import org.lanternpowered.porygen.math.vector.Vec2d
 
 /**
  * Represents a provider for the center point of a [Triangle2d].
@@ -21,8 +21,8 @@ import org.lanternpowered.porygen.math.vector.Vector2d
  *   done if this is true.
  */
 class TriangleCenterProvider(
-    val function: (Triangle2d) -> Vector2d,
-    val alwaysConvexPolygons: Boolean = false
+  val function: (Triangle2d) -> Vec2d,
+  val alwaysConvexPolygons: Boolean = false
 ) {
 
   companion object {

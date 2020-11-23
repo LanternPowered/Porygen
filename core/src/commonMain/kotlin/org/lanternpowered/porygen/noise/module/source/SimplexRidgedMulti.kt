@@ -57,19 +57,19 @@ import kotlin.math.pow
  * @property seed The seed
  */
 class SimplexRidgedMulti(
-    val frequency: Double = DEFAULT_FREQUENCY,
-    var lacunarity: Double = DEFAULT_LACUNARITY,
-    val quality: SimplexNoiseQuality = DEFAULT_QUALITY,
-    val latticeOrientation: LatticeOrientation = DEFAULT_LATTICE_ORIENTATION,
-    val octaves: Int = DEFAULT_OCTAVES,
-    val seed: Int = DEFAULT_SEED
+  val frequency: Double = DefaultFrequency,
+  var lacunarity: Double = DefaultLacunarity,
+  val quality: SimplexNoiseQuality = DefaultQuality,
+  val latticeOrientation: LatticeOrientation = DefaultLatticeOrientation,
+  val octaves: Int = DefaultOctaves,
+  val seed: Int = DefaultSeed
 ) : NoiseModule {
 
   private val spectralWeights: DoubleArray
 
   init {
-    check(octaves in 1..MAX_OCTAVES) {
-      "octaves must be between 1 and $MAX_OCTAVES (inclusive)" }
+    check(octaves in 1..MaxOctaves) {
+      "octaves must be between 1 and $MaxOctaves (inclusive)" }
 
     // Calculate the spectral weights
 
@@ -151,36 +151,36 @@ class SimplexRidgedMulti(
     /**
      * The maximum number of octaves.
      */
-    const val MAX_OCTAVES = 30
+    const val MaxOctaves = 30
 
     /**
      * The default frequency.
      */
-    const val DEFAULT_FREQUENCY = 1.0
+    const val DefaultFrequency = 1.0
 
     /**
      * The default lacunarity.
      */
-    const val DEFAULT_LACUNARITY = 2.0
+    const val DefaultLacunarity = 2.0
 
     /**
      * The default number of octaves.
      */
-    const val DEFAULT_OCTAVES = 6
+    const val DefaultOctaves = 6
 
     /**
      * The default seed.
      */
-    const val DEFAULT_SEED = 0
+    const val DefaultSeed = 0
 
     /**
      * The default noise quality.
      */
-    val DEFAULT_QUALITY = SimplexNoiseQuality.SMOOTH
+    val DefaultQuality = SimplexNoiseQuality.Smooth
 
     /**
      * The default lattice orientation.
      */
-    val DEFAULT_LATTICE_ORIENTATION = LatticeOrientation.XZ_BEFORE_Y
+    val DefaultLatticeOrientation = LatticeOrientation.XZBeforeY
   }
 }

@@ -33,7 +33,7 @@
 package org.lanternpowered.porygen.delaunay
 
 import org.lanternpowered.porygen.math.geom.Triangle2d
-import org.lanternpowered.porygen.math.vector.Vector2d
+import org.lanternpowered.porygen.math.vector.Vec2d
 import kotlin.math.max
 
 /**
@@ -48,7 +48,7 @@ object DelaunayTriangulator {
    * @return The delaunay triangles
    * @throws IllegalArgumentException Thrown when the point set contains less than three points
    */
-  fun triangulate(points: List<Vector2d>): List<Triangle2d> {
+  fun triangulate(points: List<Vec2d>): List<Triangle2d> {
     if (points.size < 3)
       throw IllegalArgumentException("Less than three points in point set.")
 
@@ -63,9 +63,9 @@ object DelaunayTriangulator {
       maxOfAnyCoordinate = max(max(vector.x, vector.y), maxOfAnyCoordinate)
 
     maxOfAnyCoordinate *= 16.0
-    val p1 = Vector2d(0.0, 3.0 * maxOfAnyCoordinate)
-    val p2 = Vector2d(3.0 * maxOfAnyCoordinate, 0.0)
-    val p3 = Vector2d(-3.0 * maxOfAnyCoordinate, -3.0 * maxOfAnyCoordinate)
+    val p1 = Vec2d(0.0, 3.0 * maxOfAnyCoordinate)
+    val p2 = Vec2d(3.0 * maxOfAnyCoordinate, 0.0)
+    val p3 = Vec2d(-3.0 * maxOfAnyCoordinate, -3.0 * maxOfAnyCoordinate)
     val superTriangle = Triangle2d(p1, p2, p3)
     triangles.add(superTriangle)
     for (point in points) {
@@ -132,7 +132,7 @@ object DelaunayTriangulator {
    * @param edge The edge to be legalized
    * @param newVertex The new vertex
    */
-  private fun legalizeEdge(triangles: MutableList<Triangle2d>, triangle: Triangle2d, edge: Edge2d, newVertex: Vector2d) {
+  private fun legalizeEdge(triangles: MutableList<Triangle2d>, triangle: Triangle2d, edge: Edge2d, newVertex: Vec2d) {
     val neighbourTriangle = triangles.findNeighbour(triangle, edge)
     // If the triangle has a neighbor, then legalize the edge
     if (neighbourTriangle != null) {
@@ -161,7 +161,7 @@ object DelaunayTriangulator {
  * @return Returns the triangle from this triangle soup that contains the
  *         specified point or null
  */
-private fun List<Triangle2d>.findContainingTriangle(point: Vector2d): Triangle2d? =
+private fun List<Triangle2d>.findContainingTriangle(point: Vec2d): Triangle2d? =
     firstOrNull { it.contains(point) }
 
 /**
@@ -195,7 +195,7 @@ private fun List<Triangle2d>.findOneTriangleSharing(edge: Edge2d): Triangle2d? =
  * @param point The point
  * @return The edge from the triangle soup nearest to the specified point
  */
-private fun List<Triangle2d>.findNearestEdge(point: Vector2d): Edge2d? =
+private fun List<Triangle2d>.findNearestEdge(point: Vec2d): Edge2d? =
     asSequence().map { it.findNearestEdge(point) }.sorted().first().edge
 
 /**
@@ -204,5 +204,5 @@ private fun List<Triangle2d>.findNearestEdge(point: Vector2d): Edge2d? =
  *
  * @param vertex The vertex
  */
-private fun MutableList<Triangle2d>.removeTrianglesUsing(vertex: Vector2d): Boolean =
+private fun MutableList<Triangle2d>.removeTrianglesUsing(vertex: Vec2d): Boolean =
     removeAll { it.hasVertex(vertex) }

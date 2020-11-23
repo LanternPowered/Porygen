@@ -10,7 +10,7 @@
 package org.lanternpowered.porygen.map.processor
 
 import org.lanternpowered.porygen.map.CellMapView
-import org.lanternpowered.porygen.value.Value2
+import org.lanternpowered.porygen.value.Vec2dToDouble
 
 /**
  * @property terrainHeightModule The module that provides the terrain height,
@@ -22,11 +22,11 @@ import org.lanternpowered.porygen.value.Value2
  *                             < 0.2 is cold, < 1.0 is medium, >= 1.0 is warm
  */
 class SingleCellBiomeSelectorProcessor<Biome>(
-    val terrainHeightModule: Value2,
-    val temperatureModule: Value2,
-    val oceanBiomeTypes: List<Biome>,
-    val landBiomeTypes: List<Biome>,
-    val hillBiomeTypes: List<Biome>
+  val terrainHeightModule: Vec2dToDouble,
+  val temperatureModule: Vec2dToDouble,
+  val oceanBiomeTypes: List<Biome>,
+  val landBiomeTypes: List<Biome>,
+  val hillBiomeTypes: List<Biome>
 ) : CellMapProcessor {
 
   /*

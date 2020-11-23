@@ -9,14 +9,14 @@
  */
 package org.lanternpowered.porygen.map
 
-import org.lanternpowered.porygen.math.vector.Vector2i
+import org.lanternpowered.porygen.math.vector.Vec2i
 
 interface Corner : CellMapElement {
 
   /**
-   * The corner point [Vector2i].
+   * The corner point [Vec2i].
    */
-  val point: Vector2i
+  val point: Vec2i
 
   /**
    * All the [Cell]s that connect to this [Corner].

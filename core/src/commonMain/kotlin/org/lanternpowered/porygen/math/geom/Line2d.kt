@@ -9,16 +9,16 @@
  */
 package org.lanternpowered.porygen.math.geom
 
-import org.lanternpowered.porygen.math.vector.Vector2d
+import org.lanternpowered.porygen.math.vector.Vec2d
 import kotlin.math.max
 import kotlin.math.min
 
-class Line2d(start: Vector2d, end: Vector2d) : AbstractLine2<Vector2d>(start, end) {
+class Line2d(start: Vec2d, end: Vec2d) : AbstractLine2<Vec2d>(start, end) {
 
-  override val center: Vector2d by lazy { start + ((end - start) / 2.0) }
+  override val center: Vec2d by lazy { start + ((end - start) / 2.0) }
 
   constructor(startX: Double, startY: Double, endX: Double, endY: Double) :
-      this(Vector2d(startX, startY), Vector2d(endX, endY))
+      this(Vec2d(startX, startY), Vec2d(endX, endY))
 
   override fun intersects(startX: Double, startY: Double, endX: Double, endY: Double) =
       linesIntersect(start.x, start.y, end.x, end.y, startX, startY, endX, endY)

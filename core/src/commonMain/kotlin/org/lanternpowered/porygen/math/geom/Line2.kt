@@ -9,8 +9,8 @@
  */
 package org.lanternpowered.porygen.math.geom
 
-import org.lanternpowered.porygen.math.vector.Vector2d
-import org.lanternpowered.porygen.math.vector.Vector2i
+import org.lanternpowered.porygen.math.vector.Vec2d
+import org.lanternpowered.porygen.math.vector.Vec2i
 
 interface Line2<P> {
 
@@ -47,7 +47,7 @@ interface Line2<P> {
    * @param end The end point
    * @return Whether the lines intersect
    */
-  fun intersects(start: Vector2i, end: Vector2i): Boolean =
+  fun intersects(start: Vec2i, end: Vec2i): Boolean =
       intersects(start.x, start.y, end.x, end.y)
 
   /**
@@ -58,7 +58,7 @@ interface Line2<P> {
    * @param end The end point
    * @return Whether the lines intersect
    */
-  fun intersects(start: Vector2d, end: Vector2d): Boolean =
+  fun intersects(start: Vec2d, end: Vec2d): Boolean =
       intersects(start.x, start.y, end.x, end.y)
 
   /**

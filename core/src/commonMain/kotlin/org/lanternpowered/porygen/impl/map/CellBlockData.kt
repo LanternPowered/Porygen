@@ -14,8 +14,8 @@ package org.lanternpowered.porygen.impl.map
 import org.lanternpowered.porygen.map.Cell
 import org.lanternpowered.porygen.util.BitHelper
 import org.lanternpowered.porygen.util.VariableValueArray
-import org.lanternpowered.porygen.math.vector.Vector2d
-import org.lanternpowered.porygen.math.vector.Vector2i
+import org.lanternpowered.porygen.math.vector.Vec2d
+import org.lanternpowered.porygen.math.vector.Vec2i
 
 interface CellBlockData {
 
@@ -48,7 +48,7 @@ class ArrayBackedCellBlockData(
  *
  * Calling this method requires that the cells in the chunk area are already generated.
  */
-internal fun generateCellBlockData(position: Vector2i, size: Vector2i, cells: Array<Cell>): CellBlockData {
+internal fun generateCellBlockData(position: Vec2i, size: Vec2i, cells: Array<Cell>): CellBlockData {
   check(cells.isNotEmpty()) { "Cell list cannot be empty" }
   if (cells.size == 1)
     return SingleCellBlockData(cells[0])
@@ -65,7 +65,7 @@ internal fun generateCellBlockData(position: Vector2i, size: Vector2i, cells: Ar
       // Loop through all cells except the last one to
       // reduce the amount of contains checks.
       for (i in 0 until last) {
-        if (cells[i].polygon.contains(Vector2d(x, y))) {
+        if (cells[i].polygon.contains(Vec2d(x, y))) {
           blockData[index] = i
           continue@yLoop
         }

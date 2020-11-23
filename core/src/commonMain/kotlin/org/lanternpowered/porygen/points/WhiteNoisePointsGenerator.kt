@@ -9,7 +9,7 @@
  */
 package org.lanternpowered.porygen.points
 
-import org.lanternpowered.porygen.math.vector.Vector2d
+import org.lanternpowered.porygen.math.vector.Vec2d
 import kotlin.random.Random
 import kotlin.random.nextInt
 
@@ -22,15 +22,15 @@ class WhiteNoisePointsGenerator(
     private val amount: IntRange
 ) : PointsGenerator {
 
-  override fun generate(random: Random): List<Vector2d> {
+  override fun generate(random: Random): List<Vec2d> {
     // Randomize the amount of points that will be generated
     val amount = random.nextInt(this.amount)
 
-    val points = mutableListOf<Vector2d>()
+    val points = mutableListOf<Vec2d>()
     for (i in 0 until amount) {
       val x = random.nextDouble()
       val y = random.nextDouble()
-      points += Vector2d(x, y)
+      points += Vec2d(x, y)
     }
     return points
   }

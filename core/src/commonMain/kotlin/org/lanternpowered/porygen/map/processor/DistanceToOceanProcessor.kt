@@ -12,7 +12,7 @@ package org.lanternpowered.porygen.map.processor
 import org.lanternpowered.porygen.map.Cell
 import org.lanternpowered.porygen.map.CellMapView
 import org.lanternpowered.porygen.map.Corner
-import org.lanternpowered.porygen.math.vector.Vector2d
+import org.lanternpowered.porygen.math.vector.Vec2d
 import kotlin.math.abs
 
 /**
@@ -22,7 +22,7 @@ import kotlin.math.abs
 class DistanceToOceanProcessor(
     private val maxOceanCellDistance: Int = 5,
     private val maxOceanCornerDistance: Int = maxOceanCellDistance + 3,
-    override val areaOffset: Vector2d = Vector2d(0.3, 0.3)
+    override val areaOffset: Vec2d = Vec2d(0.3, 0.3)
 ) : CellMapProcessor {
 
   override fun process(view: CellMapView) {

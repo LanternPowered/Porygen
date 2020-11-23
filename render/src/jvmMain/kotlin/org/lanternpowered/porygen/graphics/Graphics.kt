@@ -11,7 +11,7 @@ package org.lanternpowered.porygen.graphics
 
 import org.lanternpowered.porygen.math.geom.Line2i
 import org.lanternpowered.porygen.math.geom.Rectanglei
-import org.lanternpowered.porygen.math.vector.Vector2i
+import org.lanternpowered.porygen.math.vector.Vec2i
 import java.awt.BorderLayout
 import java.awt.Color
 import java.awt.Graphics
@@ -30,7 +30,7 @@ fun Graphics.draw(line: Line2i): Unit =
 /**
  * Draws a line.
  */
-fun Graphics.drawLine(min: Vector2i, max: Vector2i): Unit =
+fun Graphics.drawLine(min: Vec2i, max: Vec2i): Unit =
     drawLine(min.x, min.y, max.x, max.y)
 
 /**
@@ -48,13 +48,13 @@ fun Graphics.fill(rectangle: Rectanglei): Unit =
 /**
  * Draws a rectangle.
  */
-fun Graphics.drawRect(min: Vector2i, max: Vector2i): Unit =
+fun Graphics.drawRect(min: Vec2i, max: Vec2i): Unit =
     drawRect(min.x, min.y, max.x, max.y)
 
 /**
  * Draws a rectangle.
  */
-fun Graphics.fillRect(min: Vector2i, max: Vector2i): Unit =
+fun Graphics.fillRect(min: Vec2i, max: Vec2i): Unit =
     fillRect(min.x, min.y, max.x, max.y)
 
 /**
@@ -77,10 +77,10 @@ fun <R> Graphics2D.with(
   }
 }
 
-fun showGraphics(width: Int = 1000, height: Int = 1000, fn: (bounds: Vector2i, graphics: Graphics2D) -> Unit) {
+fun showGraphics(width: Int = 1000, height: Int = 1000, fn: (bounds: Vec2i, graphics: Graphics2D) -> Unit) {
   val image = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
   val graphics = image.graphics
-  fn(Vector2i(width, height), graphics as Graphics2D)
+  fn(Vec2i(width, height), graphics as Graphics2D)
 
   val canvas = object : JPanel() {
     override fun paintComponent(g: Graphics) {

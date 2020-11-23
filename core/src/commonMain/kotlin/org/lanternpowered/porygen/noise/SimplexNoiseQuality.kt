@@ -50,12 +50,12 @@ enum class SimplexNoiseQuality(
    * noise. However, Ridged noise using this setting may still be more favorable than the
    * Perlin / non-Simplex Ridged noise.
    */
-  STANDARD(0.5, Utils.RANDOM_VECTORS_SIMPLEXSTYLE_STANDARD, Utils.LOOKUP_SIMPLEXSTYLE_STANDARD),
+  Standard(0.5, Utils.RANDOM_VECTORS_SIMPLEXSTYLE_STANDARD, Utils.LOOKUP_SIMPLEXSTYLE_STANDARD),
 
   /**
    * Generates simplex-style using the eight nearest lattice vertices and larger kernels. The
    * appearance will be smoother, and there will be fewer to no straight line segments in the ridged
    * noise.
    */
-  SMOOTH(0.75, Utils.RANDOM_VECTORS_SIMPLEXSTYLE_SMOOTH, Utils.LOOKUP_SIMPLEXSTYLE_SMOOTH)
+  Smooth(0.75, Utils.RANDOM_VECTORS_SIMPLEXSTYLE_SMOOTH, Utils.LOOKUP_SIMPLEXSTYLE_SMOOTH)
 }

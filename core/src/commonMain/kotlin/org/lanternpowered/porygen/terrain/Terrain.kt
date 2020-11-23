@@ -9,7 +9,7 @@
  */
 package org.lanternpowered.porygen.terrain
 
-import org.lanternpowered.porygen.math.vector.Vector3i
+import org.lanternpowered.porygen.math.vector.Vec3i
 
 /**
  * Represents a terrain of blocks.
@@ -19,5 +19,5 @@ interface Terrain<Block> {
   /**
    * Gets the [Block] at the given position.
    */
-  fun getBlock(position: Vector3i): Block
+  fun getBlock(position: Vec3i): Block
 }

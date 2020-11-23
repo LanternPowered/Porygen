@@ -12,7 +12,7 @@ package org.lanternpowered.porygen.impl.map
 import org.lanternpowered.porygen.map.Cell
 import org.lanternpowered.porygen.map.Corner
 import org.lanternpowered.porygen.map.Edge
-import org.lanternpowered.porygen.math.vector.Vector2i
+import org.lanternpowered.porygen.math.vector.Vec2i
 
 val Corner.delegate: Corner
   get() = if (this is CornerView) delegate else this
@@ -22,7 +22,7 @@ class CornerView private constructor(
     override val view: MapViewImpl
 ) : MapElementView<Corner>(), Corner {
 
-  override val point: Vector2i
+  override val point: Vec2i
     get() = delegate.point
 
   override val cells: Collection<Cell> by lazy {

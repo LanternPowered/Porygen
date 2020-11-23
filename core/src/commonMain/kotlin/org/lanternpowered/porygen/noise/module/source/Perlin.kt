@@ -52,17 +52,17 @@ import org.lanternpowered.porygen.noise.Utils
  * @property seed The seed
  */
 class Perlin(
-    val frequency: Double = DEFAULT_FREQUENCY,
-    val lacunarity: Double = DEFAULT_LACUNARITY,
-    val quality: NoiseQuality = DEFAULT_QUALITY,
-    val octaves: Int = DEFAULT_OCTAVES,
-    val persistence: Double = DEFAULT_PERSISTENCE,
-    val seed: Int = DEFAULT_SEED
+  val frequency: Double = DefaultFrequency,
+  val lacunarity: Double = DefaultLacunarity,
+  val quality: NoiseQuality = DefaultQuality,
+  val octaves: Int = DefaultOctaves,
+  val persistence: Double = DefaultPersistence,
+  val seed: Int = DefaultSeed
 ) : NoiseModule {
 
   init {
-    check(octaves in 1..MAX_OCTAVES) {
-      "octaves must be between 1 and $MAX_OCTAVES (inclusive)" }
+    check(octaves in 1..MaxOctaves) {
+      "octaves must be between 1 and $MaxOctaves (inclusive)" }
   }
 
   override fun get(x: Double, y: Double, z: Double): Double {
@@ -103,36 +103,36 @@ class Perlin(
     /**
      * The maximum number of octaves.
      */
-    const val MAX_OCTAVES = 30
+    const val MaxOctaves = 30
 
     /**
      * The default frequency.
      */
-    const val DEFAULT_FREQUENCY = 1.0
+    const val DefaultFrequency = 1.0
 
     /**
      * The default lacunarity.
      */
-    const val DEFAULT_LACUNARITY = 2.0
+    const val DefaultLacunarity = 2.0
 
     /**
      * The default number of octaves.
      */
-    const val DEFAULT_OCTAVES = 6
+    const val DefaultOctaves = 6
 
     /**
      * The default persistence.
      */
-    const val DEFAULT_PERSISTENCE = 0.5
+    const val DefaultPersistence = 0.5
 
     /**
      * The default seed.
      */
-    const val DEFAULT_SEED = 0
+    const val DefaultSeed = 0
 
     /**
      * The default noise quality.
      */
-    val DEFAULT_QUALITY = NoiseQuality.STANDARD
+    val DefaultQuality = NoiseQuality.Standard
   }
 }

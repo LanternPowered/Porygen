@@ -9,6 +9,6 @@
  */
 package org.lanternpowered.porygen.value
 
-data class ConstantInt(val value: Int) : IntValue {
+data class ConstantInt(val value: Int) : IntSupplier {
   override fun get(): Int = value
 }

@@ -44,7 +44,7 @@ enum class NoiseQuality {
    * "creasing" artifacts in the resulting image. This is because the derivative
    * of that function is discontinuous at integer boundaries.
    */
-  FAST,
+  Fast,
 
   /**
    * Generates standard-quality coherent noise. When a coherent-noise function with
@@ -52,7 +52,7 @@ enum class NoiseQuality {
    * "creasing" artifacts in the resulting image. This is because the second
    * derivative of that function is discontinuous at integer boundaries.
    */
-  STANDARD,
+  Standard,
 
   /**
    * Generates the best-quality coherent noise. When a coherent-noise function with
@@ -60,5 +60,5 @@ enum class NoiseQuality {
    * artifacts in the resulting image. This is because the first and second derivatives
    * of that function are continuous at integer boundaries.
    */
-  BEST
+  Best
 }

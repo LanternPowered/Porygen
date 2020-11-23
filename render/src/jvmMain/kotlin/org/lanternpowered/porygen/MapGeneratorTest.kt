@@ -22,8 +22,8 @@ import org.lanternpowered.porygen.map.processor.MoistureProcessor
 import org.lanternpowered.porygen.map.processor.OceanLandProcessor
 import org.lanternpowered.porygen.map.processor.RiverProcessor
 import org.lanternpowered.porygen.math.geom.Rectanglei
-import org.lanternpowered.porygen.math.vector.Vector2i
-import org.lanternpowered.porygen.math.vector.Vector2d
+import org.lanternpowered.porygen.math.vector.Vec2i
+import org.lanternpowered.porygen.math.vector.Vec2d
 import org.lanternpowered.porygen.noise.module.source.Perlin
 import org.lanternpowered.porygen.points.BlueNoisePointsGenerator
 import org.lanternpowered.porygen.points.PointsGenerator
@@ -84,13 +84,13 @@ object MapGeneratorTest {
       }
     }*/
 
-    val sectionSize = Vector2i(512, 512)
+    val sectionSize = Vec2i(512, 512)
     val maxOceanCellDistance = 5
     val map = cellMap {
       seed(seed)
 
       var pointsGenerator: PointsGenerator = BlueNoisePointsGenerator(amount = 300..350)
-      pointsGenerator = ZoomPointsGenerator(pointsGenerator, Vector2d(1.1, 1.1))
+      pointsGenerator = ZoomPointsGenerator(pointsGenerator, Vec2d(1.1, 1.1))
 
       pointsGenerator(pointsGenerator)
       polygonGenerator(VoronoiPolygonGenerator(TriangleCenterProvider.Centroid))
@@ -102,10 +102,10 @@ object MapGeneratorTest {
       addProcessor(MoistureProcessor(base = moistureBase, modifier = moistureModifier))
     }
 
-    val boundsOffset = Vector2i(-0, -0)
+    val boundsOffset = Vec2i(-0, -0)
 
     showGraphics { bounds, graphics ->
-      val viewRectangle = Rectanglei(Vector2i.ZERO, bounds).translate(boundsOffset)
+      val viewRectangle = Rectanglei(Vec2i.Zero, bounds).translate(boundsOffset)
       val view = map.getSubView(viewRectangle)
       for (cell in view.cells) {
         val drawable = cell.polygon.translate(-boundsOffset.toDouble()).toDrawable()
@@ -143,7 +143,7 @@ object MapGeneratorTest {
     }
 
     showGraphics { bounds, graphics ->
-      val viewRectangle = Rectanglei(Vector2i.ZERO, bounds).translate(boundsOffset)
+      val viewRectangle = Rectanglei(Vec2i.Zero, bounds).translate(boundsOffset)
       val view = map.getSubView(viewRectangle)
       for (cell in view.cells) {
         val drawable = cell.polygon.translate(-boundsOffset.toDouble()).toDrawable()

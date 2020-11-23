@@ -8,7 +8,7 @@ indent_style = space
 insert_final_newline = true
 max_line_length = 120
 tab_width = 2
-ij_continuation_indent_size = 4
+ij_continuation_indent_size = 2
 ij_formatter_off_tag = @formatter:off
 ij_formatter_on_tag = @formatter:on
 ij_formatter_tags_enabled = false
@@ -20,8 +20,8 @@ ij_kotlin_name_count_to_use_star_import = 100
 ij_kotlin_name_count_to_use_star_import_for_members = 100
 
 # Reduce the number of indents when using Composable components
-[{graph-editor/*/**.kts, graph-editor/*/**.kt}]
-ij_continuation_indent_size = 2
+# [{graph-editor/*/**.kts, graph-editor/*/**.kt}]
+# ij_continuation_indent_size = 2
 
 # [{*.kts,*.kt}]
 # ij_kotlin_align_in_columns_case_branch = false

@@ -9,7 +9,7 @@
  */
 package org.lanternpowered.porygen.math.geom
 
-import org.lanternpowered.porygen.math.vector.Vector2d
+import org.lanternpowered.porygen.math.vector.Vec2d
 
 /**
  * Represents a polygon.
@@ -24,7 +24,7 @@ class Polygond : AbstractShape {
    *
    * @return The vertices
    */
-  val vertices: List<Vector2d>
+  val vertices: List<Vec2d>
 
   // Whether the polygon is convex, -1 means not yet computed
   private var isConvexState = -1
@@ -32,7 +32,7 @@ class Polygond : AbstractShape {
   /**
    * The centroid of this polygon.
    */
-  val centroid: Vector2d
+  val centroid: Vec2d
     get() {
       var x = 0.0
       var y = 0.0
@@ -40,7 +40,7 @@ class Polygond : AbstractShape {
         x += vertex.x
         y += vertex.y
       }
-      return Vector2d(
+      return Vec2d(
           x / vertices.size.toDouble(),
           y / vertices.size.toDouble())
     }
@@ -83,7 +83,7 @@ class Polygond : AbstractShape {
     return true
   }
 
-  private constructor(vertices: List<Vector2d>) {
+  private constructor(vertices: List<Vec2d>) {
     check(vertices.size >= 3) { "There must be at least 3 vertices." }
     this.vertices = vertices
   }
@@ -95,7 +95,7 @@ class Polygond : AbstractShape {
    *
    * @param vertices The vertices
    */
-  constructor(vararg vertices: Vector2d) {
+  constructor(vararg vertices: Vec2d) {
     check(vertices.size >= 3) { "There must be at least 3 vertices." }
     this.vertices = vertices.asList()
   }
@@ -107,7 +107,7 @@ class Polygond : AbstractShape {
    *
    * @param vertices The vertices
    */
-  constructor(vertices: Iterable<Vector2d>) : this(vertices.toList())
+  constructor(vertices: Iterable<Vec2d>) : this(vertices.toList())
 
   override fun contains(x: Double, y: Double): Boolean {
     // https://stackoverflow.com/questions/8721406/how-to-determine-if-a-point-is-inside-a-2d-convex-polygon
@@ -247,7 +247,7 @@ class Polygond : AbstractShape {
    * with the given [vector] and returns a new
    * [Polygond].
    */
-  fun scale(vector: Vector2d): Polygond {
+  fun scale(vector: Vec2d): Polygond {
     val vertices = vertices.map { vertex -> vertex * vector }
     val polygon = Polygond(vertices)
     polygon.isConvexState = this.isConvexState
@@ -259,7 +259,7 @@ class Polygond : AbstractShape {
    * with the given [vector] and returns a new
    * [Polygond].
    */
-  fun translate(vector: Vector2d): Polygond {
+  fun translate(vector: Vec2d): Polygond {
     val vertices = vertices.map { vertex -> vertex + vector }
     val polygon = Polygond(vertices)
     polygon.isConvexState = this.isConvexState
@@ -280,7 +280,7 @@ class Polygond : AbstractShape {
      * @param vertices The vertices
      * @return The polygon
      */
-    fun newConvexPolygon(vararg vertices: Vector2d): Polygond {
+    fun newConvexPolygon(vararg vertices: Vec2d): Polygond {
       val polygon = Polygond(vertices.asList())
       polygon.isConvexState = 1
       return polygon
@@ -295,7 +295,7 @@ class Polygond : AbstractShape {
      * @param vertices The vertices
      * @return The polygon
      */
-    fun newConvexPolygon(vertices: Iterable<Vector2d>): Polygond {
+    fun newConvexPolygon(vertices: Iterable<Vec2d>): Polygond {
       val polygon = Polygond(vertices)
       polygon.isConvexState = 1
       return polygon

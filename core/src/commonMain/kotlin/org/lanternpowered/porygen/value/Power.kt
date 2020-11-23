@@ -14,34 +14,34 @@ import org.lanternpowered.porygen.noise.asNoiseModule
 import kotlin.math.pow
 
 private data class Power(
-    val source: Value,
-    val exponent: Value
-) : Value {
+  val source: DoubleSupplier,
+  val exponent: DoubleSupplier
+) : DoubleSupplier {
   override fun get(): Double = source.get().pow(exponent.get())
 }
 
 private data class Power2(
-    val source: Value2,
-    val exponent: Value2
-) : Value2 {
+  val source: Vec2dToDouble,
+  val exponent: Vec2dToDouble
+) : Vec2dToDouble {
   override fun get(x: Double, y: Double): Double = source[x, y].pow(exponent[x, y])
 }
 
 private data class Power3(
-    val source: Value3,
-    val exponent: Value3
-) : Value3 {
+  val source: Vec3dToDouble,
+  val exponent: Vec3dToDouble
+) : Vec3dToDouble {
   override fun get(x: Double, y: Double, z: Double): Double = source[x, y, z].pow(exponent[x, y, z])
 }
 
-fun Value.pow(exponent: Value): Value = Power(this, exponent)
-fun Value.pow(exponent: Double): Value = pow(Constant(exponent))
+fun DoubleSupplier.pow(exponent: DoubleSupplier): DoubleSupplier = Power(this, exponent)
+fun DoubleSupplier.pow(exponent: Double): DoubleSupplier = pow(ConstantDouble(exponent))
 
-fun Value2.pow(exponent: Value2): Value2 = Power2(this, exponent)
-fun Value2.pow(exponent: Double): Value2 = pow(Constant(exponent))
+fun Vec2dToDouble.pow(exponent: Vec2dToDouble): Vec2dToDouble = Power2(this, exponent)
+fun Vec2dToDouble.pow(exponent: Double): Vec2dToDouble = pow(ConstantDouble(exponent))
 
-fun Value3.pow(exponent: Value3): Value3 = Power3(this, exponent)
-fun Value3.pow(exponent: Double): Value3 = pow(Constant(exponent))
+fun Vec3dToDouble.pow(exponent: Vec3dToDouble): Vec3dToDouble = Power3(this, exponent)
+fun Vec3dToDouble.pow(exponent: Double): Vec3dToDouble = pow(ConstantDouble(exponent))
 
-fun NoiseModule.pow(exponent: Value3): NoiseModule = Power3(this, exponent).asNoiseModule()
-fun NoiseModule.pow(exponent: Double): NoiseModule = Power3(this, Constant(exponent)).asNoiseModule()
+fun NoiseModule.pow(exponent: Vec3dToDouble): NoiseModule = Power3(this, exponent).asNoiseModule()
+fun NoiseModule.pow(exponent: Double): NoiseModule = Power3(this, ConstantDouble(exponent)).asNoiseModule()

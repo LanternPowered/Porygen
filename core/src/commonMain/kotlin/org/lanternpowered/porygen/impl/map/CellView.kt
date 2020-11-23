@@ -13,7 +13,7 @@ import org.lanternpowered.porygen.map.Cell
 import org.lanternpowered.porygen.map.Corner
 import org.lanternpowered.porygen.map.Edge
 import org.lanternpowered.porygen.math.geom.Polygond
-import org.lanternpowered.porygen.math.vector.Vector2i
+import org.lanternpowered.porygen.math.vector.Vec2i
 
 val Cell.delegate: Cell
   get() = if (this is CellView) delegate else this
@@ -23,7 +23,7 @@ class CellView private constructor(
     override val view: MapViewImpl
 ) : MapElementView<Cell>(), Cell {
 
-  override val centerPoint: Vector2i
+  override val centerPoint: Vec2i
     get() = delegate.centerPoint
 
   override val polygon: Polygond

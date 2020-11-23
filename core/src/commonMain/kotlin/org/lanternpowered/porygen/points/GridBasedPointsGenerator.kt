@@ -11,18 +11,18 @@ package org.lanternpowered.porygen.points
 
 import org.lanternpowered.porygen.util.IntArrays
 import org.lanternpowered.porygen.math.ceilToInt
-import org.lanternpowered.porygen.math.vector.Vector2d
-import org.lanternpowered.porygen.math.vector.Vector2i
+import org.lanternpowered.porygen.math.vector.Vec2d
+import org.lanternpowered.porygen.math.vector.Vec2i
 import kotlin.math.sqrt
 import kotlin.random.Random
 import kotlin.random.nextInt
 
 class GridBasedPointsGenerator(
     private val amount: IntRange,
-    private val gridSize: Vector2i = getDefaultCells(amount)
+    private val gridSize: Vec2i = getDefaultCells(amount)
 ) : PointsGenerator {
 
-  override fun generate(random: Random): List<Vector2d> {
+  override fun generate(random: Random): List<Vec2d> {
     // Randomize the amount of points that will be generated
     val amount = random.nextInt(this.amount)
 
@@ -33,7 +33,7 @@ class GridBasedPointsGenerator(
     val xHalfLineDiff = xLineDiff / 2.0
     val yHalfLineDiff = yLineDiff / 2.0
 
-    val points = mutableListOf<Vector2d>()
+    val points = mutableListOf<Vec2d>()
     fun addCellPoint(cell: Int) {
       // Get the coordinates from the point index
       val px = (cell % this.gridSize.y).toDouble()
@@ -41,7 +41,7 @@ class GridBasedPointsGenerator(
       // Calculate point coordinates within the cell
       val x = xLineDiff * px + xHalfLineDiff
       val y = yLineDiff * py + yHalfLineDiff
-      points.add(Vector2d(x, y))
+      points.add(Vec2d(x, y))
     }
 
     val gridPointsAmount = this.gridSize.x * this.gridSize.y
@@ -63,9 +63,9 @@ class GridBasedPointsGenerator(
 
   companion object {
 
-    fun getDefaultCells(amount: IntRange): Vector2i {
+    fun getDefaultCells(amount: IntRange): Vec2i {
       val size = ceilToInt(sqrt(amount.last.toDouble())) + 4
-      return Vector2i(size, size)
+      return Vec2i(size, size)
     }
   }
 }

@@ -40,7 +40,7 @@ import org.lanternpowered.porygen.math.floorToInt
 import org.lanternpowered.porygen.noise.NoiseModule
 import org.lanternpowered.porygen.noise.Utils
 
-class Checkerboard : NoiseModule {
+object Checkerboard : NoiseModule {
 
   override fun get(x: Double, y: Double, z: Double): Double {
     val ix = floorToInt(Utils.makeIntRange(x))

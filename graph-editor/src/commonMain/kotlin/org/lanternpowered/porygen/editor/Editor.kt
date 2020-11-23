@@ -142,13 +142,7 @@ fun NodeArea() {
           position = position,
           onUpdateTitle = { title = it },
           onUpdatePosition = { position = it },
-          scale = scale,
-          onStopOutputPortDrag = {
-            println("STOP OUTPUT DRAG")
-          },
-          onHoverInputPort = {
-            print("HOVER INPUT")
-          }
+          scale = scale
         )
       }
     }

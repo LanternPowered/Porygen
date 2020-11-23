@@ -14,8 +14,8 @@ import org.lanternpowered.porygen.map.polygon.CellPolygonGenerator
 import org.lanternpowered.porygen.math.ceilToInt
 import org.lanternpowered.porygen.points.PointsGenerator
 import org.lanternpowered.porygen.util.random.Xor128Random
-import org.lanternpowered.porygen.math.vector.Vector2d
-import org.lanternpowered.porygen.math.vector.Vector2i
+import org.lanternpowered.porygen.math.vector.Vec2d
+import org.lanternpowered.porygen.math.vector.Vec2i
 
 /**
  * This generator generates polygons for a specified world, the polygons are generated
@@ -29,10 +29,10 @@ import org.lanternpowered.porygen.math.vector.Vector2i
  * @property polygonGenerator The polygon generator
  */
 class SectionPolygonGenerator(
-    private val seed: Long,
-    private val sectionSize: Vector2i,
-    private val pointsGenerator: PointsGenerator,
-    private val polygonGenerator: CellPolygonGenerator
+  private val seed: Long,
+  private val sectionSize: Vec2i,
+  private val pointsGenerator: PointsGenerator,
+  private val polygonGenerator: CellPolygonGenerator
 ) {
 
   fun generate(section: SectionPosition): Collection<CellPolygon> {
@@ -60,11 +60,11 @@ class SectionPolygonGenerator(
     val localMaxY = offset.y + 1
 
     val sectionSize = sectionSize.toDouble()
-    val points = mutableListOf<Vector2d>()
+    val points = mutableListOf<Vec2d>()
 
     for (localSectionX in localMinSectionX..localMaxSectionX) {
       for (localSectionY in localMinSectionY..localMaxSectionY) {
-        val localSectionOffset = Vector2d(localSectionX.toDouble(), localSectionY.toDouble())
+        val localSectionOffset = Vec2d(localSectionX.toDouble(), localSectionY.toDouble())
 
         val globalSectionX = localSectionX + section.x
         val globalSectionY = localSectionY + section.y
@@ -82,7 +82,7 @@ class SectionPolygonGenerator(
       }
     }
 
-    val translation = Vector2d(section.x.toDouble() * sectionSize.x, section.y.toDouble() * sectionSize.y)
+    val translation = Vec2d(section.x.toDouble() * sectionSize.x, section.y.toDouble() * sectionSize.y)
     return polygonGenerator.generate(points).asSequence()
         // Only keep polygons that has at least one vertex that's inside the section area
         .filter { polygon -> polygon.polygon.vertices.any { point -> point.x in 0.0..1.0 && point.y in 0.0..1.0 } }

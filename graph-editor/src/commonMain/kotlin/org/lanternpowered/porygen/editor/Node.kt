@@ -36,7 +36,6 @@ import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
@@ -152,9 +151,7 @@ fun Node(
   onUpdateTitle: (String) -> Unit,
   position: Offset = Offset.Zero,
   onUpdatePosition: (Offset) -> Unit,
-  scale: Float,
-  onHoverInputPort: (Int) -> Unit,
-  onStopOutputPortDrag: (Int) -> Unit
+  scale: Float
 ) {
   var size by remember { mutableStateOf(Size.Zero) }
 
@@ -234,7 +231,7 @@ fun Node(
               Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(modifier = Modifier.preferredSize(10.dp).clip(CircleShape).background(Color.Red))
                 Spacer(Modifier.width(5.dp))
-                Text("in1")
+                BasicText(text = "in1", style = NodeTextStyle)
               }
               Row(verticalAlignment = Alignment.CenterVertically) {
                 var isHovering by remember { mutableStateOf(false) }
@@ -247,30 +244,38 @@ fun Node(
                     .onHover(
                       onEnter = {
                         isHovering = true
-                        onHoverInputPort(1)
+                        println("ENTER HOVER")
+                      },
+                      onMove = {
+                        println("MOVE")
                       },
                       onExit = {
                         isHovering = false
+                        println("EXIT HOVER")
                       }
                     )
                     .rawDragGestureFilter(object : DragObserver {
                       override fun onStart(downPosition: Offset) {
-                        println("START B")
+                        println("$title: START DRAG")
                         if (dragLock.lock())
                           hasDrawLock = true
                       }
 
                       override fun onStop(velocity: Offset) {
+                        println("$title: STOP DRAG")
                         if (!hasDrawLock)
                           return
                         dragLock.unlock()
                         hasDrawLock = false
-                        onStopOutputPortDrag(0)
+                      }
+
+                      override fun onCancel() {
+                        println("$title: CANCEL DRAG")
                       }
                     })
                 )
                 Spacer(Modifier.width(5.dp))
-                Text("in2")
+                BasicText(text = "in2", style = NodeTextStyle)
               }
             }
           }
@@ -289,7 +294,7 @@ fun Node(
               modifier = Modifier
                 .padding(paddingSize)
             ) {
-              Text("Output")
+              BasicText(text = "Output", style = NodeTextStyle)
             }
           }
         }

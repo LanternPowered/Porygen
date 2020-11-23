@@ -11,8 +11,8 @@ package org.lanternpowered.porygen.points
 
 import org.lanternpowered.porygen.util.IntArrays
 import org.lanternpowered.porygen.math.ceilToInt
-import org.lanternpowered.porygen.math.vector.Vector2d
-import org.lanternpowered.porygen.math.vector.Vector2i
+import org.lanternpowered.porygen.math.vector.Vec2d
+import org.lanternpowered.porygen.math.vector.Vec2i
 import kotlin.math.sqrt
 import kotlin.random.Random
 import kotlin.random.nextInt
@@ -30,12 +30,12 @@ import kotlin.random.nextInt
  *   minimal spread between each cell.
  */
 class BlueNoisePointsGenerator(
-    private val amount: IntRange,
-    private val cells: Vector2i = getDefaultCells(amount),
-    private val cellCoverage: Vector2d = Vector2d(0.8, 0.8)
+  private val amount: IntRange,
+  private val cells: Vec2i = getDefaultCells(amount),
+  private val cellCoverage: Vec2d = Vec2d(0.8, 0.8)
 ) : PointsGenerator {
 
-  override fun generate(random: Random): List<Vector2d> {
+  override fun generate(random: Random): List<Vec2d> {
     // Randomize the amount of points that will be generated
     val amount = random.nextInt(this.amount)
 
@@ -50,7 +50,7 @@ class BlueNoisePointsGenerator(
     val xCellSize = this.cellCoverage.x / this.cells.x
     val yCellSize = this.cellCoverage.y / this.cells.y
 
-    val points = mutableListOf<Vector2d>()
+    val points = mutableListOf<Vec2d>()
     fun addCellPoint(cell: Int) {
       // Get the coordinates from the cell index
       val cx = (cell % this.cells.y).toDouble()
@@ -59,7 +59,7 @@ class BlueNoisePointsGenerator(
       val x = cx * xCellSize + cx * xGapSize + xHalfGapSize + random.nextDouble() * xCellSize
       val y = cy * yCellSize + cy * yGapSize + yHalfGapSize + random.nextDouble() * yCellSize
       // Add the point
-      points.add(Vector2d(x, y))
+      points.add(Vec2d(x, y))
     }
 
     val cellAmount = this.cells.x * this.cells.y
@@ -81,9 +81,9 @@ class BlueNoisePointsGenerator(
 
   companion object {
 
-    fun getDefaultCells(amount: IntRange): Vector2i {
+    fun getDefaultCells(amount: IntRange): Vec2i {
       val size = ceilToInt(sqrt(amount.last.toDouble())) + 1
-      return Vector2i(size, size)
+      return Vec2i(size, size)
     }
   }
 }

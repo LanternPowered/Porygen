@@ -9,7 +9,7 @@
  */
 package org.lanternpowered.porygen.points
 
-import org.lanternpowered.porygen.math.vector.Vector2d
+import org.lanternpowered.porygen.math.vector.Vec2d
 import kotlin.random.Random
 
 /**
@@ -27,5 +27,5 @@ interface PointsGenerator {
    * Points should range between 0 (inclusive) and
    * 1 (exclusive).
    */
-  fun generate(random: Random): List<Vector2d>
+  fun generate(random: Random): List<Vec2d>
 }

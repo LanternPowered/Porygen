@@ -10,7 +10,7 @@
 package org.lanternpowered.porygen.map
 
 import org.lanternpowered.porygen.math.geom.Polygond
-import org.lanternpowered.porygen.math.vector.Vector2i
+import org.lanternpowered.porygen.math.vector.Vec2i
 
 /**
  * Represents a cell within a [CellMap].
@@ -18,11 +18,11 @@ import org.lanternpowered.porygen.math.vector.Vector2i
 interface Cell : CellMapElement {
 
   /**
-   * Gets the center point [Vector2i] of this [Cell].
+   * Gets the center point [Vec2i] of this [Cell].
    *
    * @return The center point
    */
-  val centerPoint: Vector2i
+  val centerPoint: Vec2i
 
   /**
    * Gets the [Polygond] of this cell.
@@ -53,13 +53,13 @@ interface Cell : CellMapElement {
   val corners: Collection<Corner>
 
   /**
-   * Gets whether the specified point [Vector2i]
+   * Gets whether the specified point [Vec2i]
    * is located inside this [Cell].
    *
    * @param point The point
    * @return Whether the point is located in this cell
    */
-  operator fun contains(point: Vector2i) = contains(point.x, point.y)
+  operator fun contains(point: Vec2i) = contains(point.x, point.y)
 
   /**
    * Gets whether the specified point is located

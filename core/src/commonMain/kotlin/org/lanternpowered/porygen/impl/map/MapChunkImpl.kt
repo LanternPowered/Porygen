@@ -11,7 +11,7 @@ package org.lanternpowered.porygen.impl.map
 
 import org.lanternpowered.porygen.data.SimpleDataHolder
 import org.lanternpowered.porygen.map.CellMapChunk
-import org.lanternpowered.porygen.math.vector.Vector2i
+import org.lanternpowered.porygen.math.vector.Vec2i
 
 /**
  * The implementation of [CellMapChunk].
@@ -21,8 +21,8 @@ import org.lanternpowered.porygen.math.vector.Vector2i
  */
 class MapChunkImpl(
     override val map: MapImpl,
-    override val chunkPosition: Vector2i,
-    override val chunkSize: Vector2i,
+    override val chunkPosition: Vec2i,
+    override val chunkSize: Vec2i,
     override val id: Long,
     private val cellBlockData: CellBlockData
 ) : SimpleDataHolder(), CellMapChunk {

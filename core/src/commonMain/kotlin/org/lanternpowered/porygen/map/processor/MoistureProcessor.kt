@@ -11,21 +11,21 @@ package org.lanternpowered.porygen.map.processor
 
 import org.lanternpowered.porygen.map.Cell
 import org.lanternpowered.porygen.map.CellMapView
-import org.lanternpowered.porygen.value.Constant
-import org.lanternpowered.porygen.value.Value2
+import org.lanternpowered.porygen.value.ConstantDouble
+import org.lanternpowered.porygen.value.Vec2dToDouble
 import kotlin.math.min
 
 /**
  * @property modifier The moisture modifier
  */
 class MoistureProcessor(
-    private val base: Value2 = Constant(0.0),
-    private val modifier: Value2 = Constant(1.0),
-    private val maximum: Double = 2.0,
-    private val oceanNeighborFactor: Double = 0.3,
-    private val oceanMaxNeighbors: Int = 1,
-    private val riverNeighborFactor: Double = oceanNeighborFactor / 1.5,
-    private val riverMaxNeighbors: Int = 2
+  private val base: Vec2dToDouble = ConstantDouble(0.0),
+  private val modifier: Vec2dToDouble = ConstantDouble(1.0),
+  private val maximum: Double = 2.0,
+  private val oceanNeighborFactor: Double = 0.3,
+  private val oceanMaxNeighbors: Int = 1,
+  private val riverNeighborFactor: Double = oceanNeighborFactor / 1.5,
+  private val riverMaxNeighbors: Int = 2
 ) : CellMapProcessor {
 
   override fun process(view: CellMapView) {

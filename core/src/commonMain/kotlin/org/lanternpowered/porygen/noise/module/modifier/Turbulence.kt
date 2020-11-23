@@ -40,11 +40,11 @@ import org.lanternpowered.porygen.noise.NoiseModule
 import org.lanternpowered.porygen.noise.module.source.Perlin
 
 class Turbulence(
-    val source: NoiseModule,
-    val power: Double = DEFAULT_POWER,
-    val frequency: Double = DEFAULT_FREQUENCY,
-    val roughness: Int = DEFAULT_ROUGHNESS,
-    val seed: Int = DEFAULT_SEED
+  val source: NoiseModule,
+  val power: Double = DefaultPower,
+  val frequency: Double = DefaultFrequency,
+  val roughness: Int = DefaultRoughness,
+  val seed: Int = DefaultSeed
 ) : NoiseModule {
 
   private var xDistortModule = Perlin(octaves = roughness, frequency = frequency, seed = seed)
@@ -81,21 +81,21 @@ class Turbulence(
     /**
      * The default turbulence power.
      */
-    const val DEFAULT_POWER = 1.0
+    const val DefaultPower = 1.0
 
     /**
      * The default seed.
      */
-    const val DEFAULT_SEED = 0
+    const val DefaultSeed = 0
 
     /**
      * The default frequency.
      */
-    const val DEFAULT_FREQUENCY = Perlin.DEFAULT_FREQUENCY
+    const val DefaultFrequency = Perlin.DefaultFrequency
 
     /**
      * The default roughness.
      */
-    const val DEFAULT_ROUGHNESS = Perlin.DEFAULT_OCTAVES
+    const val DefaultRoughness = Perlin.DefaultOctaves
   }
 }

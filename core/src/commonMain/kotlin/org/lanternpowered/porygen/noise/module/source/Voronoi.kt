@@ -50,10 +50,10 @@ import kotlin.math.sqrt
  *   of the seed points.
  */
 class Voronoi(
-    val displacement: Double = DEFAULT_DISPLACEMENT,
-    var frequency: Double = DEFAULT_FREQUENCY,
-    var seed: Int = DEFAULT_SEED,
-    var useSeedPointDistance: Boolean = false
+  val displacement: Double = DefaultDisplacement,
+  var frequency: Double = DefaultFrequency,
+  var seed: Int = DefaultSeed,
+  var useSeedPointDistance: Boolean = false
 ) : NoiseModule {
 
   override fun get(x: Double, y: Double, z: Double): Double {
@@ -107,7 +107,7 @@ class Voronoi(
       val xDist: Double = xCandidate - x1
       val yDist: Double = yCandidate - y1
       val zDist: Double = zCandidate - z1
-      sqrt((xDist * xDist) + (yDist * yDist) + (zDist * zDist)) / SQRT_3
+      sqrt((xDist * xDist) + (yDist * yDist) + (zDist * zDist)) / Sqrt3
     } else {
       0.0
     }
@@ -119,21 +119,21 @@ class Voronoi(
 
   companion object {
 
-    private val SQRT_3 = sqrt(3.0)
+    private val Sqrt3 = sqrt(3.0)
 
     /**
      * The default displacement.
      */
-    const val DEFAULT_DISPLACEMENT = 1.0
+    const val DefaultDisplacement = 1.0
 
     /**
      * The default frequency.
      */
-    const val DEFAULT_FREQUENCY = 1.0
+    const val DefaultFrequency = 1.0
 
     /**
      * The default seed.
      */
-    const val DEFAULT_SEED = 0
+    const val DefaultSeed = 0
   }
 }
