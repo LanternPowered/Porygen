@@ -15,6 +15,7 @@ import org.lanternpowered.porygen.graph.node.port.OutputPort
 import org.lanternpowered.porygen.graph.node.port.Port
 import org.lanternpowered.porygen.graph.node.port.PortId
 import org.lanternpowered.porygen.graph.node.spec.PortSpec
+import org.lanternpowered.porygen.graph.node.spec.PropertySpec
 import org.lanternpowered.porygen.math.vector.Vec2d
 
 @Serializable(with = NodeSerializer::class)
@@ -30,11 +31,22 @@ class NodeImpl(
   override val outputs: List<OutputPort<*>>
     get() = TODO("Not yet implemented")
 
+  override val properties: List<Property<*>>
+    get() = TODO("Not yet implemented")
+
   override fun port(id: PortId): Port<*>? {
     TODO("Not yet implemented")
   }
 
   override fun <T> port(spec: PortSpec<T>): Port<T>? {
+    TODO("Not yet implemented")
+  }
+
+  override fun property(id: PropertyId): Property<*>? {
+    TODO("Not yet implemented")
+  }
+
+  override fun <T> property(spec: PropertySpec<T>): Property<T>? {
     TODO("Not yet implemented")
   }
 }

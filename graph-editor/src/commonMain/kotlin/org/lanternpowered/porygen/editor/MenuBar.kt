@@ -136,7 +136,7 @@ private fun InnerMenuBar(
                 .fillMaxWidth()
                 .preferredSizeIn(minWidth = 100.dp)
                 .padding(horizontal = 10.dp, vertical = 6.dp),
-              alignment = Alignment.CenterStart
+              contentAlignment = Alignment.CenterStart
             ) {
               menuItem.content()
             }

@@ -45,7 +45,7 @@ import org.lanternpowered.porygen.noise.Utils
 /**
  * Generates summed octave Simplex-style noise. The base Simplex uses a different
  * formula but produces a similar appearance to classic Simplex. Default lattice
- * orientation is XZ_BEFORE_Y. See [LatticeOrientation] for recommended usage.
+ * orientation is "XZ before Y". See [LatticeOrientation] for recommended usage.
  *
  * @property frequency The frequency of the first octave
  * @property lacunarity The frequency multiplier between successive octaves
@@ -55,18 +55,18 @@ import org.lanternpowered.porygen.noise.Utils
  * @property seed The seed
  */
 class Simplex(
-    val frequency: Double = DEFAULT_FREQUENCY,
-    var lacunarity: Double = DEFAULT_LACUNARITY,
-    val quality: SimplexNoiseQuality = DEFAULT_QUALITY,
-    val latticeOrientation: LatticeOrientation = DEFAULT_LATTICE_ORIENTATION,
-    val octaves: Int = DEFAULT_OCTAVES,
-    val persistence: Double = DEFAULT_PERSISTENCE,
-    val seed: Int = DEFAULT_SEED
+  val frequency: Double = DefaultFrequency,
+  var lacunarity: Double = DefaultLacunarity,
+  val quality: SimplexNoiseQuality = DefaultQuality,
+  val latticeOrientation: LatticeOrientation = DefaultLatticeOrientation,
+  val octaves: Int = DefaultOctaves,
+  val persistence: Double = DefaultPersistence,
+  val seed: Int = DefaultSeed
 ) : NoiseModule {
 
   init {
-    check(octaves in 1..MAX_OCTAVES) {
-      "octaves must be between 1 and $MAX_OCTAVES (inclusive)" }
+    check(octaves in 1..MaxOctaves) {
+      "octaves must be between 1 and $MaxOctaves (inclusive)" }
   }
 
   override fun get(x: Double, y: Double, z: Double): Double {
@@ -109,41 +109,41 @@ class Simplex(
     /**
      * The maximum number of octaves.
      */
-    const val MAX_OCTAVES = 30
+    const val MaxOctaves = 30
 
     /**
      * The default frequency.
      */
-    const val DEFAULT_FREQUENCY = 1.0
+    const val DefaultFrequency = 1.0
 
     /**
      * The default lacunarity.
      */
-    const val DEFAULT_LACUNARITY = 2.0
+    const val DefaultLacunarity = 2.0
 
     /**
      * The default number of octaves.
      */
-    const val DEFAULT_OCTAVES = 6
+    const val DefaultOctaves = 6
 
     /**
      * The default persistence.
      */
-    const val DEFAULT_PERSISTENCE = 0.5
+    const val DefaultPersistence = 0.5
 
     /**
      * The default seed.
      */
-    const val DEFAULT_SEED = 0
+    const val DefaultSeed = 0
 
     /**
      * The default noise quality.
      */
-    val DEFAULT_QUALITY = SimplexNoiseQuality.Smooth
+    val DefaultQuality = SimplexNoiseQuality.Smooth
 
     /**
      * The default lattice orientation.
      */
-    val DEFAULT_LATTICE_ORIENTATION = LatticeOrientation.XZBeforeY
+    val DefaultLatticeOrientation = LatticeOrientation.XZBeforeY
   }
 }

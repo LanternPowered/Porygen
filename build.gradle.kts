@@ -1,6 +1,6 @@
 plugins {
-  kotlin("multiplatform") version "1.4.10" apply false
-  kotlin("plugin.serialization") version "1.4.10" apply false
+  kotlin("multiplatform") version "1.4.20" apply false
+  kotlin("plugin.serialization") version "1.4.20" apply false
   id("net.minecrell.licenser") version "0.4.1"
 }
 

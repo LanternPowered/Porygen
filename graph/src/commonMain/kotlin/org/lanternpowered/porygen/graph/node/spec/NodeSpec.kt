@@ -17,6 +17,7 @@ import org.lanternpowered.porygen.value.ConstantLong
 import org.lanternpowered.porygen.value.DoubleSupplier
 import org.lanternpowered.porygen.value.IntSupplier
 import org.lanternpowered.porygen.value.LongSupplier
+import kotlin.jvm.JvmName
 import kotlin.reflect.KClass
 
 /**
@@ -47,6 +48,7 @@ abstract class NodeSpec(
   ): InputPortSpec<T?> =
     input(id, type, null)
 
+  @JvmName("inputWithNullableDefault")
   fun <T : Any> input(
     id: String,
     type: KClass<T>,
@@ -64,13 +66,18 @@ abstract class NodeSpec(
   }
 
   inline fun <reified T : Any> input(
+    id: String
+  ): InputPortSpec<T?> = input(id, T::class, null)
+
+  inline fun <reified T : Any> input(
     id: String,
     default: T
   ): InputPortSpec<T> = input(id, T::class, default)
 
+  @JvmName("inputWithNullableDefault")
   inline fun <reified T : Any> input(
     id: String,
-    default: T? = null
+    default: T?
   ): InputPortSpec<T?> = input(id, T::class, default)
 
   fun input(

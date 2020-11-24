@@ -1,6 +1,4 @@
 plugins {
-  java
-  idea
   kotlin("multiplatform")
   kotlin("plugin.serialization")
   // id("org.spongepowered.plugin") version "0.8.1"

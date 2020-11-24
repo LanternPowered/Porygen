@@ -11,6 +11,9 @@ package org.lanternpowered.porygen.graph.node
 
 import kotlin.reflect.KProperty
 
+/**
+ * Represents the identifier of a property.
+ */
 inline class PropertyId(val value: String)
 
 /**

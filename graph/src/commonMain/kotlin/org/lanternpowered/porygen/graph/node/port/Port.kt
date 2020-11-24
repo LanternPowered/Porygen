@@ -9,8 +9,8 @@
  */
 package org.lanternpowered.porygen.graph.node.port
 
-import org.lanternpowered.porygen.graph.Node
 import org.lanternpowered.porygen.graph.data.DataType
+import org.lanternpowered.porygen.graph.node.Node
 
 /**
  * Represents the identifier of a port.
