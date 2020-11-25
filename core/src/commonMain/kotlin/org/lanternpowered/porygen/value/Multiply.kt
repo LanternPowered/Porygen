@@ -33,24 +33,37 @@ private data class Multiply3(
   override fun get(x: Double, y: Double, z: Double): Double = source1[x, y, z] * source2[x, y, z]
 }
 
-operator fun DoubleSupplier.times(valueModule: DoubleSupplier): DoubleSupplier = Multiply(this, valueModule)
-operator fun DoubleSupplier.times(value: Double): DoubleSupplier = this * ConstantDouble(value)
-operator fun DoubleSupplier.times(valueModule: NoiseModule): NoiseModule = Multiply3(this, valueModule).asNoiseModule()
+operator fun DoubleSupplier.times(valueModule: DoubleSupplier): DoubleSupplier =
+  Multiply(this, valueModule)
+operator fun DoubleSupplier.times(value: Double): DoubleSupplier =
+  this * ConstantDouble(value)
+operator fun DoubleSupplier.times(valueModule: NoiseModule): NoiseModule =
+  Multiply3(this, valueModule).asNoiseModule()
 
-operator fun Vec2dToDouble.times(valueModule: Vec2dToDouble): Vec2dToDouble = Multiply2(this, valueModule)
-operator fun Vec2dToDouble.times(value: Double): Vec2dToDouble = this * ConstantDouble(value)
+operator fun Vec2dToDouble.times(valueModule: Vec2dToDouble): Vec2dToDouble =
+  Multiply2(this, valueModule)
+operator fun Vec2dToDouble.times(value: Double): Vec2dToDouble =
+  this * ConstantDouble(value)
 
-operator fun Vec3dToDouble.times(valueModule: Vec3dToDouble): Vec3dToDouble = Multiply3(this, valueModule)
-operator fun Vec3dToDouble.times(value: Double): Vec3dToDouble = this * ConstantDouble(value)
+operator fun Vec3dToDouble.times(valueModule: Vec3dToDouble): Vec3dToDouble =
+  Multiply3(this, valueModule)
+operator fun Vec3dToDouble.times(value: Double): Vec3dToDouble =
+  this * ConstantDouble(value)
 
-operator fun NoiseModule.times(valueModule: DoubleSupplier): NoiseModule = Multiply3(this, valueModule).asNoiseModule()
-operator fun NoiseModule.times(valueModule: Vec3dToDouble): NoiseModule = Multiply3(this, valueModule).asNoiseModule()
+operator fun NoiseModule.times(valueModule: DoubleSupplier): NoiseModule =
+  Multiply3(this, valueModule).asNoiseModule()
+operator fun NoiseModule.times(valueModule: Vec3dToDouble): NoiseModule =
+  Multiply3(this, valueModule).asNoiseModule()
 
-operator fun Double.times(valueModule: DoubleSupplier): DoubleSupplier = ConstantDouble(this) * valueModule
-operator fun Double.times(valueModule: Vec2dToDouble): Vec2dToDouble = ConstantDouble(this) * valueModule
-operator fun Double.times(valueModule: Vec3dToDouble): Vec3dToDouble = ConstantDouble(this) * valueModule
+operator fun Double.times(valueModule: DoubleSupplier): DoubleSupplier =
+  ConstantDouble(this) * valueModule
+operator fun Double.times(valueModule: Vec2dToDouble): Vec2dToDouble =
+  ConstantDouble(this) * valueModule
+operator fun Double.times(valueModule: Vec3dToDouble): Vec3dToDouble =
+  ConstantDouble(this) * valueModule
 
-operator fun NoiseModule.times(value: Double): NoiseModule = (this * ConstantDouble(value)).asNoiseModule()
+operator fun NoiseModule.times(value: Double): NoiseModule =
+  (this * ConstantDouble(value)).asNoiseModule()
 
 operator fun DoubleSupplier.unaryMinus(): DoubleSupplier = this * -1.0
 operator fun Vec2dToDouble.unaryMinus(): Vec2dToDouble = this * -1.0

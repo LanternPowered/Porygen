@@ -18,7 +18,7 @@ import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.JsonObject
 
 @Serializer(forClass = NodeImpl::class)
-class NodeSerializer : KSerializer<NodeImpl> {
+internal class NodeSerializer : KSerializer<NodeImpl> {
 
   override val descriptor: SerialDescriptor = serialDescriptor<JsonObject>()
 

@@ -13,6 +13,8 @@ import org.lanternpowered.porygen.graph.node.port.InputPort
 import org.lanternpowered.porygen.graph.node.port.OutputPort
 import org.lanternpowered.porygen.graph.node.port.Port
 import org.lanternpowered.porygen.graph.node.port.PortId
+import org.lanternpowered.porygen.graph.node.property.Property
+import org.lanternpowered.porygen.graph.node.property.PropertyId
 import org.lanternpowered.porygen.graph.node.spec.InputPortSpec
 import org.lanternpowered.porygen.graph.node.spec.OutputPortSpec
 import org.lanternpowered.porygen.graph.node.spec.PortSpec
@@ -28,6 +30,18 @@ inline class NodeId(val value: Int)
  * Represents a single node in a graph.
  */
 interface Node {
+
+  /**
+   * The graph this node is or
+   * was attached to.
+   */
+  val graph: NodeGraph
+
+  /**
+   * Whether this node is still valid. A node is
+   * valid if it's still attached to its graph.
+   */
+  val isValid: Boolean
 
   /**
    * The id of the node.
@@ -47,17 +61,17 @@ interface Node {
   /**
    * A list with all the inputs of this node.
    */
-  val inputs: List<InputPort<*>>
+  val inputs: Collection<InputPort<*>>
 
   /**
    * A list with all the outputs of this node.
    */
-  val outputs: List<OutputPort<*>>
+  val outputs: Collection<OutputPort<*>>
 
   /**
    * All the properties of this node.
    */
-  val properties: List<Property<*>>
+  val properties: Collection<Property<*>>
 
   /**
    * Attempts to get a port with the given id.
@@ -67,14 +81,12 @@ interface Node {
   /**
    * Attempts to get an input port with the given id.
    */
-  fun input(id: PortId): InputPort<*>? =
-    port(id) as? InputPort<*>
+  fun input(id: PortId): InputPort<*>?
 
   /**
    * Attempts to get an output port with the given id.
    */
-  fun output(id: PortId): OutputPort<*>? =
-    port(id) as? OutputPort<*>
+  fun output(id: PortId): OutputPort<*>?
 
   /**
    * Attempts to get the property with the given id.

@@ -15,7 +15,7 @@ import org.lanternpowered.porygen.graph.node.Node
 /**
  * Represents the identifier of a port.
  */
-inline class PortId(val id: String)
+inline class PortId(val value: String)
 
 /**
  * Represents a port of a node.

@@ -25,6 +25,7 @@ import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.ripple.rememberRippleIndication
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,25 +51,14 @@ fun MenuBar(
   items: List<MenuItem>
 ) {
   Row(modifier) {
-    var active: Int? by remember { mutableStateOf(null) }
-    // Workaround around an issue with onDismissRequest,
-    // if we pass a lambda in and there is more than one item in
-    // the list, an exception occurs when attempting to create a
-    // popup
-    // https://gist.github.com/Cybermaxke/2644a824f2e947a7ee334a07bbd65ed1
-    //   error line: onDismissRequest = { active = null }
-    // So we declare the function manually so we know that no
-    // cast error will occur
-    val function = object : Function0<Unit> {
-      override fun invoke() {
-        active = null
-      }
-    }
+    // For now don't use a delegate here
+    // https://github.com/JetBrains/compose-jb/issues/132
+    val active: MutableState<Int?> = remember { mutableStateOf(null) }
     for ((index, item) in items.withIndex()) {
       var popupOffset by remember { mutableStateOf(Offset.Zero) }
       Button(
         onClick = {
-          active = index
+          active.value = index
           item.onClick?.invoke()
         },
         modifier = Modifier
@@ -78,13 +68,12 @@ fun MenuBar(
       ) {
         item.content()
       }
-      if (active != index || item.subItems == null)
+      if (active.value != index || item.subItems == null)
         continue
       Popup(
         isFocusable = true,
         alignment = Alignment.TopStart,
-        onDismissRequest = function
-        // onDismissRequest = { active = null } // See above
+        onDismissRequest = { active.value = null }
       ) {
         InnerMenuBar(
           items = item.subItems,

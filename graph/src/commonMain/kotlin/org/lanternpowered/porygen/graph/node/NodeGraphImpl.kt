@@ -10,6 +10,7 @@
 package org.lanternpowered.porygen.graph.node
 
 import org.lanternpowered.porygen.graph.node.spec.NodeSpec
+import org.lanternpowered.porygen.math.vector.Vec2d
 import org.lanternpowered.porygen.util.collections.Int2ObjectOpenHashMap
 import org.lanternpowered.porygen.util.collections.asUnmodifiableCollection
 
@@ -20,6 +21,7 @@ internal class NodeGraphImpl : NodeGraph {
 
   override val nodes: Collection<Node> =
     byId.values.asUnmodifiableCollection()
+  
   override fun iterator(): Iterator<Node> =
     nodes.iterator()
 
@@ -30,12 +32,19 @@ internal class NodeGraphImpl : NodeGraph {
     byId[node.id.value] = node
   }
 
-  override fun createDynamic(spec: NodeSpec?): DynamicNode {
-    TODO("Not yet implemented")
+  override fun createDynamic(spec: NodeSpec?, title: String?, position: Vec2d): DynamicNode {
+    val id = allocId()
+    val title0 = title ?: spec?.title ?: "Node $id"
+    val node = DynamicNodeImpl(id, title0, position, this, spec)
+    add(node)
+    return node
   }
 
-  override fun create(spec: NodeSpec): Node {
-    TODO("Not yet implemented")
+  override fun create(spec: NodeSpec, position: Vec2d): Node {
+    val id = allocId()
+    val node = SpecNodeImpl(id, spec.title, position, this, spec)
+    add(node)
+    return node
   }
 
   override fun remove(id: NodeId): Boolean {

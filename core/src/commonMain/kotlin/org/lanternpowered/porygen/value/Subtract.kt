@@ -33,19 +33,31 @@ private data class Subtract3(
   override fun get(x: Double, y: Double, z: Double): Double = source1[x, y, z] - source2[x, y, z]
 }
 
-operator fun DoubleSupplier.minus(valueModule: DoubleSupplier): DoubleSupplier = Subtract(this, valueModule)
-operator fun DoubleSupplier.minus(value: Double): DoubleSupplier = this - ConstantDouble(value)
+operator fun DoubleSupplier.minus(valueModule: DoubleSupplier): DoubleSupplier =
+  Subtract(this, valueModule)
+operator fun DoubleSupplier.minus(value: Double): DoubleSupplier =
+  this - ConstantDouble(value)
 
-operator fun Vec2dToDouble.minus(valueModule: Vec2dToDouble): Vec2dToDouble = Subtract2(this, valueModule)
-operator fun Vec2dToDouble.minus(value: Double): Vec2dToDouble = this - ConstantDouble(value)
+operator fun Vec2dToDouble.minus(valueModule: Vec2dToDouble): Vec2dToDouble =
+  Subtract2(this, valueModule)
+operator fun Vec2dToDouble.minus(value: Double): Vec2dToDouble =
+  this - ConstantDouble(value)
 
-operator fun Vec3dToDouble.minus(valueModule: Vec3dToDouble): Vec3dToDouble = Subtract3(this, valueModule)
-operator fun Vec3dToDouble.minus(value: Double): Vec3dToDouble = this - ConstantDouble(value)
+operator fun Vec3dToDouble.minus(valueModule: Vec3dToDouble): Vec3dToDouble =
+  Subtract3(this, valueModule)
+operator fun Vec3dToDouble.minus(value: Double): Vec3dToDouble =
+  this - ConstantDouble(value)
 
-operator fun NoiseModule.minus(valueModule: DoubleSupplier): NoiseModule = Subtract3(this, valueModule).asNoiseModule()
-operator fun NoiseModule.minus(valueModule: Vec3dToDouble): NoiseModule = Subtract3(this, valueModule).asNoiseModule()
-operator fun NoiseModule.minus(value: Double): NoiseModule = (this - ConstantDouble(value)).asNoiseModule()
+operator fun NoiseModule.minus(valueModule: DoubleSupplier): NoiseModule =
+  Subtract3(this, valueModule).asNoiseModule()
+operator fun NoiseModule.minus(valueModule: Vec3dToDouble): NoiseModule =
+  Subtract3(this, valueModule).asNoiseModule()
+operator fun NoiseModule.minus(value: Double): NoiseModule =
+  (this - ConstantDouble(value)).asNoiseModule()
 
-operator fun Double.minus(valueModule: DoubleSupplier): DoubleSupplier = ConstantDouble(this) - valueModule
-operator fun Double.minus(valueModule: Vec2dToDouble): Vec2dToDouble = ConstantDouble(this) - valueModule
-operator fun Double.minus(valueModule: Vec3dToDouble): Vec3dToDouble = ConstantDouble(this) - valueModule
+operator fun Double.minus(valueModule: DoubleSupplier): DoubleSupplier =
+  ConstantDouble(this) - valueModule
+operator fun Double.minus(valueModule: Vec2dToDouble): Vec2dToDouble =
+  ConstantDouble(this) - valueModule
+operator fun Double.minus(valueModule: Vec3dToDouble): Vec3dToDouble =
+  ConstantDouble(this) - valueModule

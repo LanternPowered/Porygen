@@ -10,6 +10,7 @@
 package org.lanternpowered.porygen.graph.node
 
 import org.lanternpowered.porygen.graph.node.spec.NodeSpec
+import org.lanternpowered.porygen.math.vector.Vec2d
 
 /**
  * Represents a graph of nodes.
@@ -24,12 +25,12 @@ interface NodeGraph : Iterable<Node> {
   /**
    * Creates a dynamic node. Optionally with the given spec.
    */
-  fun createDynamic(spec: NodeSpec? = null): DynamicNode
+  fun createDynamic(spec: NodeSpec? = null, title: String? = null, position: Vec2d = Vec2d.Zero): DynamicNode
 
   /**
    * Creates a node with the given node spec.
    */
-  fun create(spec: NodeSpec): Node
+  fun create(spec: NodeSpec, position: Vec2d = Vec2d.Zero): Node
 
   /**
    * Removes the node with the given id.
