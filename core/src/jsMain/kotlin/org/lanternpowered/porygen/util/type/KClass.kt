@@ -12,56 +12,61 @@ package org.lanternpowered.porygen.util.type
 import org.lanternpowered.porygen.util.collections.asUnmodifiableList
 import org.lanternpowered.porygen.util.collections.computeIfAbsent
 import kotlin.reflect.KClass
-
-private val superclasses = HashMap<KClass<*>, List<KClass<*>>>()
-private val isSuperclass = HashMap<IsSuperclassKey, Boolean>()
+import kotlin.js.unsafeCast
+import kotlin.reflect.KType
+import kotlin.reflect.KTypeProjection
 
 actual val KClass<*>.superclasses: List<KClass<*>>
   get() = getSuperclasses(this)
 
-private data class IsSuperclassKey(
-  private val superclass: KClass<*>,
-  private val subclass: KClass<*>
-)
+actual val KClass<*>.supertypes: List<KType>
+  get() = getSuperclasses(this).map { it.createType() }
 
-actual fun KClass<*>.isSubclassOf(type: KClass<*>): Boolean = type.isSuperclassOf(this)
+actual fun KClass<*>.isSubclassOf(base: KClass<*>): Boolean = base.isSuperclassOf(this)
 
-actual fun KClass<*>.isSuperclassOf(type: KClass<*>): Boolean {
-  if (this == type)
+actual fun KClass<*>.isSuperclassOf(derived: KClass<*>): Boolean {
+  if (this == derived)
     return true
-  val key = IsSuperclassKey(this, type)
-  return isSuperclass.computeIfAbsent(key) {
-    checkSuperclass(this, type)
+  val metadata = derived.js.asDynamic().`$metadata$`
+    ?: return false
+  var cache = metadata.`$isSuperclass$`.unsafeCast<MutableMap<KClass<*>, Boolean>?>()
+  if (cache == null) {
+    cache = HashMap()
+    metadata.`$isSuperclass$` = cache
   }
+  return cache.computeIfAbsent(derived) { checkSuperclass(this, derived) }
 }
 
-private fun checkSuperclass(superclass: KClass<*>, subclass: KClass<*>): Boolean {
-  if (superclass == subclass)
+private fun checkSuperclass(base: KClass<*>, derived: KClass<*>): Boolean {
+  if (base == derived)
     return true
-  for (inner in subclass.superclasses) {
-    if (checkSuperclass(superclass, inner))
+  for (inner in derived.superclasses) {
+    if (checkSuperclass(base, inner))
       return true
   }
   return false
 }
 
 /**
- * Gets the superclasses of the given [KClass] and caches them.
+ * Gets the superclasses of the given [KClass].
  */
-private fun getSuperclasses(kClass: KClass<*>): List<KClass<*>> =
-  superclasses.computeIfAbsent(kClass) { findSuperclasses(kClass) }
-
-/**
- * Finds the superclasses of the given [KClass] through the js metadata.
- */
-private fun findSuperclasses(kClass: KClass<*>): List<KClass<*>> {
-  val metadata = kClass.js.asDynamic().`$metadata$`
+private fun getSuperclasses(derived: KClass<*>): List<KClass<*>> {
+  val metadata = derived.js.asDynamic().`$metadata$`
     ?: return emptyList()
-  val superclassObjs = metadata.interfaces
-  val superclasses = ArrayList<KClass<*>>()
-  for (superclassObj in superclassObjs) {
-    val superclass = js("Kotlin").getKClass(superclassObj).unsafeCast<KClass<*>>()
-    superclasses += superclass
+  val cached = metadata.`$superclasses$`.unsafeCast<List<KClass<*>>?>()
+  if (cached != null)
+    return cached
+  val interfaces = metadata.interfaces
+  val mutableSuperclasses = ArrayList<KClass<*>>()
+  for (itf in interfaces) {
+    val superclass = js("Kotlin").getKClass(itf).unsafeCast<KClass<*>>()
+    mutableSuperclasses += superclass
   }
-  return superclasses.asUnmodifiableList()
+  val superclasses = mutableSuperclasses.asUnmodifiableList()
+  metadata.`$superclasses$` = superclasses
+  return superclasses
+}
+
+actual fun KClass<*>.createType(arguments: List<KTypeProjection>, nullable: Boolean): KType {
+  return js("Kotlin").createKType(this, arguments, nullable).unsafeCast<KType>()
 }

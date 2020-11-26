@@ -10,8 +10,16 @@
 package org.lanternpowered.porygen.util.type
 
 import kotlin.reflect.KClass
+import kotlin.reflect.KType
+import kotlin.reflect.KTypeProjection
 
-expect fun KClass<*>.isSubclassOf(type: KClass<*>): Boolean
-expect fun KClass<*>.isSuperclassOf(type: KClass<*>): Boolean
+expect fun KClass<*>.isSubclassOf(base: KClass<*>): Boolean
+expect fun KClass<*>.isSuperclassOf(derived: KClass<*>): Boolean
+
+expect fun KClass<*>.createType(
+  arguments: List<KTypeProjection> = emptyList(),
+  nullable: Boolean = false
+): KType
 
 expect val KClass<*>.superclasses: List<KClass<*>>
+expect val KClass<*>.supertypes: List<KType>
