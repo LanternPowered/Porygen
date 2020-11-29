@@ -17,7 +17,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
-object KClassTest {
+class KClassTest {
 
   @Test
   fun testSuperclass() {

@@ -38,8 +38,8 @@ inline fun <reified T> NodeGraphSpecBuilder.DataScope.color(color: Color) =
  * connected in the graph.
  */
 inline fun <reified I, reified O> NodeGraphSpecBuilder.DataScope.conversion(
-  noinline convertor: (I) -> O
-) = conversion(genericTypeOf(), genericTypeOf(), convertor)
+  noinline function: (I) -> O
+) = conversion(genericTypeOf(), genericTypeOf(), function)
 
 /**
  * Represents the builder of the node graph spec.
@@ -74,8 +74,8 @@ interface NodeGraphSpecBuilder {
      * connected in the graph.
      */
     fun <I : Any, O : Any> conversion(
-      input: KClass<I>, output: KClass<O>, convertor: (I) -> O
-    ) = conversion(GenericType(input), GenericType(output), convertor)
+      input: KClass<I>, output: KClass<O>, function: (I) -> O
+    ) = conversion(GenericType(input), GenericType(output), function)
 
     /**
      * Registers a data conversion that accepts the given
@@ -85,7 +85,7 @@ interface NodeGraphSpecBuilder {
      * connected in the graph.
      */
     fun <I, O> conversion(
-      input: GenericType<I>, output: GenericType<O>, convertor: (I) -> O
+      input: GenericType<I>, output: GenericType<O>, function: (I) -> O
     )
 
     /**

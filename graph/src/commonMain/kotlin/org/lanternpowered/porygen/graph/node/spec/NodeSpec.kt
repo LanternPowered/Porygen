@@ -10,8 +10,8 @@
 package org.lanternpowered.porygen.graph.node.spec
 
 import org.lanternpowered.porygen.graph.node.Node
-import org.lanternpowered.porygen.graph.node.property.PropertyId
 import org.lanternpowered.porygen.graph.node.port.PortId
+import org.lanternpowered.porygen.graph.node.property.PropertyId
 import org.lanternpowered.porygen.util.type.GenericType
 import org.lanternpowered.porygen.util.type.genericTypeOf
 import kotlin.js.JsName
@@ -92,9 +92,8 @@ abstract class NodeSpec(
     id: String,
     type: GenericType<T>,
     factory: OutputBuilderScope.(node: Node) -> T?
-  ): OutputPortSpec<T> {
-    TODO()
-  }
+  ): OutputPortSpec<T> =
+    impl.output(id, type, factory)
 
   fun <T : Any> output(
     id: String,

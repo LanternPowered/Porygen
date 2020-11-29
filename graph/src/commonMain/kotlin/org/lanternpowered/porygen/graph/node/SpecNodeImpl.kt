@@ -17,7 +17,7 @@ internal class SpecNodeImpl(
   id: NodeId,
   title: String,
   position: Vec2d,
-  graph: NodeGraph,
+  graph: NodeGraphImpl,
   val spec: NodeSpec
 ) : NodeImpl(id, title, position, graph) {
 

@@ -9,9 +9,11 @@
  */
 package org.lanternpowered.porygen.graph.node.port
 
+import org.lanternpowered.porygen.graph.node.Node
 import org.lanternpowered.porygen.graph.node.NodeImpl
 import org.lanternpowered.porygen.util.collections.asUnmodifiableCollection
 import org.lanternpowered.porygen.util.type.GenericType
+import org.lanternpowered.porygen.util.unsafeCast
 
 internal abstract class PortImpl<T>(
   override val id: PortId,
@@ -25,12 +27,26 @@ internal class InputPortImpl<T>(
   node: NodeImpl,
   private val defaultSupplier: () -> T?
 ) : PortImpl<T>(id, dataType, node), InputPort<T> {
-  override var connection: OutputPort<out T>? = null
+  override var connection: OutputPort<*>? = null
   override val default: T?
     get() = defaultSupplier()
 
   fun disconnect() {
     connection?.disconnectFrom(this)
+  }
+
+  override fun isDataTypeAccepted(type: GenericType<*>): Boolean =
+    node.graph.spec.getConversionFunction(type, dataType) != null
+
+  override fun buildTree(): T? {
+    val output = this.connection
+      ?: return null
+    val value = output.buildTree()
+    if (!dataType.isNullable && value == null)
+      return null
+    val function = node.graph.spec.getConversionFunction(output.dataType, dataType)
+      .unsafeCast<(Any?) -> T>()
+    return function(value)
   }
 }
 
@@ -38,24 +54,25 @@ internal class OutputPortImpl<T>(
   id: PortId,
   dataType: GenericType<T>,
   node: NodeImpl,
+  private val outputBuilder: (Node) -> T?
 ) : PortImpl<T>(id, dataType, node), OutputPort<T> {
 
-  private val mutableConnections = HashSet<InputPortImpl<in T>>()
+  private val mutableConnections = HashSet<InputPortImpl<*>>()
 
-  override val connections: Collection<InputPort<in T>> =
+  override val connections: Collection<InputPort<*>> =
     mutableConnections.asUnmodifiableCollection()
 
-  override fun connectTo(port: InputPort<in T>): Boolean {
-    port as InputPortImpl<in T>
-    if (!port.node.isValid || !node.isValid || port.node == node)
+  override fun connectTo(port: InputPort<*>): Boolean {
+    port as InputPortImpl<*>
+    if (!port.node.isValid || !node.isValid || port.node == node || !port.isDataTypeAccepted(dataType))
       return false
     port.connection = this
     mutableConnections.add(port)
     return true
   }
 
-  override fun disconnectFrom(port: InputPort<in T>): Boolean {
-    port as InputPortImpl<in T>
+  override fun disconnectFrom(port: InputPort<*>): Boolean {
+    port as InputPortImpl<*>
     if (port.connection != this)
       return false
     port.connection = null
@@ -69,7 +86,6 @@ internal class OutputPortImpl<T>(
     mutableConnections.clear()
   }
 
-  override fun buildTree(): T? {
-    TODO("Not yet implemented")
-  }
+  override fun buildTree(): T? =
+    outputBuilder(node)
 }

@@ -7,19 +7,49 @@
  * This work is licensed under the terms of the MIT License (MIT). For
  * a copy, see 'LICENSE.txt' or <https://opensource.org/licenses/MIT>.
  */
+@file:Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
+
 package org.lanternpowered.porygen.util.type
 
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.KTypeProjection
-import kotlin.reflect.KVariance
 import kotlin.reflect.full.createType as createType0
+import java.lang.Integer as BoxedInt
+import java.lang.Short as BoxedShort
+import java.lang.Long as BoxedLong
+import java.lang.Byte as BoxedByte
+import java.lang.Float as BoxedFloat
+import java.lang.Double as BoxedDouble
+import java.lang.Character as BoxedChar
+import java.lang.Boolean as BoxedBoolean
 
 actual fun KClass<*>.isSubclassOf(base: KClass<*>): Boolean =
   base.isSuperclassOf(this)
 
 actual fun KClass<*>.isSuperclassOf(derived: KClass<*>): Boolean =
-  java.isAssignableFrom(derived.java)
+  java.toBoxed().isAssignableFrom(derived.java.toBoxed())
+
+// This is a workaround some issues with primitive types, kotlin captures
+// primitive types through typeOf() and genericTypeOf(), so isSuperclassOf
+// will break when that happens, this fixes that. There's no guarantee that
+// the actual types are compatible.
+
+private fun Class<*>.toBoxed(): Class<*> {
+  if (!isPrimitive)
+    return this
+  return when (this) {
+    Byte::class.java -> BoxedByte::class.java
+    Short::class.java -> BoxedShort::class.java
+    Char::class.java -> BoxedChar::class.java
+    Int::class.java -> BoxedInt::class.java
+    Long::class.java -> BoxedLong::class.java
+    Float::class.java -> BoxedFloat::class.java
+    Double::class.java -> BoxedDouble::class.java
+    Boolean::class.java -> BoxedBoolean::class.java
+    else -> this
+  }
+}
 
 @Suppress("EXTENSION_SHADOWED_BY_MEMBER")
 actual val KClass<*>.superclasses: List<KClass<*>>

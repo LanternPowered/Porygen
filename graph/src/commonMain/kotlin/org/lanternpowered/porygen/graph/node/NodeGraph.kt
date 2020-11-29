@@ -11,13 +11,15 @@ package org.lanternpowered.porygen.graph.node
 
 import org.lanternpowered.porygen.graph.node.spec.DefaultNodeGraphSpec
 import org.lanternpowered.porygen.graph.node.spec.NodeGraphSpec
+import org.lanternpowered.porygen.graph.node.spec.NodeGraphSpecImpl
 import org.lanternpowered.porygen.graph.node.spec.NodeSpec
 import org.lanternpowered.porygen.math.vector.Vec2d
 
 /**
  * Instantiates a new [NodeGraph].
  */
-fun NodeGraph(spec: NodeGraphSpec = DefaultNodeGraphSpec): NodeGraph = NodeGraphImpl(spec)
+fun NodeGraph(spec: NodeGraphSpec = DefaultNodeGraphSpec): NodeGraph =
+  NodeGraphImpl(spec as NodeGraphSpecImpl)
 
 /**
  * Represents a graph of nodes.

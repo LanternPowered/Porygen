@@ -19,8 +19,10 @@ import org.lanternpowered.porygen.graph.node.port.PortId
 import org.lanternpowered.porygen.graph.node.property.Property
 import org.lanternpowered.porygen.graph.node.property.PropertyId
 import org.lanternpowered.porygen.graph.node.property.PropertyImpl
+import org.lanternpowered.porygen.graph.node.spec.InputPortSpec
 import org.lanternpowered.porygen.graph.node.spec.InputPortSpecImpl
 import org.lanternpowered.porygen.graph.node.spec.NodeSpec
+import org.lanternpowered.porygen.graph.node.spec.OutputPortSpec
 import org.lanternpowered.porygen.graph.node.spec.OutputPortSpecImpl
 import org.lanternpowered.porygen.graph.node.spec.PortSpec
 import org.lanternpowered.porygen.graph.node.spec.PropertySpec
@@ -28,13 +30,14 @@ import org.lanternpowered.porygen.graph.node.spec.PropertySpecImpl
 import org.lanternpowered.porygen.math.vector.Vec2d
 import org.lanternpowered.porygen.util.collections.asUnmodifiableCollection
 import org.lanternpowered.porygen.util.type.GenericType
+import org.lanternpowered.porygen.util.unsafeCast
 
 @Serializable(with = NodeSerializer::class)
 internal abstract class NodeImpl(
   override val id: NodeId,
   override var title: String,
   override var position: Vec2d,
-  override val graph: NodeGraph
+  override val graph: NodeGraphImpl
 ) : Node {
 
   private val mutableInputs = HashMap<String, InputPortImpl<*>>()
@@ -60,7 +63,7 @@ internal abstract class NodeImpl(
     }
     for (output in spec.impl.outputs.values) {
       output as OutputPortSpecImpl<Any>
-      createOutput(output.id, output.dataType as GenericType<Any>)
+      createOutput(output.id, output.dataType as GenericType<Any>, output.outputBuilder)
     }
     for (property in spec.impl.properties.values) {
       property as PropertySpecImpl<Any>
@@ -75,15 +78,26 @@ internal abstract class NodeImpl(
     return input
   }
 
-  protected fun <T> createOutput(id: PortId, type: GenericType<T>): OutputPortImpl<T> {
+  protected fun <T> createOutput(id: PortId, type: GenericType<T>, outputBuilder: (Node) -> T?): OutputPortImpl<T> {
     checkFreePort(id.value)
-    val output = OutputPortImpl(id, type, this)
+    val output = OutputPortImpl(id, type, this, outputBuilder)
     mutableOutputs[id.value] = output
     return output
   }
 
   protected open fun removePort(id: PortId): Boolean {
-    TODO()
+    val input = mutableInputs.remove(id.value)
+    if (input != null) {
+      input.disconnect()
+      return true
+    } else {
+      val output = mutableOutputs.remove(id.value)
+      if (output != null) {
+        output.disconnectFromAll()
+        return true
+      }
+    }
+    return false
   }
 
   protected fun <T> createProperty(id: PropertyId, type: GenericType<T>, value: T): PropertyImpl<T> {
@@ -98,27 +112,29 @@ internal abstract class NodeImpl(
     return mutableProperties.remove(id.value) != null
   }
 
-  override fun input(id: PortId): InputPort<*>? {
-    TODO("Not yet implemented")
-  }
+  override fun input(id: PortId): InputPort<*>? =
+    mutableInputs[id.value]
 
-  override fun output(id: PortId): OutputPort<*>? {
-    TODO("Not yet implemented")
-  }
+  override fun output(id: PortId): OutputPort<*>? =
+    mutableOutputs[id.value]
 
-  override fun port(id: PortId): Port<*>? {
-    TODO("Not yet implemented")
-  }
+  override fun port(id: PortId): Port<*>? =
+    mutableInputs[id.value] ?: mutableOutputs[id.value]
 
-  override fun <T> port(spec: PortSpec<T>): Port<T>? {
-    TODO("Not yet implemented")
-  }
+  @Suppress("UNCHECKED_CAST")
+  override fun <T> port(spec: InputPortSpec<T>): InputPort<T>? =
+    port(spec.id) as? InputPort<T>
 
-  override fun property(id: PropertyId): Property<*>? {
-    TODO("Not yet implemented")
-  }
+  @Suppress("UNCHECKED_CAST")
+  override fun <T> port(spec: OutputPortSpec<T>): OutputPort<T>? =
+    port(spec.id) as? OutputPort<T>
 
-  override fun <T> property(spec: PropertySpec<T>): Property<T>? {
-    TODO("Not yet implemented")
-  }
+  override fun <T> port(spec: PortSpec<T>): Port<T>? =
+    port(spec.id).unsafeCast()
+
+  override fun property(id: PropertyId): Property<*>? =
+    mutableProperties[id.value]
+
+  override fun <T> property(spec: PropertySpec<T>): Property<T>? =
+    property(spec.id).unsafeCast()
 }

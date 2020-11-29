@@ -20,8 +20,8 @@ import org.lanternpowered.porygen.util.type.genericTypeOf
 /**
  * Registers a new output port.
  */
-inline fun <reified T> DynamicNode.addOutput(id: PortId): OutputPort<T> =
-  addOutput(id, genericTypeOf())
+inline fun <reified T> DynamicNode.addOutput(id: PortId, noinline output: (Node) -> T?): OutputPort<T> =
+  addOutput(id, genericTypeOf(), output)
 
 /**
  * Registers a new input port.
@@ -44,7 +44,7 @@ interface DynamicNode : Node {
   /**
    * Registers a new output port.
    */
-  fun <T> addOutput(id: PortId, type: GenericType<T>): OutputPort<T>
+  fun <T> addOutput(id: PortId, type: GenericType<T>, output: (Node) -> T?): OutputPort<T>
 
   /**
    * Registers a new input port.

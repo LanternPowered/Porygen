@@ -11,6 +11,8 @@
 
 package org.lanternpowered.porygen.util.type
 
+import org.lanternpowered.porygen.util.unsafeCast
+import kotlin.jvm.JvmName
 import kotlin.reflect.KClass
 import kotlin.reflect.KClassifier
 import kotlin.reflect.KType
@@ -26,7 +28,17 @@ inline fun <reified T> genericTypeOf(): GenericType<T> =
 /**
  * Gets the [GenericType] as a not nullable version.
  */
-fun <T : Any> GenericType<T?>.notNullable(): GenericType<T> {
+fun <T : Any> GenericType<T?>.notNullable(): GenericType<T> = notNullable0().unsafeCast()
+
+/**
+ * Gets the [GenericType] as a not nullable version.
+ */
+@JvmName("notNullable_unknown")
+fun <T> GenericType<T>.notNullable(): GenericType<T> = notNullable0()
+
+private fun <T> GenericType<T>.notNullable0(): GenericType<T> {
+  if (!isNullable)
+    return unsafeCast()
   val kClass = classifier as? KClass<*> ?: throw UnsupportedOperationException()
   return GenericType(kClass.createType(arguments, nullable = false))
 }
@@ -34,7 +46,9 @@ fun <T : Any> GenericType<T?>.notNullable(): GenericType<T> {
 /**
  * Gets the [GenericType] as a nullable version.
  */
-fun <T : Any> GenericType<T>.nullable(): GenericType<T?> {
+fun <T> GenericType<T>.nullable(): GenericType<T?> {
+  if (isNullable)
+    return unsafeCast()
   val kClass = classifier as? KClass<*> ?: throw UnsupportedOperationException()
   return GenericType(kClass.createType(arguments, nullable = true))
 }
@@ -74,4 +88,50 @@ data class GenericType<T>(val kType: KType) {
    */
   val isNullable: Boolean
     get() = kType.isMarkedNullable
+}
+
+/**
+ * Returns `true` if type [T] is a subtype of this generic type.
+ */
+inline fun <reified T> GenericType<*>.isSubtypeOf(): Boolean =
+  isSubtypeOf(genericTypeOf<T>())
+
+/**
+ * Returns `true` if type [T] is a supertype of this generic type.
+ */
+inline fun <reified T> GenericType<*>.isSupertypeOf(): Boolean =
+  isSupertypeOf(genericTypeOf<T>())
+
+/**
+ * Returns `true` if type [base] is a subtype of this generic type.
+ */
+fun GenericType<*>.isSubtypeOf(base: KClass<*>): Boolean =
+  isSubtypeOf(GenericType(base))
+
+/**
+ * Returns `true` if type [derived] is a supertype of this generic type.
+ */
+fun GenericType<*>.isSupertypeOf(derived: KClass<*>): Boolean =
+  isSupertypeOf(GenericType(derived))
+
+/**
+ * Returns `true` if type [base] is a subtype of this generic type.
+ */
+fun GenericType<*>.isSubtypeOf(base: GenericType<*>): Boolean =
+  base.isSupertypeOf(this)
+
+/**
+ * Returns `true` if type [derived] is a supertype of this generic type.
+ */
+fun GenericType<*>.isSupertypeOf(derived: GenericType<*>): Boolean {
+  val kClass0 = classifier as? KClass<*>
+    ?: return false
+  val kClass1 = derived.classifier as? KClass<*>
+    ?: return false
+  if (!kClass0.isSuperclassOf(kClass1))
+    return false
+  if (derived.isNullable && !isNullable)
+    return false
+  // TODO: Check type arguments once they can be retrieved in Kotlin JS reflection
+  return true
 }

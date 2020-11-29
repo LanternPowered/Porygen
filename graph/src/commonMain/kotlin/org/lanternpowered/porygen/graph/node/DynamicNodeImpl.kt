@@ -15,6 +15,7 @@ import org.lanternpowered.porygen.graph.node.port.PortId
 import org.lanternpowered.porygen.graph.node.property.Property
 import org.lanternpowered.porygen.graph.node.property.PropertyId
 import org.lanternpowered.porygen.graph.node.spec.NodeSpec
+import org.lanternpowered.porygen.graph.node.spec.NodeSpecImpl
 import org.lanternpowered.porygen.math.vector.Vec2d
 import org.lanternpowered.porygen.util.type.GenericType
 
@@ -23,7 +24,7 @@ internal class DynamicNodeImpl(
   id: NodeId,
   title: String,
   position: Vec2d,
-  graph: NodeGraph,
+  graph: NodeGraphImpl,
   spec: NodeSpec?
 ) : NodeImpl(id, title, position, graph), DynamicNode {
 
@@ -32,8 +33,8 @@ internal class DynamicNodeImpl(
       initSpec(spec)
   }
 
-  override fun <T> addOutput(id: PortId, type: GenericType<T>): OutputPort<T> =
-    createOutput(id, type)
+  override fun <T> addOutput(id: PortId, type: GenericType<T>, output: (Node) -> T?): OutputPort<T> =
+    createOutput(id, type, output)
 
   override fun <T> addInput(id: PortId, type: GenericType<T>, default: () -> T?): InputPort<T> =
     createInput(id, type, default)

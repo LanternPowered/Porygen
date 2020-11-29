@@ -9,11 +9,15 @@
  */
 package org.lanternpowered.porygen.graph.node.spec
 
+import org.lanternpowered.porygen.graph.node.Node
 import org.lanternpowered.porygen.graph.node.port.PortId
 import org.lanternpowered.porygen.graph.node.property.PropertyId
 import org.lanternpowered.porygen.util.type.GenericType
+import org.lanternpowered.porygen.util.unsafeCast
 import kotlin.js.JsName
 import kotlin.jvm.JvmName
+
+// TODO: Introduce some caching mechanism so outputs can be reused for inputs?
 
 @Suppress("UNCHECKED_CAST")
 internal class NodeSpecImpl {
@@ -27,17 +31,32 @@ internal class NodeSpecImpl {
       "There's already a port registered with the id: $id" }
   }
 
-  @JsName("inputWithNullableDefault_DataType")
-  @JvmName("inputWithNullableDefault")
-  fun <T> input(id: String, type: GenericType<T>, default: T?): InputPortSpec<T?> {
+  fun <T> output(
+    id: String,
+    type: GenericType<T>,
+    factory: OutputBuilderScope.(node: Node) -> T?
+  ): OutputPortSpec<T> {
+    checkFreePort(id)
+    val builder: (Node) -> T? = { OutputBuilderScopeImpl.factory(it) }
+    val spec = OutputPortSpecImpl(PortId(id), type, builder)
+    outputs[id] = spec
+    return spec
+  }
+
+  private fun <T> input0(id: String, type: GenericType<T>, default: T?): InputPortSpec<T?> {
     checkFreePort(id)
     val spec = InputPortSpecImpl(PortId(id), type) { default }
     inputs[id] = spec
     return spec
   }
 
+  @JsName("input_nullableDefault")
+  @JvmName("input_nullableDefault")
+  fun <T> input(id: String, type: GenericType<T>, default: T?): InputPortSpec<T?> =
+    input0(id, type, default)
+
   fun <T> input(id: String, type: GenericType<T>, default: T): InputPortSpec<T> =
-    input(id, type, default as T?) as InputPortSpec<T>
+    input0(id, type, default as T?) as InputPortSpec<T>
 
   fun <T> property(id: String, type: GenericType<T>, default: () -> T): PropertySpec<T> {
     check(id !in properties) {
@@ -46,6 +65,15 @@ internal class NodeSpecImpl {
     properties[id] = spec
     return spec
   }
+}
+
+internal object OutputBuilderScopeImpl : OutputBuilderScope {
+
+  override fun <T> Node.get(spec: InputPortSpec<T>): T =
+    requirePort(spec).buildTreeOrDefault().unsafeCast()
+
+  override fun <T> Node.get(spec: PropertySpec<T>): T =
+    requireProperty(spec).value
 }
 
 internal data class PropertySpecImpl<T>(
@@ -57,6 +85,7 @@ internal data class PropertySpecImpl<T>(
 internal data class OutputPortSpecImpl<T>(
   override val id: PortId,
   override val dataType: GenericType<out T>,
+  val outputBuilder: (Node) -> T?
 ) : OutputPortSpec<T>
 
 internal data class InputPortSpecImpl<T>(

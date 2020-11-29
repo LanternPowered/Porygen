@@ -101,14 +101,12 @@ interface Node {
   /**
    * Attempts to get the input port for the given spec.
    */
-  fun <T> port(spec: InputPortSpec<T>): InputPort<T>? =
-    port(spec as PortSpec<T>) as? InputPort<T>
+  fun <T> port(spec: InputPortSpec<T>): InputPort<T>?
 
   /**
    * Attempts to get the output port for the given spec.
    */
-  fun <T> port(spec: OutputPortSpec<T>): OutputPort<T>? =
-    port(spec as PortSpec<T>) as? OutputPort<T>
+  fun <T> port(spec: OutputPortSpec<T>): OutputPort<T>?
 
   /**
    * Attempts to get the port for the given spec.
