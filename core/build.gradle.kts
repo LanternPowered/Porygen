@@ -11,7 +11,7 @@ kotlin {
     browser()
     nodejs()
   }
-  mingwX64()
+  // mingwX64()
 
   sourceSets {
     val commonMain by getting {

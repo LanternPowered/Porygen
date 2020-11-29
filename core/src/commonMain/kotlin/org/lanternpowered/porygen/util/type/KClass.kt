@@ -17,9 +17,14 @@ expect fun KClass<*>.isSubclassOf(base: KClass<*>): Boolean
 expect fun KClass<*>.isSuperclassOf(derived: KClass<*>): Boolean
 
 expect fun KClass<*>.createType(
-  arguments: List<KTypeProjection> = emptyList(),
+  arguments: List<KTypeProjection>? = null,
   nullable: Boolean = false
 ): KType
 
 expect val KClass<*>.superclasses: List<KClass<*>>
 expect val KClass<*>.supertypes: List<KType>
+
+/**
+ * The enum values of the class.
+ */
+expect val <E : Enum<E>> KClass<E>.enumValues: List<E>

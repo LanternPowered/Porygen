@@ -9,8 +9,8 @@
  */
 package org.lanternpowered.porygen.graph.node.port
 
-import org.lanternpowered.porygen.graph.data.DataType
 import org.lanternpowered.porygen.graph.node.Node
+import org.lanternpowered.porygen.util.type.GenericType
 
 /**
  * Represents the identifier of a port.
@@ -30,7 +30,7 @@ interface Port<T> {
   /**
    * The data type that is expected for this port.
    */
-  val dataType: DataType<T>
+  val dataType: GenericType<T>
 
   /**
    * The node this port is part of.
@@ -62,11 +62,22 @@ interface InputPort<T> : Port<T> {
 interface OutputPort<T> : Port<T> {
 
   /**
-   * Attempts to connect this output port to
-   * the given input port. Returns whether it was
-   * successful.
+   * Attempts to connect this output port to the given input
+   * port. Returns whether it was successful.
    */
   fun connectTo(port: InputPort<in T>): Boolean
+
+  /**
+   * Attempts to disconnect this output port from
+   * the given input port.
+   */
+  fun disconnectFrom(port: InputPort<in T>): Boolean
+
+  /**
+   * Disconnects this output port from all the inputs it's
+   * connected to.
+   */
+  fun disconnectFromAll()
 
   /**
    * All the input ports this output port

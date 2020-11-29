@@ -12,6 +12,7 @@ package org.lanternpowered.porygen.util.type
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.KTypeProjection
+import kotlin.reflect.KVariance
 import kotlin.reflect.full.createType as createType0
 
 actual fun KClass<*>.isSubclassOf(base: KClass<*>): Boolean =
@@ -28,5 +29,13 @@ actual val KClass<*>.superclasses: List<KClass<*>>
 actual val KClass<*>.supertypes: List<KType>
   get() = supertypes
 
-actual fun KClass<*>.createType(arguments: List<KTypeProjection>, nullable: Boolean): KType =
-  createType0(nullable = nullable)
+actual fun KClass<*>.createType(arguments: List<KTypeProjection>?, nullable: Boolean): KType =
+  createType0(nullable = nullable, arguments = arguments ?: getDefaultArgumentTypes())
+
+private fun KClass<*>.getDefaultArgumentTypes(): List<KTypeProjection> {
+  val size = this.typeParameters.size
+  return (0 until size).map { KTypeProjection.STAR }
+}
+
+actual val <E : Enum<E>> KClass<E>.enumValues: List<E>
+  get() = java.enumConstants.asList()

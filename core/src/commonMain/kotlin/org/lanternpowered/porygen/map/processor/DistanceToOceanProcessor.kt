@@ -20,9 +20,9 @@ import kotlin.math.abs
  * determines where the coastline is.
  */
 class DistanceToOceanProcessor(
-    private val maxOceanCellDistance: Int = 5,
-    private val maxOceanCornerDistance: Int = maxOceanCellDistance + 3,
-    override val areaOffset: Vec2d = Vec2d(0.3, 0.3)
+  private val maxOceanCellDistance: Int = 5,
+  private val maxOceanCornerDistance: Int = maxOceanCellDistance + 3,
+  override val areaOffset: Vec2d = Vec2d(0.3, 0.3)
 ) : CellMapProcessor {
 
   override fun process(view: CellMapView) {
@@ -34,7 +34,7 @@ class DistanceToOceanProcessor(
   }
 
   private fun Cell.isOcean(): Boolean =
-      this[DataKeys.IS_OCEAN] == true
+    this[DataKeys.IS_OCEAN] == true
 
   private fun Corner.getType(): CornerType {
     val count = cells.count { cell -> cell.isOcean() }
@@ -51,7 +51,9 @@ class DistanceToOceanProcessor(
     Ocean
   }
 
-  private fun updateCornerOceanDistance(element: Corner, allowedDistance: Int, processStack: Set<Corner> = setOf()): Int? {
+  private fun updateCornerOceanDistance(
+    element: Corner, allowedDistance: Int, processStack: Set<Corner> = setOf()
+  ): Int? {
     val stored = element[DataKeys.DISTANCE_TO_OCEAN]
     if (stored == 0 || stored == 1 || stored == -1)
       return stored
@@ -65,11 +67,11 @@ class DistanceToOceanProcessor(
       val newProcessed = processStack + element
       // Find the shortest distance
       val value = element.neighbors.asSequence()
-          .filter { neighbor -> neighbor !in processStack } // Prevent infinite loops
-          .map { neighbor -> updateCornerOceanDistance(neighbor, allowedDistance, newProcessed) }
-          .filterNotNull()
-          .sortedBy { abs(it) } // Find the closest distance to 0
-          .firstOrNull()
+        .filter { neighbor -> neighbor !in processStack } // Prevent infinite loops
+        .map { neighbor -> updateCornerOceanDistance(neighbor, allowedDistance, newProcessed) }
+        .filterNotNull()
+        .sortedBy { abs(it) } // Find the closest distance to 0
+        .firstOrNull()
       return value?.coerceIn(-allowedDistance, allowedDistance)
     }
 
@@ -113,11 +115,11 @@ class DistanceToOceanProcessor(
       val newProcessed = processStack + element
       // Find the shortest distance
       val value = element.neighbors.asSequence()
-          .filter { neighbor -> neighbor !in processStack } // Prevent infinite loops
-          .map { neighbor -> updateCellOceanDistance(neighbor, allowedDistance, newProcessed) }
-          .filterNotNull()
-          .sortedBy { abs(it) } // Find the closest distance to 0
-          .firstOrNull()
+        .filter { neighbor -> neighbor !in processStack } // Prevent infinite loops
+        .map { neighbor -> updateCellOceanDistance(neighbor, allowedDistance, newProcessed) }
+        .filterNotNull()
+        .sortedBy { abs(it) } // Find the closest distance to 0
+        .firstOrNull()
       return value?.coerceIn(-allowedDistance, allowedDistance)
     }
 

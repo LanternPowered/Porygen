@@ -9,8 +9,8 @@
  */
 package org.lanternpowered.porygen.graph.node.property
 
-import org.lanternpowered.porygen.graph.data.DataType
 import org.lanternpowered.porygen.graph.node.Node
+import org.lanternpowered.porygen.util.type.GenericType
 import kotlin.reflect.KProperty
 
 /**
@@ -36,7 +36,7 @@ interface Property<T> {
   /**
    * The data type of the property.
    */
-  val dataType: DataType<T>
+  val dataType: GenericType<T>
 
   /**
    * The value of the property.

@@ -10,7 +10,6 @@
 package org.lanternpowered.porygen.graph.node
 
 import kotlinx.serialization.Serializable
-import org.lanternpowered.porygen.graph.data.DataType
 import org.lanternpowered.porygen.graph.node.port.InputPort
 import org.lanternpowered.porygen.graph.node.port.InputPortImpl
 import org.lanternpowered.porygen.graph.node.port.OutputPort
@@ -28,6 +27,7 @@ import org.lanternpowered.porygen.graph.node.spec.PropertySpec
 import org.lanternpowered.porygen.graph.node.spec.PropertySpecImpl
 import org.lanternpowered.porygen.math.vector.Vec2d
 import org.lanternpowered.porygen.util.collections.asUnmodifiableCollection
+import org.lanternpowered.porygen.util.type.GenericType
 
 @Serializable(with = NodeSerializer::class)
 internal abstract class NodeImpl(
@@ -56,11 +56,11 @@ internal abstract class NodeImpl(
   protected fun initSpec(spec: NodeSpec) {
     for (input in spec.impl.inputs.values) {
       input as InputPortSpecImpl<Any>
-      createInput(input.id, input.dataType as DataType<Any>, input.default)
+      createInput(input.id, input.dataType as GenericType<Any>, input.default)
     }
     for (output in spec.impl.outputs.values) {
       output as OutputPortSpecImpl<Any>
-      createOutput(output.id, output.dataType as DataType<Any>)
+      createOutput(output.id, output.dataType as GenericType<Any>)
     }
     for (property in spec.impl.properties.values) {
       property as PropertySpecImpl<Any>
@@ -68,14 +68,14 @@ internal abstract class NodeImpl(
     }
   }
 
-  protected fun <T> createInput(id: PortId, type: DataType<T>, default: () -> T?): InputPortImpl<T> {
+  protected fun <T> createInput(id: PortId, type: GenericType<T>, default: () -> T?): InputPortImpl<T> {
     checkFreePort(id.value)
     val input = InputPortImpl(id, type, this, default)
     mutableInputs[id.value] = input
     return input
   }
 
-  protected fun <T> createOutput(id: PortId, type: DataType<T>): OutputPortImpl<T> {
+  protected fun <T> createOutput(id: PortId, type: GenericType<T>): OutputPortImpl<T> {
     checkFreePort(id.value)
     val output = OutputPortImpl(id, type, this)
     mutableOutputs[id.value] = output
@@ -86,7 +86,7 @@ internal abstract class NodeImpl(
     TODO()
   }
 
-  protected fun <T> createProperty(id: PropertyId, type: DataType<T>, value: T): PropertyImpl<T> {
+  protected fun <T> createProperty(id: PropertyId, type: GenericType<T>, value: T): PropertyImpl<T> {
     check(id.value !in mutableProperties) {
       "There's already a port registered with the id: $id" }
     val property = PropertyImpl(id, type, value, this)

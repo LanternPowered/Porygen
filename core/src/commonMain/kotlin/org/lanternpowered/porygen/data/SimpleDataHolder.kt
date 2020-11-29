@@ -9,18 +9,18 @@
  */
 package org.lanternpowered.porygen.data
 
-import org.lanternpowered.porygen.util.uncheckedCast
+import org.lanternpowered.porygen.util.unsafeCast
 
 open class SimpleDataHolder : DataHolder {
 
   // Data values stored within this cell
-  private val dataValues = mutableMapOf<DataKey<*>, Any?>()
+  private val dataValues = HashMap<DataKey<*>, Any?>()
 
-  override fun <T> get(key: DataKey<T>): T? = dataValues[key].uncheckedCast()
+  override fun <T> get(key: DataKey<T>): T? = dataValues[key].unsafeCast()
 
   override fun <T> set(key: DataKey<T>, value: T) {
     dataValues[key] = value as Any?
   }
 
-  override fun <T> remove(key: DataKey<T>): T? = dataValues.remove(key).uncheckedCast()
+  override fun <T> remove(key: DataKey<T>): T? = dataValues.remove(key).unsafeCast()
 }

@@ -10,15 +10,10 @@
 package org.lanternpowered.porygen.graph.node.spec
 
 import org.lanternpowered.porygen.graph.node.Node
-import org.lanternpowered.porygen.graph.data.DataType
 import org.lanternpowered.porygen.graph.node.property.PropertyId
 import org.lanternpowered.porygen.graph.node.port.PortId
-import org.lanternpowered.porygen.value.ConstantDouble
-import org.lanternpowered.porygen.value.ConstantInt
-import org.lanternpowered.porygen.value.ConstantLong
-import org.lanternpowered.porygen.value.DoubleSupplier
-import org.lanternpowered.porygen.value.IntSupplier
-import org.lanternpowered.porygen.value.LongSupplier
+import org.lanternpowered.porygen.util.type.GenericType
+import org.lanternpowered.porygen.util.type.genericTypeOf
 import kotlin.js.JsName
 import kotlin.jvm.JvmName
 import kotlin.reflect.KClass
@@ -36,21 +31,21 @@ abstract class NodeSpec(
   /**
    * Adds a new input port with the given id and data type.
    */
-  fun <T> input(id: String, type: DataType<T>): InputPortSpec<T?> =
+  fun <T> input(id: String, type: GenericType<T>): InputPortSpec<T?> =
     input(id, type, null)
 
   /**
    * Adds a new input port with the given id, data type and default value.
    */
-  fun <T> input(id: String, type: DataType<T>, default: T): InputPortSpec<T> =
+  fun <T> input(id: String, type: GenericType<T>, default: T): InputPortSpec<T> =
     impl.input(id, type, default)
 
   /**
    * Adds a new input port with the given id, data type and default value.
    */
-  @JsName("inputWithNullableDefault_DataType")
-  @JvmName("inputWithNullableDefault")
-  fun <T> input(id: String, type: DataType<T>, default: T?): InputPortSpec<T?> =
+  @JsName("input_nullableDefault")
+  @JvmName("input_nullableDefault")
+  fun <T> input(id: String, type: GenericType<T>, default: T?): InputPortSpec<T?> =
     impl.input(id, type, default)
 
   /**
@@ -62,58 +57,40 @@ abstract class NodeSpec(
   /**
    * Adds a new input port with the given id, data type and default value.
    */
-  @JsName("inputWithNullableDefault")
-  @JvmName("inputWithNullableDefault")
+  @JsName("input_nullableDefault_kClass")
+  @JvmName("input_nullableDefault_kClass")
   fun <T : Any> input(id: String, type: KClass<T>, default: T?): InputPortSpec<T?> =
-    impl.input(id, type, default)
+    input(id, GenericType(type), default)
 
   /**
    * Adds a new input port with the given id, data type and default value.
    */
   fun <T : Any> input(id: String, type: KClass<T>, default: T): InputPortSpec<T> =
-    impl.input(id, type, default)
+    input(id, GenericType(type), default)
 
   /**
    * Adds a new input port with the given id and data type.
    */
   inline fun <reified T : Any> input(id: String): InputPortSpec<T?> =
-    input(id, T::class, null)
+    input(id, genericTypeOf(), null)
 
   /**
    * Adds a new input port with the given id, data type and default value.
    */
   inline fun <reified T : Any> input(id: String, default: T): InputPortSpec<T> =
-    input(id, T::class, default)
+    input(id, genericTypeOf(), default)
 
   /**
    * Adds a new input port with the given id, data type and default value.
    */
-  @JsName("reifiedInputWithNullableDefault")
-  @JvmName("inputWithNullableDefault")
+  @JsName("input_nullableDefault_reified")
+  @JvmName("input_nullableDefault_reified")
   inline fun <reified T : Any> input(id: String, default: T?): InputPortSpec<T?> =
-    input(id, T::class, default)
-
-  fun input(id: String, default: Int? = null): InputPortSpec<IntSupplier?> =
-    input(id, IntSupplier::class, if (default != null) ConstantInt(default) else null)
-
-  fun input(id: String, default: Int): InputPortSpec<IntSupplier> =
-    input(id, IntSupplier::class, ConstantInt(default))
-
-  fun input(id: String, default: Double? = null): InputPortSpec<DoubleSupplier?> =
-    input(id, DoubleSupplier::class, if (default != null) ConstantDouble(default) else null)
-
-  fun input(id: String, default: Double): InputPortSpec<DoubleSupplier> =
-    input(id, DoubleSupplier::class, ConstantDouble(default))
-
-  fun input(id: String, default: Long? = null): InputPortSpec<LongSupplier?> =
-    input(id, LongSupplier::class, if (default != null) ConstantLong(default) else null)
-
-  fun input(id: String, default: Long): InputPortSpec<LongSupplier> =
-    input(id, LongSupplier::class, ConstantLong(default))
+    input(id, genericTypeOf(), default)
 
   fun <T> output(
     id: String,
-    type: DataType<T>,
+    type: GenericType<T>,
     factory: OutputBuilderScope.(node: Node) -> T?
   ): OutputPortSpec<T> {
     TODO()
@@ -123,31 +100,32 @@ abstract class NodeSpec(
     id: String,
     type: KClass<T>,
     factory: OutputBuilderScope.(node: Node) -> T?
-  ): OutputPortSpec<T> {
-    TODO()
-  }
+  ): OutputPortSpec<T> =
+    output(id, GenericType(type), factory)
 
   inline fun <reified T : Any> output(
     id: String,
     noinline factory: OutputBuilderScope.(node: Node) -> T?
   ): OutputPortSpec<T> =
-    output(id, T::class, factory)
+    output(id, genericTypeOf(), factory)
 
-  inline fun <reified T : Any> property(id: String, default: T): PropertySpec<T> =
-    property(id, T::class) { default }
+  inline fun <reified T> property(id: String, default: T): PropertySpec<T> =
+    property(id, genericTypeOf(), default)
 
-  inline fun <reified T : Any> property(id: String, noinline default: () -> T): PropertySpec<T> =
-    property(id, T::class, default)
+  inline fun <reified T> property(id: String, noinline default: () -> T): PropertySpec<T> =
+    property<T>(id, genericTypeOf(), default)
 
-  fun <T : Any> property(id: String, type: KClass<T>, default: () -> T): PropertySpec<T> {
-    TODO()
-  }
+  fun <T : Any> property(id: String, type: KClass<T>, default: T): PropertySpec<T> =
+    property(id, GenericType(type), default)
+
+  fun <T : Any> property(id: String, type: KClass<T>, default: () -> T): PropertySpec<T> =
+    property(id, GenericType(type), default)
 
   @Suppress("USELESS_CAST")
-  fun <T : Any> property(id: String, type: DataType<T>, default: T): PropertySpec<T> =
+  fun <T> property(id: String, type: GenericType<T>, default: T): PropertySpec<T> =
     property(id, type, { default } as () -> T)
 
-  fun <T : Any> property(id: String, type: DataType<T>, default: () -> T): PropertySpec<T> =
+  fun <T> property(id: String, type: GenericType<T>, default: () -> T): PropertySpec<T> =
     impl.property(id, type, default)
 }
 
@@ -169,7 +147,7 @@ interface PropertySpec<T> {
   /**
    * The data type of the property created from this spec.
    */
-  val dataType: DataType<T>
+  val dataType: GenericType<T>
 }
 
 /**
@@ -185,7 +163,7 @@ interface PortSpec<T> {
   /**
    * The data type of the port created from this spec.
    */
-  val dataType: DataType<out T>
+  val dataType: GenericType<out T>
 }
 
 /**

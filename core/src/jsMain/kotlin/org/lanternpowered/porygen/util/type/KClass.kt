@@ -67,6 +67,17 @@ private fun getSuperclasses(derived: KClass<*>): List<KClass<*>> {
   return superclasses
 }
 
-actual fun KClass<*>.createType(arguments: List<KTypeProjection>, nullable: Boolean): KType {
-  return js("Kotlin").createKType(this, arguments, nullable).unsafeCast<KType>()
+actual fun KClass<*>.createType(arguments: List<KTypeProjection>?, nullable: Boolean): KType {
+  return js("Kotlin").createKType(this, arguments ?: emptyList<KTypeProjection>(), nullable).unsafeCast<KType>()
 }
+
+actual val <E : Enum<E>> KClass<E>.enumValues: List<E>
+  get() {
+    val js = js.asDynamic()
+    val metadata = js.`$metadata$`
+      ?: return emptyList()
+    // Check if the class is an enum
+    if (Enum::class.js !in metadata.interfaces.unsafeCast<Array<Any>>())
+      throw IllegalStateException()
+    return js.values().unsafeCast<Array<E>>().asList()
+  }

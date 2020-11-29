@@ -11,10 +11,29 @@ package org.lanternpowered.porygen.graph.node
 
 import org.lanternpowered.porygen.graph.node.port.InputPort
 import org.lanternpowered.porygen.graph.node.port.OutputPort
-import org.lanternpowered.porygen.graph.data.DataType
 import org.lanternpowered.porygen.graph.node.port.PortId
 import org.lanternpowered.porygen.graph.node.property.Property
 import org.lanternpowered.porygen.graph.node.property.PropertyId
+import org.lanternpowered.porygen.util.type.GenericType
+import org.lanternpowered.porygen.util.type.genericTypeOf
+
+/**
+ * Registers a new output port.
+ */
+inline fun <reified T> DynamicNode.addOutput(id: PortId): OutputPort<T> =
+  addOutput(id, genericTypeOf())
+
+/**
+ * Registers a new input port.
+ */
+inline fun <reified T> DynamicNode.addInput(id: PortId, noinline default: () -> T? = { null }): InputPort<T> =
+  addInput(id, genericTypeOf(), default)
+
+/**
+ * Registers a new property.
+ */
+inline fun <reified T> DynamicNode.addProperty(id: PropertyId, value: T): Property<T> =
+  addProperty(id, genericTypeOf(), value)
 
 /**
  * Represents a node that can be dynamically
@@ -25,12 +44,12 @@ interface DynamicNode : Node {
   /**
    * Registers a new output port.
    */
-  fun <T> addOutput(id: PortId, type: DataType<T>): OutputPort<T>
+  fun <T> addOutput(id: PortId, type: GenericType<T>): OutputPort<T>
 
   /**
    * Registers a new input port.
    */
-  fun <T> addInput(id: PortId, type: DataType<T>, default: () -> T? = { null }): InputPort<T>
+  fun <T> addInput(id: PortId, type: GenericType<T>, default: () -> T? = { null }): InputPort<T>
 
   /**
    * Removes the port with the given id and removes
@@ -42,7 +61,7 @@ interface DynamicNode : Node {
   /**
    * Registers a new property.
    */
-  fun <T> addProperty(id: PropertyId, type: DataType<T>, value: T): Property<T>
+  fun <T> addProperty(id: PropertyId, type: GenericType<T>, value: T): Property<T>
 
   /**
    * Removes the property with the given id. Returns

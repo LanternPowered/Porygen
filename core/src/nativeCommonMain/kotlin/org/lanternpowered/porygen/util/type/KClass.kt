@@ -18,5 +18,6 @@ actual fun KClass<*>.isSuperclassOf(derived: KClass<*>): Boolean = TODO()
 
 actual val KClass<*>.superclasses: List<KClass<*>> get() = TODO()
 actual val KClass<*>.supertypes: List<KType> get() = TODO()
+actual val <E : Enum<E>> KClass<E>.enumValues: List<E> get() = TODO()
 
-actual fun KClass<*>.createType(arguments: List<KTypeProjection>, nullable: Boolean): KType = TODO()
+actual fun KClass<*>.createType(arguments: List<KTypeProjection>?, nullable: Boolean): KType = TODO()

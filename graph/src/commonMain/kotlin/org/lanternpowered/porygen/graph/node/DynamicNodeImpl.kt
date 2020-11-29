@@ -9,7 +9,6 @@
  */
 package org.lanternpowered.porygen.graph.node
 
-import org.lanternpowered.porygen.graph.data.DataType
 import org.lanternpowered.porygen.graph.node.port.InputPort
 import org.lanternpowered.porygen.graph.node.port.OutputPort
 import org.lanternpowered.porygen.graph.node.port.PortId
@@ -17,6 +16,7 @@ import org.lanternpowered.porygen.graph.node.property.Property
 import org.lanternpowered.porygen.graph.node.property.PropertyId
 import org.lanternpowered.porygen.graph.node.spec.NodeSpec
 import org.lanternpowered.porygen.math.vector.Vec2d
+import org.lanternpowered.porygen.util.type.GenericType
 
 @Suppress("RedundantVisibilityModifier")
 internal class DynamicNodeImpl(
@@ -32,13 +32,13 @@ internal class DynamicNodeImpl(
       initSpec(spec)
   }
 
-  override fun <T> addOutput(id: PortId, type: DataType<T>): OutputPort<T> =
+  override fun <T> addOutput(id: PortId, type: GenericType<T>): OutputPort<T> =
     createOutput(id, type)
 
-  override fun <T> addInput(id: PortId, type: DataType<T>, default: () -> T?): InputPort<T> =
+  override fun <T> addInput(id: PortId, type: GenericType<T>, default: () -> T?): InputPort<T> =
     createInput(id, type, default)
 
-  override fun <T> addProperty(id: PropertyId, type: DataType<T>, value: T): Property<T> =
+  override fun <T> addProperty(id: PropertyId, type: GenericType<T>, value: T): Property<T> =
     createProperty(id, type, value)
 
   public override fun removeProperty(id: PropertyId): Boolean = super.removeProperty(id)

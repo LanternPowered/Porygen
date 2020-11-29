@@ -9,12 +9,12 @@
  */
 package org.lanternpowered.porygen.graph.node.property
 
-import org.lanternpowered.porygen.graph.data.DataType
 import org.lanternpowered.porygen.graph.node.Node
+import org.lanternpowered.porygen.util.type.GenericType
 
 internal class PropertyImpl<T>(
   override val id: PropertyId,
-  override val dataType: DataType<T>,
+  override val dataType: GenericType<T>,
   override var value: T,
   override val node: Node,
 ) : Property<T>

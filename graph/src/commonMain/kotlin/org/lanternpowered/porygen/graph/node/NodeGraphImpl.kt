@@ -9,12 +9,16 @@
  */
 package org.lanternpowered.porygen.graph.node
 
+import org.lanternpowered.porygen.graph.node.port.InputPortImpl
+import org.lanternpowered.porygen.graph.node.spec.NodeGraphSpec
 import org.lanternpowered.porygen.graph.node.spec.NodeSpec
 import org.lanternpowered.porygen.math.vector.Vec2d
 import org.lanternpowered.porygen.util.collections.Int2ObjectOpenHashMap
 import org.lanternpowered.porygen.util.collections.asUnmodifiableCollection
 
-internal class NodeGraphImpl : NodeGraph {
+internal class NodeGraphImpl(
+  private val spec: NodeGraphSpec
+) : NodeGraph {
 
   private val byId = Int2ObjectOpenHashMap<Node>()
   private var idCounter = 0
@@ -50,7 +54,10 @@ internal class NodeGraphImpl : NodeGraph {
   override fun remove(id: NodeId): Boolean {
     val node = byId.remove(id.value)
       ?: return false
-    // TODO: Remove connections
+    for (output in node.outputs)
+      output.disconnectFromAll()
+    for (input in node.inputs)
+      (input as InputPortImpl).disconnect()
     return true
   }
 

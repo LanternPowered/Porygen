@@ -14,9 +14,8 @@ import kotlin.random.Random
 object IntArrays {
 
   fun shuffle(array: IntArray, random: Random = Random.Default) {
-    var index: Int
     for (i in array.size - 1 downTo 1) {
-      index = random.nextInt(i + 1)
+      val index = random.nextInt(i + 1)
       if (index != i) {
         array[index] = array[index] xor array[i]
         array[i] = array[i] xor array[index]

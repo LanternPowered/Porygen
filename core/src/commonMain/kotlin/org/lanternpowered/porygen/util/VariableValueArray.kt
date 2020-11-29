@@ -27,7 +27,7 @@ class VariableValueArray {
   val size: Int
 
   /**
-   * The amount of bits that are used for a single value.
+   * The number of bits that are used for a single value.
    */
   val bitsPerValue: Int
 
