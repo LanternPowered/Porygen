@@ -11,6 +11,7 @@ package org.lanternpowered.porygen.graph.node.port
 
 import org.lanternpowered.porygen.graph.node.Node
 import org.lanternpowered.porygen.graph.node.spec.NodeGraphSpec
+import org.lanternpowered.porygen.util.Named
 import org.lanternpowered.porygen.util.type.GenericType
 
 /**
@@ -21,7 +22,7 @@ inline class PortId(val value: String)
 /**
  * Represents a port of a node.
  */
-interface Port<T> {
+interface Port<T> : Named {
 
   /**
    * The identifier of this port.

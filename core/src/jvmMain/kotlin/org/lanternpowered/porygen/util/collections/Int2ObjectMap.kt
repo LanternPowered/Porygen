@@ -12,7 +12,6 @@
 package org.lanternpowered.porygen.util.collections
 
 import java.util.function.IntFunction
-import kotlin.reflect.full.createType
 
 typealias FuInt2ObjectMap<V> = it.unimi.dsi.fastutil.ints.Int2ObjectMap<V>
 typealias FuInt2ObjectOpenHashMap<V> = it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap<V>
@@ -28,7 +27,6 @@ actual class Int2ObjectOpenHashMap<V>(
   actual override fun set(key: Int, value: V) {
     @Suppress("ReplacePutWithAssignment")
     backing.put(key, value)
-    this::class.createType()
   }
   actual inline fun getOrPut(key: Int, crossinline defaultValue: () -> V): V =
     computeIfAbsent(key, IntFunction { defaultValue() })

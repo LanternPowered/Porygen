@@ -10,6 +10,7 @@
 package org.lanternpowered.porygen.graph.node.property
 
 import org.lanternpowered.porygen.graph.node.Node
+import org.lanternpowered.porygen.util.Named
 import org.lanternpowered.porygen.util.type.GenericType
 import kotlin.reflect.KProperty
 
@@ -21,7 +22,7 @@ inline class PropertyId(val value: String)
 /**
  * Represents a property of a node.
  */
-interface Property<T> {
+interface Property<T> : Named {
 
   /**
    * The node this property belongs to.

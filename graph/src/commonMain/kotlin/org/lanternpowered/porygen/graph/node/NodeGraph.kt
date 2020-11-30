@@ -50,4 +50,10 @@ interface NodeGraph : Iterable<Node> {
    * Attempts to get the node with the given id.
    */
   operator fun get(id: NodeId): Node?
+
+  /**
+   * Attempts to get the node with the given id.
+   */
+  fun require(id: NodeId): Node =
+    get(id) ?: error("There's no node with the given id: $id")
 }

@@ -17,16 +17,18 @@ import org.lanternpowered.porygen.util.unsafeCast
 
 internal abstract class PortImpl<T>(
   override val id: PortId,
+  override val name: String,
   override val dataType: GenericType<T>,
-  override val node: NodeImpl,
+  override val node: NodeImpl
 ) : Port<T>
 
 internal class InputPortImpl<T>(
   id: PortId,
+  name: String,
   dataType: GenericType<T>,
   node: NodeImpl,
   private val defaultSupplier: () -> T?
-) : PortImpl<T>(id, dataType, node), InputPort<T> {
+) : PortImpl<T>(id, name, dataType, node), InputPort<T> {
   override var connection: OutputPort<*>? = null
   override val default: T?
     get() = defaultSupplier()
@@ -52,10 +54,11 @@ internal class InputPortImpl<T>(
 
 internal class OutputPortImpl<T>(
   id: PortId,
+  name: String,
   dataType: GenericType<T>,
   node: NodeImpl,
   private val outputBuilder: (Node) -> T?
-) : PortImpl<T>(id, dataType, node), OutputPort<T> {
+) : PortImpl<T>(id, name, dataType, node), OutputPort<T> {
 
   private val mutableConnections = HashSet<InputPortImpl<*>>()
 

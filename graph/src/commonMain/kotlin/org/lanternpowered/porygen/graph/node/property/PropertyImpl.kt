@@ -14,6 +14,7 @@ import org.lanternpowered.porygen.util.type.GenericType
 
 internal class PropertyImpl<T>(
   override val id: PropertyId,
+  override val name: String,
   override val dataType: GenericType<T>,
   override var value: T,
   override val node: Node,

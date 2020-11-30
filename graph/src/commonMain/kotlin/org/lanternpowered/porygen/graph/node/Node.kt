@@ -59,6 +59,11 @@ interface Node {
   var position: Vec2d
 
   /**
+   * Whether the node is currently expanded.
+   */
+  var expanded: Boolean
+
+  /**
    * A list with all the inputs of this node.
    */
   val inputs: Collection<InputPort<*>>

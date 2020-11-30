@@ -33,7 +33,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.globalBounds
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.dp
@@ -63,7 +62,7 @@ fun MenuBar(
         },
         modifier = Modifier
           .onGloballyPositioned { coordinates ->
-            popupOffset = coordinates.boundsInRoot.bottomLeft
+            popupOffset = coordinates.globalBounds.bottomLeft
           },
       ) {
         item.content()

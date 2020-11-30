@@ -40,6 +40,8 @@ internal abstract class NodeImpl(
   override val graph: NodeGraphImpl
 ) : Node {
 
+  override var expanded: Boolean = true
+
   private val mutableInputs = HashMap<String, InputPortImpl<*>>()
   private val mutableOutputs = HashMap<String, OutputPortImpl<*>>()
   private val mutableProperties = HashMap<String, PropertyImpl<*>>()
@@ -71,16 +73,18 @@ internal abstract class NodeImpl(
     }
   }
 
+  // TODO: Add port and property names
+
   protected fun <T> createInput(id: PortId, type: GenericType<T>, default: () -> T?): InputPortImpl<T> {
     checkFreePort(id.value)
-    val input = InputPortImpl(id, type, this, default)
+    val input = InputPortImpl(id, id.value, type, this, default)
     mutableInputs[id.value] = input
     return input
   }
 
   protected fun <T> createOutput(id: PortId, type: GenericType<T>, outputBuilder: (Node) -> T?): OutputPortImpl<T> {
     checkFreePort(id.value)
-    val output = OutputPortImpl(id, type, this, outputBuilder)
+    val output = OutputPortImpl(id, id.value, type, this, outputBuilder)
     mutableOutputs[id.value] = output
     return output
   }
@@ -103,7 +107,7 @@ internal abstract class NodeImpl(
   protected fun <T> createProperty(id: PropertyId, type: GenericType<T>, value: T): PropertyImpl<T> {
     check(id.value !in mutableProperties) {
       "There's already a port registered with the id: $id" }
-    val property = PropertyImpl(id, type, value, this)
+    val property = PropertyImpl(id, id.value, type, value, this)
     mutableProperties[id.value] = property
     return property
   }

@@ -15,7 +15,6 @@ import org.lanternpowered.porygen.graph.node.port.PortId
 import org.lanternpowered.porygen.graph.node.property.Property
 import org.lanternpowered.porygen.graph.node.property.PropertyId
 import org.lanternpowered.porygen.graph.node.spec.NodeSpec
-import org.lanternpowered.porygen.graph.node.spec.NodeSpecImpl
 import org.lanternpowered.porygen.math.vector.Vec2d
 import org.lanternpowered.porygen.util.type.GenericType
 
