@@ -107,6 +107,7 @@ object EditorColors {
   val Node = Color(60, 60, 60)
   val NodeBorder = Color(20, 20, 20)
   val NodeInnerDivider = Color(30, 30, 30)
+  val NodePortInner = Color(30, 30, 30)
   val NodeInputs = Node
   val NodeOutputs = Color(45, 45, 45)
   val NodeSelectionOutline = Color(90, 130, 150)

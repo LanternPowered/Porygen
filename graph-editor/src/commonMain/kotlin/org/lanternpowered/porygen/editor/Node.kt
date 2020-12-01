@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.preferredHeight
 import androidx.compose.foundation.layout.preferredSize
@@ -80,7 +81,7 @@ private val NodeTextStyle = TextStyle(
   fontSize = 16.sp
 )
 
-class NodeGraphViewModel(
+private class NodeGraphViewModel(
   private val graph: NodeGraph
 ) {
 
@@ -112,7 +113,7 @@ class NodeConnectionViewModel(
   val outputBounds by mutableStateOf(Offset.Zero)
 }
 
-abstract class NodePortViewModel(
+private abstract class NodePortViewModel(
   private val port: Port<*>
 ) {
 
@@ -122,16 +123,19 @@ abstract class NodePortViewModel(
   val name: String
     get() = port.name
 
+  val dataType: GenericType<*>
+    get() = port.dataType
+
   val color: Color = Color.Red // TODO
+
+  var state by mutableStateOf(PortState.Default)
 }
 
-class NodeOutputViewModel(
+private class NodeOutputViewModel(
   private val output: OutputPort<*>
-) : NodePortViewModel(output) {
+) : NodePortViewModel(output)
 
-}
-
-class NodeInputViewModel(
+private class NodeInputViewModel(
   private val input: InputPort<*>
 ) : NodePortViewModel(input) {
 
@@ -150,7 +154,7 @@ class NodePropertyViewModel(
 /**
  * The view model of a single node.
  */
-class NodeViewModel(
+private class NodeViewModel(
   private val node: Node,
   private val graphViewModel: NodeGraphViewModel
 ) {
@@ -167,14 +171,72 @@ class NodeViewModel(
   var expanded by mutableStateOf(node.expanded)
     private set
 
-  val inputs = node.inputs.map(::NodeInputViewModel)
-  val outputs = node.outputs.map(::NodeOutputViewModel)
+  private var inputsByKey = node.inputs.associate { it.id to NodeInputViewModel(it) }
+  private var outputsByKey = node.outputs.associate { it.id to NodeOutputViewModel(it) }
+
+  val inputs get() = inputsByKey.values
+  val outputs get() = outputsByKey.values
   val properties = node.properties.map(::NodePropertyViewModel)
 
   /**
    * The bounds of all the ports relative to the node graph grid.
    */
   var portBounds = mutableMapOf<PortId, Rect>()
+
+  private var currentHover: NodePortViewModel? = null
+  private var currentDrag: NodeOutputViewModel? = null
+
+  fun onStartDragOutput(portId: PortId) {
+    onStopDragOutput()
+    val output = outputsByKey[portId] ?: error("Port with id $id is missing.")
+    currentDrag = output
+    output.state = PortState.Dragging
+
+    for (node in graphViewModel.nodes) {
+      for (otherOutput in node.outputs) {
+        if (output == otherOutput)
+          continue
+        otherOutput.state = PortState.Disabled
+      }
+      for (otherInput in node.inputs) {
+        if (otherInput.isDataTypeAccepted(output.dataType))
+          continue
+        otherInput.state = PortState.Disabled
+      }
+    }
+  }
+
+  fun onStopDragOutput() {
+    if (currentDrag != currentHover)
+      currentDrag?.state = PortState.Default
+    currentDrag = null
+
+    for (node in graphViewModel.nodes) {
+      for (otherOutput in node.outputs) {
+        if (otherOutput == currentHover)
+          continue
+        otherOutput.state = PortState.Default
+      }
+      for (otherInput in node.inputs) {
+        if (otherInput == currentHover)
+          continue
+        otherInput.state = PortState.Default
+      }
+    }
+  }
+
+  fun onStartHover(portId: PortId) {
+    onStopHover()
+    val port = outputsByKey[portId] ?: inputsByKey[portId] ?: error("Port with id $id is missing.")
+    currentHover = port
+    port.state = PortState.HoveringOrConnected
+  }
+
+  fun onStopHover() {
+    if (currentDrag != currentHover)
+      currentHover?.state = PortState.Default
+    currentHover = null
+  }
 
   fun updatePortBounds(port: PortId, bounds: Rect) {
     portBounds[port] = bounds
@@ -255,28 +317,12 @@ private fun NodeGraphGrid(
   scale: Float,
   graph: NodeGraph
 ) {
-
-  val portDragTracker by remember { mutableStateOf(PortDragTracker(
-    onStartDrag = { input ->
-      //println("Start dragging: ${input.node.title}:${input.name}")
-    },
-    onStopDrag = { input, output ->
-      /*
-      print("Stop dragging: ${input.node.title}:${input.name}")
-      if (output != null)
-        print(" on top of: ${output.node.title}:${output.name}")
-      println()
-      */
-    }
-  )) }
-
   val graphViewModel by remember { mutableStateOf(NodeGraphViewModel(graph)) }
 
   for (node in graphViewModel.nodes) {
     Node(
       viewModel = node,
       dragLock = dragLock,
-      portDragTracker = portDragTracker,
       scale = scale
     )
   }
@@ -359,33 +405,6 @@ fun NodeHeader(
   }
 }
 
-class PortDragTracker(
-  val onStartDrag: (PortId) -> Unit,
-  val onStopDrag: (PortId, PortId?) -> Unit
-) {
-
-  private var output: PortId? = null
-  private var currentlyHovering: PortId? = null
-
-  fun onStartHover(port: PortId) {
-    currentlyHovering = port
-  }
-
-  fun onStopHover() {
-    currentlyHovering = null
-  }
-
-  fun onStartDrag(port: PortId) {
-    output = port
-    onStartDrag.invoke(port)
-  }
-
-  fun onStopDrag() {
-    val input = output ?: return
-    onStopDrag.invoke(input, currentlyHovering)
-  }
-}
-
 @Composable
 private fun NodeConnections(
 
@@ -399,7 +418,6 @@ private fun NodeConnections(
 @Composable
 private fun Node(
   viewModel: NodeViewModel,
-  portDragTracker: PortDragTracker,
   dragLock: DragLock,
   scale: Float
 ) {
@@ -408,11 +426,6 @@ private fun Node(
 
   val borderSize = 1.dp
   val roundedCornerShape = RoundedCornerShape(4.dp)
-
-  Canvas(Modifier) {
-    for ((_, bounds) in viewModel.portBounds)
-      drawLine(Color.White, start = Offset.Zero, end = position + bounds.center)
-  }
 
   Box(
     modifier = Modifier
@@ -490,31 +503,25 @@ private fun Node(
               ) {
                 Column(
                   modifier = Modifier
-                    .padding(7.dp)
+                    .padding(end = 7.dp, top = 7.dp, bottom = 7.dp)
                 ) {
                   for (input in viewModel.inputs) {
-                    var isHovering by remember { mutableStateOf(false) }
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                      Box(modifier = Modifier
-                        .preferredSize(10.dp)
-                        .clip(CircleShape)
-                        .background(if (isHovering) Color.Red else Color.Blue)
-                        .onHover(
-                          onEnter = {
-                            isHovering = true
-                            portDragTracker.onStartHover(input.id)
+                      Port(
+                        modifier = Modifier
+                          .onHover(
+                            onEnter = { viewModel.onStartHover(input.id) },
+                            onExit = viewModel::onStopHover
+                          )
+                          .onGloballyPositioned { coordinates ->
+                            val nodeCoordinates0 = nodeCoordinates
+                              ?: return@onGloballyPositioned
+                            val portBounds = nodeCoordinates0.childBoundingBox(coordinates)
+                            viewModel.updatePortBounds(input.id, portBounds)
                           },
-                          onExit = {
-                            isHovering = false
-                            portDragTracker.onStopHover()
-                          }
-                        )
-                        .onGloballyPositioned { coordinates ->
-                          val nodeCoordinates0 = nodeCoordinates
-                            ?: return@onGloballyPositioned
-                          val portBounds = nodeCoordinates0.childBoundingBox(coordinates)
-                          viewModel.updatePortBounds(input.id, portBounds)
-                        }
+                        color = input.color,
+                        state = input.state,
+                        isInput = true
                       )
                       Spacer(Modifier.width(5.dp))
                       BasicText(text = input.name, style = NodeTextStyle)
@@ -538,26 +545,26 @@ private fun Node(
               ) {
                 Column(
                   modifier = Modifier
-                    .padding(7.dp)
+                    .padding(start = 7.dp, top = 7.dp, bottom = 7.dp)
                 ) {
                   for (output in viewModel.outputs) {
-                    var isHovering by remember { mutableStateOf(false) }
                     Row(verticalAlignment = Alignment.CenterVertically) {
                       BasicText(text = output.name, style = NodeTextStyle)
                       Spacer(Modifier.width(5.dp))
-                      Box(modifier = Modifier
-                        .preferredSize(10.dp)
-                        .clip(CircleShape)
-                        .background(if (isHovering) Color.Red else Color.Blue)
-                        .onHover(
-                          onEnter = { isHovering = true },
-                          onExit = { isHovering = false }
-                        )
-                        .onDrag(
-                          lock = dragLock,
-                          onStart = { portDragTracker.onStartDrag(output.id) },
-                          onStop = { portDragTracker.onStopDrag() }
-                        )
+                      Port(
+                        modifier = Modifier
+                          .onHover(
+                            onEnter = { viewModel.onStartHover(output.id) },
+                            onExit = { viewModel.onStopHover() }
+                          )
+                          .onDrag(
+                            lock = dragLock,
+                            onStart = { viewModel.onStartDragOutput(output.id) },
+                            onStop = { viewModel.onStopDragOutput() }
+                          ),
+                        color = output.color,
+                        state = output.state,
+                        isInput = false
                       )
                     }
                   }
@@ -573,6 +580,69 @@ private fun Node(
 
           Box(Modifier.preferredHeight(6.dp))
         }
+      }
+    }
+  }
+
+  Canvas(Modifier) {
+    for ((_, bounds) in viewModel.portBounds) {
+      drawLine(Color.White, start = Offset.Zero, end = position + bounds.centerLeft)
+    }
+  }
+}
+
+private enum class PortState {
+  Default,
+  Dragging,
+  HoveringOrConnected,
+  Disabled,
+}
+
+@Composable
+private fun Port(
+  modifier: Modifier,
+  color: Color,
+  state: PortState,
+  isInput: Boolean
+) {
+  val fullCircleSize = 7.2.dp
+  val lineThickness = 1.2.dp
+  val centerCircle = 4.5.dp
+  val lineLength = 10.dp
+  Box(
+    modifier = modifier
+      .preferredWidth(15.dp)
+  ) {
+    if (state != PortState.Disabled) {
+      Box(modifier = Modifier
+        .offset(
+          x = if (!isInput) fullCircleSize / 2 else 0.dp,
+          y = fullCircleSize / 2 + lineThickness / 2
+        )
+        .preferredSize(
+          height = lineThickness,
+          width = lineLength
+        )
+        .background(color.copy(alpha = 0.6f))
+      )
+    }
+    Box(modifier = Modifier
+      .offset(x = if (!isInput) 0.dp else lineLength - fullCircleSize / 2)
+      .clip(CircleShape)
+      .background(if (state == PortState.Disabled || state == PortState.Dragging) Color.Transparent else color)
+    ) {
+      Box(modifier = Modifier
+        .padding(lineThickness)
+        .clip(CircleShape)
+        .background(if (state == PortState.Dragging) Color.Transparent else EditorColors.NodePortInner)
+      ) {
+        Box(modifier = Modifier
+          .padding(fullCircleSize - centerCircle - lineThickness)
+          .preferredSize(centerCircle)
+          .clip(CircleShape)
+          .background(if (state == PortState.HoveringOrConnected ||
+            state == PortState.Dragging) color else EditorColors.NodePortInner)
+        )
       }
     }
   }
