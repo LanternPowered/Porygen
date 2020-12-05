@@ -43,6 +43,8 @@ fun Root() {
   val add = graph.create(AddDoubleSpec)
   add.title = "Add Doubles"
 
+  const2.outputs.first().connectTo(add.inputs.first())
+
   MaterialTheme {
     Column {
       Menu()
@@ -107,10 +109,13 @@ object EditorColors {
   val Node = Color(60, 60, 60)
   val NodeBorder = Color(20, 20, 20)
   val NodeInnerDivider = Color(30, 30, 30)
-  val NodePortInner = Color(30, 30, 30)
   val NodeInputs = Node
+
   val NodeOutputs = Color(45, 45, 45)
   val NodeSelectionOutline = Color(90, 130, 150)
 
   val NodeText = Color(195, 195, 195)
+
+  val NodePortInner = Color(36, 36, 36)
+  val NodePortDisabledBorder = Color(23, 23, 23)
 }

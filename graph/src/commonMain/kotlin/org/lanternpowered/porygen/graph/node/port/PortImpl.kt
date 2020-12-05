@@ -41,7 +41,7 @@ internal class InputPortImpl<T>(
     node.graph.spec.getConversionFunction(type, dataType) != null
 
   override fun buildTree(): T? {
-    val output = this.connection
+    val output = connection
       ?: return null
     val value = output.buildTree()
     if (!dataType.isNullable && value == null)
@@ -69,6 +69,7 @@ internal class OutputPortImpl<T>(
     port as InputPortImpl<*>
     if (!port.node.isValid || !node.isValid || port.node == node || !port.isDataTypeAccepted(dataType))
       return false
+    port.disconnect()
     port.connection = this
     mutableConnections.add(port)
     return true

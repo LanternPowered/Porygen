@@ -44,7 +44,6 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -56,12 +55,14 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.gesture.doubleTapGestureFilter
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PointMode
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.layout.LayoutCoordinates
+import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.unit.Bounds
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.lanternpowered.porygen.graph.node.Node
@@ -73,47 +74,113 @@ import org.lanternpowered.porygen.graph.node.port.Port
 import org.lanternpowered.porygen.graph.node.port.PortId
 import org.lanternpowered.porygen.graph.node.property.Property
 import org.lanternpowered.porygen.math.vector.Vec2d
+import org.lanternpowered.porygen.util.collections.asUnmodifiableCollection
 import org.lanternpowered.porygen.util.type.GenericType
 
 private val NodeHeaderPadding = 8.dp
 private val NodeTextStyle = TextStyle(
   color = EditorColors.NodeText,
-  fontSize = 16.sp
+  fontSize = 15.sp
 )
 
 private class NodeGraphViewModel(
   private val graph: NodeGraph
 ) {
 
-  val nodes = graph.nodes.map { NodeViewModel(it, this) }
+  private val nodesById = graph.nodes.associate { it.id to NodeViewModel(it, this) }
 
-  val connections = mutableStateListOf<NodeConnectionViewModel>()
+  val nodes = nodesById.values.asUnmodifiableCollection()
+
+  private var currentHover: NodePortViewModel? = null
 
   /**
-   * Updates the positions of the connections.
+   * The output that's currently being dragged.
    */
-  fun updateConnectionPositions(nodeId: NodeId, portBounds: Map<PortId, Bounds>) {
+  var draggedOutput: NodeOutputViewModel? by mutableStateOf(null)
+    private set
 
+  fun nodeOrNull(id: NodeId): NodeViewModel? = nodesById[id]
+
+  fun node(id: NodeId): NodeViewModel =
+    nodeOrNull(id) ?: error("There's no node with the id: $id")
+
+  fun onStartDragOutputPort(output: NodeOutputViewModel) {
+    onStopDragOutputPort()
+
+    draggedOutput = output
+    output.state = PortState.Dragging
+
+    for (node in nodesById.values) {
+      // Disable all the outputs except for the dragged one
+      for (otherOutput in node.outputs) {
+        if (output == otherOutput)
+          continue
+        otherOutput.state = PortState.Disabled
+      }
+      // Disable inputs that don't accept the data
+      // type from the dragged output
+      for (otherInput in node.inputs) {
+        if (otherInput.isDataTypeAccepted(output.dataType))
+          continue
+        otherInput.state = PortState.Disabled
+      }
+    }
+  }
+
+  fun onStopDragOutputPort() {
+    val currentHover = currentHover
+    if (draggedOutput != currentHover) {
+      val draggedOutput = draggedOutput
+      draggedOutput?.state = PortState.Default
+      if (draggedOutput != null &&
+        currentHover is NodeInputViewModel &&
+        currentHover.state != PortState.Disabled
+      ) {
+        draggedOutput.connectTo(currentHover)
+      }
+    }
+    draggedOutput = null
+
+    resetDisabled()
+  }
+
+  /**
+   * Resets all the disabled ports.
+   */
+  private fun resetDisabled() {
+    for (node in nodesById.values) {
+      for (port in node.outputs + node.inputs) {
+        if (port.state == PortState.Disabled)
+          port.state = PortState.Default
+      }
+    }
+  }
+
+  fun onStartPortHover(port: NodePortViewModel) {
+    val previousHover = currentHover
+    val currentDrag = draggedOutput
+    currentHover = port
+    if (currentDrag != null && port.state == PortState.Disabled)
+      return
+    previousHover?.state = PortState.Default
+    if (port != currentDrag)
+      port.state = PortState.HoveringOrConnected
+  }
+
+  fun onStopPortHover() {
+    val currentHover = currentHover
+    this.currentHover = null
+    if (currentHover != null &&
+      currentHover.state != PortState.Disabled &&
+      currentHover != draggedOutput
+    ) {
+      currentHover.state = PortState.Default
+    }
   }
 }
 
-class NodeConnectionViewModel(
-  private val input: InputPort<*>,
-  private val output: OutputPort<*>
-) {
-
-  /**
-   * The bounds of the input port.
-   */
-  val inputBounds by mutableStateOf(Offset.Zero)
-
-  /**
-   * The bounds of the output port.
-   */
-  val outputBounds by mutableStateOf(Offset.Zero)
-}
-
 private abstract class NodePortViewModel(
+  val node: NodeViewModel,
   private val port: Port<*>
 ) {
 
@@ -128,16 +195,40 @@ private abstract class NodePortViewModel(
 
   val color: Color = Color.Red // TODO
 
+  var position: Offset = Offset.Zero
+
   var state by mutableStateOf(PortState.Default)
 }
 
 private class NodeOutputViewModel(
+  node: NodeViewModel,
   private val output: OutputPort<*>
-) : NodePortViewModel(output)
+) : NodePortViewModel(node, output) {
+
+  fun connectTo(input: NodeInputViewModel) {
+    val previousConnection = input.connection?.node
+    if (!output.connectTo(input.input))
+      return
+    node.updateConnections()
+    if (previousConnection != null && previousConnection != node)
+      previousConnection.updateConnections()
+    input.node.updateConnections()
+  }
+}
 
 private class NodeInputViewModel(
-  private val input: InputPort<*>
-) : NodePortViewModel(input) {
+  node: NodeViewModel,
+  val input: InputPort<*>
+) : NodePortViewModel(node, input) {
+
+  val connection: NodeOutputViewModel?
+    get() {
+      val output = input.connection
+        ?: return null
+      return node.graphViewModel
+        .node(output.node.id)
+        .output(output.id)
+    }
 
   fun isDataTypeAccepted(type: GenericType<*>): Boolean =
     input.isDataTypeAccepted(type)
@@ -151,12 +242,22 @@ class NodePropertyViewModel(
     get() = property.name
 }
 
+private class NodeConnection(
+  val output: NodeOutputViewModel,
+  private val inputPortId: PortId,
+  private val inputNodeId: NodeId
+) {
+
+  val input: NodeInputViewModel
+    get() = output.node.graphViewModel.node(inputNodeId).input(inputPortId)
+}
+
 /**
  * The view model of a single node.
  */
 private class NodeViewModel(
   private val node: Node,
-  private val graphViewModel: NodeGraphViewModel
+  val graphViewModel: NodeGraphViewModel
 ) {
 
   val id: NodeId
@@ -171,75 +272,74 @@ private class NodeViewModel(
   var expanded by mutableStateOf(node.expanded)
     private set
 
-  private var inputsByKey = node.inputs.associate { it.id to NodeInputViewModel(it) }
-  private var outputsByKey = node.outputs.associate { it.id to NodeOutputViewModel(it) }
+  var bounds: Rect by mutableStateOf(Rect(Offset.Zero, Offset.Zero))
+    private set
+
+  private var inputsByKey = node.inputs.associate { it.id to NodeInputViewModel(this, it) }
+  private var outputsByKey = node.outputs.associate { it.id to NodeOutputViewModel(this, it) }
 
   val inputs get() = inputsByKey.values
   val outputs get() = outputsByKey.values
   val properties = node.properties.map(::NodePropertyViewModel)
 
-  /**
-   * The bounds of all the ports relative to the node graph grid.
-   */
-  var portBounds = mutableMapOf<PortId, Rect>()
+  fun inputOrNull(portId: PortId): NodeInputViewModel? =
+    inputsByKey[portId]
 
-  private var currentHover: NodePortViewModel? = null
-  private var currentDrag: NodeOutputViewModel? = null
+  fun outputOrNull(portId: PortId): NodeOutputViewModel? =
+    outputsByKey[portId]
 
-  fun onStartDragOutput(portId: PortId) {
-    onStopDragOutput()
-    val output = outputsByKey[portId] ?: error("Port with id $id is missing.")
-    currentDrag = output
-    output.state = PortState.Dragging
+  fun input(portId: PortId): NodeInputViewModel =
+    inputOrNull(portId) ?: error("There's no input port with the port id: $portId")
 
-    for (node in graphViewModel.nodes) {
-      for (otherOutput in node.outputs) {
-        if (output == otherOutput)
-          continue
-        otherOutput.state = PortState.Disabled
-      }
-      for (otherInput in node.inputs) {
-        if (otherInput.isDataTypeAccepted(output.dataType))
-          continue
-        otherInput.state = PortState.Disabled
+  fun output(portId: PortId): NodeOutputViewModel =
+    outputOrNull(portId) ?: error("There's no output port with the port id: $portId")
+
+  var connections by mutableStateOf(loadConnections())
+    private set
+
+  private fun loadConnections() = node.outputs
+    .flatMap { output ->
+      output.connections.map { input ->
+        NodeConnection(output(output.id), input.id, input.node.id)
       }
     }
+
+  fun updateConnections() {
+    connections = loadConnections()
+  }
+
+  fun onStartDragOutput(portId: PortId) {
+    val output = outputsByKey[portId] ?: error("Port with id $id is missing.")
+    graphViewModel.onStartDragOutputPort(output)
   }
 
   fun onStopDragOutput() {
-    if (currentDrag != currentHover)
-      currentDrag?.state = PortState.Default
-    currentDrag = null
-
-    for (node in graphViewModel.nodes) {
-      for (otherOutput in node.outputs) {
-        if (otherOutput == currentHover)
-          continue
-        otherOutput.state = PortState.Default
-      }
-      for (otherInput in node.inputs) {
-        if (otherInput == currentHover)
-          continue
-        otherInput.state = PortState.Default
-      }
-    }
+    graphViewModel.onStopDragOutputPort()
   }
 
+  private fun port(portId: PortId): NodePortViewModel =
+    outputsByKey[portId] ?: inputsByKey[portId] ?: error("Port with id $id is missing.")
+
   fun onStartHover(portId: PortId) {
-    onStopHover()
-    val port = outputsByKey[portId] ?: inputsByKey[portId] ?: error("Port with id $id is missing.")
-    currentHover = port
-    port.state = PortState.HoveringOrConnected
+    graphViewModel.onStartPortHover(port(portId))
   }
 
   fun onStopHover() {
-    if (currentDrag != currentHover)
-      currentHover?.state = PortState.Default
-    currentHover = null
+    graphViewModel.onStopPortHover()
   }
 
-  fun updatePortBounds(port: PortId, bounds: Rect) {
-    portBounds[port] = bounds
+  fun updatePortBounds(portId: PortId, bounds: Rect) {
+    val port = port(portId)
+    val relative = if (port is NodeInputViewModel) {
+      bounds.centerLeft
+    } else {
+      bounds.centerRight
+    }
+    port.position = position.toOffset() + relative
+  }
+
+  fun updateBounds(bounds: Rect) {
+    this.bounds = bounds
   }
 
   fun updateTitle(title: String) {
@@ -265,14 +365,24 @@ fun DraggableNodeGraphGrid(
   var scale by remember { mutableStateOf(1f) }
   var translate by remember { mutableStateOf(Offset.Zero) }
   val dragLock by remember { mutableStateOf(DragLock()) }
+  var mousePosition by remember { mutableStateOf(Offset.Zero) }
+  var dragGridCoordinates: LayoutCoordinates? by remember { mutableStateOf(null) }
+  var translatedGridCoordinates: LayoutCoordinates? by remember { mutableStateOf(null) }
+
+  fun updateScale(newScale: Float) {
+    val oldScale = scale
+    scale = newScale
+    val deltaScale = newScale - oldScale
+    translate -= (mousePosition - translate) * deltaScale
+  }
 
   Box(
     modifier = Modifier
       .mouseScroll { delta, _ ->
-        scale *= 1f + (-delta * 0.006f)
+        updateScale(scale * (1f + (-delta * 0.006f)))
         true
       }
-      .zoomable(onZoomDelta = { scale *= it })
+      .zoomable(onZoomDelta = { updateScale(scale * it) })
       .onDrag(dragLock) { dragDistance ->
         translate += dragDistance
       }
@@ -280,7 +390,19 @@ fun DraggableNodeGraphGrid(
         // Re-center
         translate = Offset.Zero
       }
-      .background(EditorColors.Background),
+      .background(EditorColors.Background)
+      .onGloballyPositioned {
+        dragGridCoordinates = it
+      }
+      .onHover(
+        onMove = {
+          if (dragGridCoordinates != null && translatedGridCoordinates != null) {
+            // Convert the mouse position in the draggable area to the translated and scaled grid
+            mousePosition = translatedGridCoordinates!!.globalToLocal(
+              dragGridCoordinates!!.localToGlobal(it))
+          }
+        }
+      ),
   ) {
     Box(
       modifier = Modifier
@@ -294,13 +416,22 @@ fun DraggableNodeGraphGrid(
           //   scale will currently break tap/clickables
           scaleX = scale,
           scaleY = scale
-        ),
+        )
     ) {
-      NodeGraphGrid(
-        dragLock = dragLock,
-        scale = scale,
-        graph = graph
-      )
+      Box(
+        modifier = Modifier
+          .fillMaxSize()
+          .onGloballyPositioned {
+            translatedGridCoordinates = it
+          }
+      ) {
+        NodeGraphGrid(
+          dragLock = dragLock,
+          scale = scale,
+          graph = graph,
+          mousePosition = mousePosition
+        )
+      }
     }
   }
 }
@@ -315,16 +446,58 @@ fun Offset.toVec2d(): Vec2d =
 private fun NodeGraphGrid(
   dragLock: DragLock,
   scale: Float,
-  graph: NodeGraph
+  graph: NodeGraph,
+  mousePosition: Offset,
 ) {
   val graphViewModel by remember { mutableStateOf(NodeGraphViewModel(graph)) }
 
-  for (node in graphViewModel.nodes) {
-    Node(
-      viewModel = node,
-      dragLock = dragLock,
-      scale = scale
-    )
+  Box {
+    for (node in graphViewModel.nodes) {
+      Node(
+        viewModel = node,
+        dragLock = dragLock,
+        scale = scale
+      )
+    }
+
+    Canvas(Modifier) {
+      val offset1 = Offset(-2.dp.toPx(), 0f)
+      val offset2 = Offset(15.dp.toPx(), 0f)
+      val thickness = 1.2.dp.toPx()
+
+      val draggedOutput = graphViewModel.draggedOutput
+      if (draggedOutput != null) {
+        val position = draggedOutput.position
+        val start = position + offset1
+        val middle = position + offset2
+        drawPoints(
+          pointMode = PointMode.Polygon,
+          points = listOf(start, middle, mousePosition),
+          color = draggedOutput.color,
+          strokeWidth = thickness,
+          cap = StrokeCap.Round
+        )
+      }
+
+      for (node in graphViewModel.nodes) {
+        for (connection in node.connections) {
+          val output = connection.output
+          val input = connection.input
+
+          val point1 = input.position - offset1
+          val point2 = input.position - offset2
+          val point3 = output.position + offset2
+          val point4 = output.position + offset1
+          drawPoints(
+            pointMode = PointMode.Polygon,
+            points = listOf(point1, point2, point3, point4),
+            color = output.color,
+            strokeWidth = thickness,
+            cap = StrokeCap.Round
+          )
+        }
+      }
+    }
   }
 }
 
@@ -405,13 +578,6 @@ fun NodeHeader(
   }
 }
 
-@Composable
-private fun NodeConnections(
-
-) {
-
-}
-
 /**
  * @param dragLock The shared drag lock of the application
  */
@@ -435,7 +601,10 @@ private fun Node(
       )
       .preferredHeight(IntrinsicSize.Min)
       .preferredWidth(IntrinsicSize.Min)
-      .onGloballyPositioned { coordinates -> nodeCoordinates = coordinates },
+      .onGloballyPositioned { coordinates ->
+        nodeCoordinates = coordinates
+        viewModel.updateBounds(coordinates.boundsInParent)
+      }
   ) {
     var isSelected by remember { mutableStateOf(false) }
 
@@ -553,6 +722,12 @@ private fun Node(
                       Spacer(Modifier.width(5.dp))
                       Port(
                         modifier = Modifier
+                          .onGloballyPositioned { coordinates ->
+                            val nodeCoordinates0 = nodeCoordinates
+                              ?: return@onGloballyPositioned
+                            val portBounds = nodeCoordinates0.childBoundingBox(coordinates)
+                            viewModel.updatePortBounds(output.id, portBounds)
+                          }
                           .onHover(
                             onEnter = { viewModel.onStartHover(output.id) },
                             onExit = { viewModel.onStopHover() }
@@ -581,12 +756,6 @@ private fun Node(
           Box(Modifier.preferredHeight(6.dp))
         }
       }
-    }
-  }
-
-  Canvas(Modifier) {
-    for ((_, bounds) in viewModel.portBounds) {
-      drawLine(Color.White, start = Offset.Zero, end = position + bounds.centerLeft)
     }
   }
 }
@@ -629,7 +798,11 @@ private fun Port(
     Box(modifier = Modifier
       .offset(x = if (!isInput) 0.dp else lineLength - fullCircleSize / 2)
       .clip(CircleShape)
-      .background(if (state == PortState.Disabled || state == PortState.Dragging) Color.Transparent else color)
+      .background(when (state) {
+        PortState.Dragging -> Color.Transparent
+        PortState.Disabled -> EditorColors.NodeBorder
+        else -> color
+      })
     ) {
       Box(modifier = Modifier
         .padding(lineThickness)
