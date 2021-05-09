@@ -7,7 +7,7 @@ plugins {
 ext.set("serialization", true)
 
 repositories {
-  maven("http://repo.spongepowered.org/maven")
+  maven("https://repo.spongepowered.org/maven")
 }
 
 kotlin {
@@ -18,7 +18,7 @@ kotlin {
       dependencies {
         implementation(project(":porygen-core"))
         implementation(project(":porygen-graph"))
-        implementation("org.spongepowered:spongeapi:7.1.0-SNAPSHOT")
+        implementation("org.spongepowered:spongeapi:7.4.0-SNAPSHOT")
       }
     }
   }

@@ -46,12 +46,12 @@ object PerlinSpec : NodeSpec("noise/perlin", "Perlin") {
 
   val output = output("out") { node ->
     Perlin(
-        frequency = node[frequency],
-        lacunarity = node[lacunarity],
-        quality = node[quality],
-        octaves = node[octaves],
-        persistence = node[persistence],
-        seed = node[seed]
+      frequency = node[frequency],
+      lacunarity = node[lacunarity],
+      quality = node[quality],
+      octaves = node[octaves],
+      persistence = node[persistence],
+      seed = node[seed]
     )
   }
 }

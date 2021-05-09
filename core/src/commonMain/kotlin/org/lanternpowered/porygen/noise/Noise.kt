@@ -198,26 +198,20 @@ object Noise {
     // the coherent-noise value at the input point, interpolate these eight
     // noise values using the S-curve value as the interpolant (trilinear
     // interpolation.)
-    var n0: Double
-    var n1: Double
-    var ix0: Double
-    var ix1: Double
-    val iy0: Double
-    val iy1: Double
-    n0 = gradientNoise3D(x, y, z, x0, y0, z0, seed)
-    n1 = gradientNoise3D(x, y, z, x1, y0, z0, seed)
-    ix0 = linearInterp(n0, n1, xs)
+    var n0 = gradientNoise3D(x, y, z, x0, y0, z0, seed)
+    var n1 = gradientNoise3D(x, y, z, x1, y0, z0, seed)
+    var ix0 = linearInterp(n0, n1, xs)
     n0 = gradientNoise3D(x, y, z, x0, y1, z0, seed)
     n1 = gradientNoise3D(x, y, z, x1, y1, z0, seed)
-    ix1 = linearInterp(n0, n1, xs)
-    iy0 = linearInterp(ix0, ix1, ys)
+    var ix1 = linearInterp(n0, n1, xs)
+    val iy0 = linearInterp(ix0, ix1, ys)
     n0 = gradientNoise3D(x, y, z, x0, y0, z1, seed)
     n1 = gradientNoise3D(x, y, z, x1, y0, z1, seed)
     ix0 = linearInterp(n0, n1, xs)
     n0 = gradientNoise3D(x, y, z, x0, y1, z1, seed)
     n1 = gradientNoise3D(x, y, z, x1, y1, z1, seed)
     ix1 = linearInterp(n0, n1, xs)
-    iy1 = linearInterp(ix0, ix1, ys)
+    val iy1 = linearInterp(ix0, ix1, ys)
     return linearInterp(iy0, iy1, zs)
   }
 
@@ -348,26 +342,20 @@ object Noise {
     // the coherent-noise value at the input point, interpolate these eight
     // noise values using the S-curve value as the interpolant (trilinear
     // interpolation.)
-    var n0: Double
-    var n1: Double
-    var ix0: Double
-    var ix1: Double
-    val iy0: Double
-    val iy1: Double
-    n0 = valueNoise3D(x0, y0, z0, seed)
-    n1 = valueNoise3D(x1, y0, z0, seed)
-    ix0 = linearInterp(n0, n1, xs)
+    var n0 = valueNoise3D(x0, y0, z0, seed)
+    var n1 = valueNoise3D(x1, y0, z0, seed)
+    var ix0 = linearInterp(n0, n1, xs)
     n0 = valueNoise3D(x0, y1, z0, seed)
     n1 = valueNoise3D(x1, y1, z0, seed)
-    ix1 = linearInterp(n0, n1, xs)
-    iy0 = linearInterp(ix0, ix1, ys)
+    var ix1 = linearInterp(n0, n1, xs)
+    val iy0 = linearInterp(ix0, ix1, ys)
     n0 = valueNoise3D(x0, y0, z1, seed)
     n1 = valueNoise3D(x1, y0, z1, seed)
     ix0 = linearInterp(n0, n1, xs)
     n0 = valueNoise3D(x0, y1, z1, seed)
     n1 = valueNoise3D(x1, y1, z1, seed)
     ix1 = linearInterp(n0, n1, xs)
-    iy1 = linearInterp(ix0, ix1, ys)
+    val iy1 = linearInterp(ix0, ix1, ys)
     return linearInterp(iy0, iy1, zs)
   }
 

@@ -27,6 +27,7 @@ import org.lanternpowered.porygen.graph.node.NodeGraph
 import org.lanternpowered.porygen.graph.node.spec.DefaultNodeGraphSpec
 import org.lanternpowered.porygen.graph.specs.AddDoubleSpec
 import org.lanternpowered.porygen.graph.specs.ConstantDoubleSpec
+import org.lanternpowered.porygen.graph.specs.noise.PerlinSpec
 
 expect fun Modifier.mouseScroll(onMouseScroll: (delta: Float, bounds: IntSize) -> Boolean): Modifier
 
@@ -44,6 +45,8 @@ fun Root() {
   add.title = "Add Doubles"
 
   const2.outputs.first().connectTo(add.inputs.first())
+
+  graph.create(PerlinSpec)
 
   MaterialTheme {
     Column {

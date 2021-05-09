@@ -66,6 +66,12 @@ interface InputPort<T> : Port<T> {
   val default: T?
 
   /**
+   * Disconnects the input port from the currently
+   * connected output port, if any.
+   */
+  fun disconnect(): Boolean
+
+  /**
    * Attempts to build the node tree up to this output
    * port and return the built object that will be used
    * as input value.

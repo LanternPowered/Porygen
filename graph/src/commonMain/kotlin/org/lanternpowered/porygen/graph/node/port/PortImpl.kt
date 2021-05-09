@@ -33,9 +33,8 @@ internal class InputPortImpl<T>(
   override val default: T?
     get() = defaultSupplier()
 
-  fun disconnect() {
-    connection?.disconnectFrom(this)
-  }
+  override fun disconnect(): Boolean =
+    connection?.disconnectFrom(this) ?: false
 
   override fun isDataTypeAccepted(type: GenericType<*>): Boolean =
     node.graph.spec.getConversionFunction(type, dataType) != null

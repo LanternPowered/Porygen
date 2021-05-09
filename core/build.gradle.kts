@@ -25,7 +25,10 @@ kotlin {
       }
     }
 
-    val nativeCommonMain by creating {}
-    val nativeCommonTest by creating {}
+    val jsAndNativeMain by creating {}
+    val jsAndNativeTest by creating {}
+
+    val nativeMain by creating {}
+    val nativeTest by creating {}
   }
 }

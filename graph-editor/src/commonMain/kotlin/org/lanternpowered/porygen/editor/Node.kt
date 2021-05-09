@@ -206,12 +206,12 @@ private class NodeOutputViewModel(
 ) : NodePortViewModel(node, output) {
 
   fun connectTo(input: NodeInputViewModel) {
-    val previousConnection = input.connection?.node
+    val previousConnectedNode = input.connection?.node
     if (!output.connectTo(input.input))
       return
     node.updateConnections()
-    if (previousConnection != null && previousConnection != node)
-      previousConnection.updateConnections()
+    if (previousConnectedNode != null && previousConnectedNode != node)
+      previousConnectedNode.updateConnections()
     input.node.updateConnections()
   }
 }
@@ -229,6 +229,13 @@ private class NodeInputViewModel(
         .node(output.node.id)
         .output(output.id)
     }
+
+  fun disconnect() {
+    val connectedNode = connection?.node ?: return
+    input.disconnect()
+    connectedNode.updateConnections()
+    node.updateConnections()
+  }
 
   fun isDataTypeAccepted(type: GenericType<*>): Boolean =
     input.isDataTypeAccepted(type)
@@ -272,7 +279,7 @@ private class NodeViewModel(
   var expanded by mutableStateOf(node.expanded)
     private set
 
-  var bounds: Rect by mutableStateOf(Rect(Offset.Zero, Offset.Zero))
+  var bounds: Rect by mutableStateOf(Rect.Zero)
     private set
 
   private var inputsByKey = node.inputs.associate { it.id to NodeInputViewModel(this, it) }
@@ -452,9 +459,11 @@ private fun NodeGraphGrid(
   val graphViewModel by remember { mutableStateOf(NodeGraphViewModel(graph)) }
 
   Box {
+    // TODO: Draw background grid?
+
     for (node in graphViewModel.nodes) {
       Node(
-        viewModel = node,
+        node = node,
         dragLock = dragLock,
         scale = scale
       )
@@ -583,11 +592,11 @@ fun NodeHeader(
  */
 @Composable
 private fun Node(
-  viewModel: NodeViewModel,
+  node: NodeViewModel,
   dragLock: DragLock,
   scale: Float
 ) {
-  val position = viewModel.position.toOffset()
+  val position = node.position.toOffset()
   var nodeCoordinates: LayoutCoordinates? by remember { mutableStateOf(null) }
 
   val borderSize = 1.dp
@@ -603,7 +612,7 @@ private fun Node(
       .preferredWidth(IntrinsicSize.Min)
       .onGloballyPositioned { coordinates ->
         nodeCoordinates = coordinates
-        viewModel.updateBounds(coordinates.boundsInParent)
+        node.updateBounds(coordinates.boundsInParent)
       }
   ) {
     var isSelected by remember { mutableStateOf(false) }
@@ -640,18 +649,18 @@ private fun Node(
       ) {
         Box(modifier = Modifier
           .onDrag(dragLock) { dragDistance ->
-            viewModel.updatePosition((position + dragDistance / scale).toVec2d())
+            node.updatePosition((position + dragDistance / scale).toVec2d())
           }
         ) {
           NodeHeader(
-            title = viewModel.title,
-            onUpdateTitle = viewModel::updateTitle,
-            expanded = viewModel.expanded,
-            onUpdateExpanded = viewModel::updateExpanded,
+            title = node.title,
+            onUpdateTitle = node::updateTitle,
+            expanded = node.expanded,
+            onUpdateExpanded = node::updateExpanded,
           )
         }
 
-        if (viewModel.expanded) {
+        if (node.expanded) {
           HorizontalDivider(
             thickness = borderSize,
             color = EditorColors.NodeInnerDivider
@@ -663,7 +672,7 @@ private fun Node(
               .preferredHeight(IntrinsicSize.Min)
           ) {
             // Inputs
-            if (viewModel.inputs.isNotEmpty()) {
+            if (node.inputs.isNotEmpty()) {
               Column(
                 modifier = Modifier
                   .background(EditorColors.NodeInputs)
@@ -674,19 +683,22 @@ private fun Node(
                   modifier = Modifier
                     .padding(end = 7.dp, top = 7.dp, bottom = 7.dp)
                 ) {
-                  for (input in viewModel.inputs) {
+                  for (input in node.inputs) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                       Port(
                         modifier = Modifier
                           .onHover(
-                            onEnter = { viewModel.onStartHover(input.id) },
-                            onExit = viewModel::onStopHover
+                            onEnter = { node.onStartHover(input.id) },
+                            onExit = node::onStopHover
+                          )
+                          .clickable(
+                            onClick = { input.disconnect() }
                           )
                           .onGloballyPositioned { coordinates ->
                             val nodeCoordinates0 = nodeCoordinates
                               ?: return@onGloballyPositioned
                             val portBounds = nodeCoordinates0.childBoundingBox(coordinates)
-                            viewModel.updatePortBounds(input.id, portBounds)
+                            node.updatePortBounds(input.id, portBounds)
                           },
                         color = input.color,
                         state = input.state,
@@ -703,7 +715,7 @@ private fun Node(
               thickness = borderSize,
               color = EditorColors.NodeInnerDivider
             )
-            if (viewModel.outputs.isNotEmpty()) {
+            if (node.outputs.isNotEmpty()) {
               // Outputs
               Column(
                 modifier = Modifier
@@ -716,7 +728,7 @@ private fun Node(
                   modifier = Modifier
                     .padding(start = 7.dp, top = 7.dp, bottom = 7.dp)
                 ) {
-                  for (output in viewModel.outputs) {
+                  for (output in node.outputs) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                       BasicText(text = output.name, style = NodeTextStyle)
                       Spacer(Modifier.width(5.dp))
@@ -726,16 +738,16 @@ private fun Node(
                             val nodeCoordinates0 = nodeCoordinates
                               ?: return@onGloballyPositioned
                             val portBounds = nodeCoordinates0.childBoundingBox(coordinates)
-                            viewModel.updatePortBounds(output.id, portBounds)
+                            node.updatePortBounds(output.id, portBounds)
                           }
                           .onHover(
-                            onEnter = { viewModel.onStartHover(output.id) },
-                            onExit = { viewModel.onStopHover() }
+                            onEnter = { node.onStartHover(output.id) },
+                            onExit = { node.onStopHover() }
                           )
                           .onDrag(
                             lock = dragLock,
-                            onStart = { viewModel.onStartDragOutput(output.id) },
-                            onStop = { viewModel.onStopDragOutput() }
+                            onStart = { node.onStartDragOutput(output.id) },
+                            onStop = { node.onStopDragOutput() }
                           ),
                         color = output.color,
                         state = output.state,

@@ -6,7 +6,7 @@ plugins {
 
 allprojects {
   group = "org.lanternpowered"
-  version = "0.0.1"
+  version = "1.0.0"
 
   repositories {
     mavenCentral()
@@ -19,28 +19,6 @@ subprojects {
   afterEvaluate {
     apply(plugin = "net.minecrell.licenser")
 
-    fun setupKotlinSettings(
-        languageVersion: (name: String) -> Unit,
-        enableLanguageFeature: (name: String) -> Unit,
-        useExperimentalAnnotation: (name: String) -> Unit
-    ) {
-      languageVersion("1.4")
-
-      enableLanguageFeature("InlineClasses")
-      enableLanguageFeature("NewInference")
-      enableLanguageFeature("NonParenthesizedAnnotationsOnFunctionalTypes")
-
-      useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")
-      useExperimentalAnnotation("kotlin.contracts.ExperimentalContracts")
-      useExperimentalAnnotation("kotlin.ExperimentalStdlibApi")
-      useExperimentalAnnotation("kotlin.experimental.ExperimentalTypeInference")
-      useExperimentalAnnotation("kotlinx.serialization.UnstableDefault")
-      useExperimentalAnnotation("kotlinx.serialization.ExperimentalSerializationApi")
-
-      // Compose
-      useExperimentalAnnotation("androidx.compose.foundation.layout.ExperimentalLayout")
-    }
-
     val multiplatform = extensions.findByType<org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension>()
     val serialization = if (ext.has("serialization")) ext.get("serialization") as? Boolean ?: false else false
 
@@ -51,14 +29,12 @@ subprojects {
       sourceSets {
         val commonMain by getting {
           dependencies {
-            implementation(kotlin("stdlib-common"))
             if (serialization) {
               implementation(serialization("core"))
               implementation(serialization("json"))
             }
           }
         }
-
         val commonTest by getting {
           dependencies {
             implementation(kotlin("test-common"))
@@ -66,63 +42,106 @@ subprojects {
           }
         }
 
-        findByName("jvmMain")?.apply {
-          dependencies {
-            implementation(kotlin("stdlib-jdk8"))
-          }
+        val jvmMain = findByName("jvmMain")
+        val jvmTest = findByName("jvmTest")
+
+        val jsAndNativeMain = findByName("jsAndNativeMain")
+        val jsAndNativeTest = findByName("jsAndNativeTest")
+
+        val jsAndJvmMain = findByName("jsAndJvmMain")
+        val jsAndJvmTest = findByName("jsAndJvmTest")
+
+        val jsMain = findByName("jsMain")
+        val jsTest = findByName("jsTest")
+
+        val nativeMain = findByName("nativeMain")
+        val nativeTest = findByName("nativeTest")
+
+        jvmTest?.dependencies {
+          implementation(kotlin("test-junit"))
+        }
+        jsTest?.dependencies {
+          implementation(kotlin("test-js"))
         }
 
-        findByName("jvmTest")?.apply {
-          dependencies {
-            implementation(kotlin("test-junit"))
-          }
+        if (jsAndJvmMain != null) {
+          jsAndJvmMain.dependsOn(commonMain)
+          jsMain?.dependsOn(jsAndJvmMain)
+          jvmMain?.dependsOn(jsAndJvmMain)
+        }
+        if (jsAndJvmTest != null) {
+          jsAndJvmTest.dependsOn(commonTest)
+          if (jsAndJvmMain != null)
+            jsAndJvmTest.dependsOn(jsAndJvmMain)
+          jvmTest?.dependsOn(jsAndJvmTest)
+          jsTest?.dependsOn(jsAndJvmTest)
         }
 
-        findByName("jsMain")?.apply {
-          dependencies {
-            implementation(kotlin("stdlib-js"))
-          }
+        if (jsAndNativeMain != null) {
+          jsAndNativeMain.dependsOn(commonMain)
+          jsMain?.dependsOn(jsAndNativeMain)
+          nativeMain?.dependsOn(jsAndNativeMain)
+        }
+        if (jsAndNativeTest != null) {
+          jsAndNativeTest.dependsOn(commonTest)
+          if (jsAndNativeMain != null)
+            jsAndNativeTest.dependsOn(jsAndNativeMain)
+          nativeTest?.dependsOn(jsAndNativeTest)
+          jsTest?.dependsOn(jsAndNativeTest)
         }
 
-        findByName("jsTest")?.apply {
-          dependencies {
-            implementation(kotlin("test-js"))
-          }
-        }
+        if (jvmMain != null)
+          jvmTest?.dependsOn(jvmMain)
+        if (jsMain != null)
+          jsTest?.dependsOn(jsMain)
+        if (nativeMain != null)
+          nativeTest?.dependsOn(nativeMain)
 
-        val nativeCommonMain = findByName("nativeCommonMain")
-        nativeCommonMain?.apply {
-          dependsOn(commonMain)
-        }
-        val nativeCommonTest = findByName("nativeCommonTest")
-        nativeCommonTest?.apply {
-          dependsOn(commonTest)
-        }
-
-        fun applyNativeCommon(target: String) {
-          findByName("${target}Main")?.apply {
-            if (nativeCommonMain != null)
-              dependsOn(nativeCommonMain)
+        targets
+          .filterIsInstance<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>()
+          .map { it.name }
+          .forEach { target ->
+            if (target == "native")
+              return@forEach
+            findByName("${target}Main")?.apply {
+              if (nativeMain != null)
+                dependsOn(nativeMain)
+            }
+            findByName("${target}Test")?.apply {
+              if (nativeTest != null)
+                dependsOn(nativeTest)
+            }
           }
-          findByName("${target}Test")?.apply {
-            if (nativeCommonTest != null)
-              dependsOn(nativeCommonTest)
-          }
-        }
 
-        arrayOf(
-            "androidNativeArm32", "androidNativeArm64", "iosArm32", "iosArm64", "iosX64",
-            "linuxArm64", "linuxArm32Hfp", "linuxMips32", "linuxMipsel32", "linuxX64", "macosX64",
-            "mingwX64", "mingwX86", "wasm32"
-        ).forEach(::applyNativeCommon)
+        val javaTarget: Int = (if (ext.has("javaTarget")) ext.get("javaTarget") as? Int else null) ?: 8
+
+        targets
+          .filterIsInstance<org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget>()
+          .forEach { target ->
+            target.compilations.forEach { compilation ->
+              compilation.kotlinOptions.jvmTarget = if (javaTarget > 8) javaTarget.toString() else "1.$javaTarget"
+            }
+          }
 
         all {
           languageSettings.apply {
-            fun languageVersion(version: String) {
-              apiVersion = version
-              languageVersion = version
-            }
-            setupKotlinSettings(::languageVersion, ::enableLanguageFeature, ::useExperimentalAnnotation)
+            // languageVersion = "1.5"
+
+            enableLanguageFeature("InlineClasses")
+            enableLanguageFeature("NewInference")
+            enableLanguageFeature("NonParenthesizedAnnotationsOnFunctionalTypes")
+
+            useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")
+            useExperimentalAnnotation("kotlin.contracts.ExperimentalContracts")
+            useExperimentalAnnotation("kotlin.ExperimentalStdlibApi")
+            useExperimentalAnnotation("kotlin.experimental.ExperimentalTypeInference")
+            useExperimentalAnnotation("kotlin.time.ExperimentalTime")
+
+            useExperimentalAnnotation("kotlinx.serialization.UnstableDefault")
+            useExperimentalAnnotation("kotlinx.serialization.ExperimentalSerializationApi")
+
+            // Compose
+            useExperimentalAnnotation("androidx.compose.foundation.layout.ExperimentalLayout")
           }
         }
       }
@@ -134,36 +153,6 @@ subprojects {
         if (serialization) {
           add("implementation", serialization("core-jvm"))
         }
-      }
-    }
-
-    val javaTarget: Int = (if (ext.has("javaTarget")) ext.get("javaTarget") as? Int else null) ?: 8
-
-    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().forEach {
-      it.kotlinOptions.apply {
-        jvmTarget = if (javaTarget > 8) javaTarget.toString() else "1.$javaTarget"
-
-        val args = mutableListOf<String>()
-        args += "-Xjvm-default=all"
-        args += "-Xallow-result-return-type"
-        args += "-Xemit-jvm-type-annotations"
-
-        fun useExperimentalAnnotation(name: String) {
-          args += "-Xuse-experimental=$name"
-        }
-
-        fun enableLanguageFeature(name: String) {
-          args += "-XXLanguage:+$name"
-        }
-
-        fun languageVersion(version: String) {
-          apiVersion = version
-          languageVersion = version
-        }
-
-        setupKotlinSettings(::languageVersion, ::enableLanguageFeature, ::useExperimentalAnnotation)
-
-        freeCompilerArgs = args
       }
     }
 

@@ -9,11 +9,11 @@
  */
 package org.lanternpowered.porygen.map.polygon
 
-import org.lanternpowered.porygen.math.geom.Triangle2d
+import org.lanternpowered.porygen.math.geom.Triangled
 import org.lanternpowered.porygen.math.vector.Vec2d
 
 /**
- * Represents a provider for the center point of a [Triangle2d].
+ * Represents a provider for the center point of a [Triangled].
  *
  * @property function The function which calculates the center point
  * @property alwaysConvexPolygons Whether the usage of the center point always results in convex
@@ -21,7 +21,7 @@ import org.lanternpowered.porygen.math.vector.Vec2d
  *   done if this is true.
  */
 class TriangleCenterProvider(
-  val function: (Triangle2d) -> Vec2d,
+  val function: (Triangled) -> Vec2d,
   val alwaysConvexPolygons: Boolean = false
 ) {
 
@@ -30,17 +30,17 @@ class TriangleCenterProvider(
     /**
      * A provider which uses the circumcenter of the triangle.
      */
-    val Circumcenter = TriangleCenterProvider(Triangle2d::circumcenter, alwaysConvexPolygons = true)
+    val Circumcenter = TriangleCenterProvider(Triangled::circumcenter, alwaysConvexPolygons = true)
 
     /**
      * A provider which uses the centroid of the triangle.
      */
-    val Centroid = TriangleCenterProvider(Triangle2d::centroid)
+    val Centroid = TriangleCenterProvider(Triangled::centroid)
 
     /**
      * A provider which uses the incenter of the triangle.
      */
-    val Incenter = TriangleCenterProvider(Triangle2d::incenter)
+    val Incenter = TriangleCenterProvider(Triangled::incenter)
 
     /**
      * Gets a provider which interpolates between the two given [TriangleCenterProvider]s.
@@ -51,7 +51,7 @@ class TriangleCenterProvider(
         return from
       if (fraction == 1.0)
         return to
-      val function = { triangle: Triangle2d ->
+      val function = { triangle: Triangled ->
         val fromPoint = from.function(triangle)
         val toPoint = from.function(triangle)
         fromPoint + ((toPoint - fromPoint) * fraction)

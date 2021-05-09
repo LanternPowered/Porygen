@@ -32,7 +32,7 @@
  */
 package org.lanternpowered.porygen.delaunay
 
-import org.lanternpowered.porygen.math.geom.Triangle2d
+import org.lanternpowered.porygen.math.geom.Triangled
 import org.lanternpowered.porygen.math.vector.Vec2d
 import kotlin.math.max
 
@@ -48,11 +48,11 @@ object DelaunayTriangulator {
    * @return The delaunay triangles
    * @throws IllegalArgumentException Thrown when the point set contains less than three points
    */
-  fun triangulate(points: List<Vec2d>): List<Triangle2d> {
+  fun triangulate(points: List<Vec2d>): List<Triangled> {
     if (points.size < 3)
       throw IllegalArgumentException("Less than three points in point set.")
 
-    val triangles = mutableListOf<Triangle2d>()
+    val triangles = mutableListOf<Triangled>()
 
     // In order for the in circumcircle test to not consider the vertices of
     // the super triangle we have to start out with a big triangle
@@ -66,7 +66,7 @@ object DelaunayTriangulator {
     val p1 = Vec2d(0.0, 3.0 * maxOfAnyCoordinate)
     val p2 = Vec2d(3.0 * maxOfAnyCoordinate, 0.0)
     val p3 = Vec2d(-3.0 * maxOfAnyCoordinate, -3.0 * maxOfAnyCoordinate)
-    val superTriangle = Triangle2d(p1, p2, p3)
+    val superTriangle = Triangled(p1, p2, p3)
     triangles.add(superTriangle)
     for (point in points) {
       val triangle = triangles.findContainingTriangle(point)
@@ -78,7 +78,6 @@ object DelaunayTriangulator {
         // which is nearest to the point we try to add. This edge is
         // removed and four new edges are added.
         val edge = triangles.findNearestEdge(point)
-            ?: throw IllegalStateException()
         val first = triangles.findOneTriangleSharing(edge)
             ?: throw IllegalStateException()
         val second = triangles.findNeighbour(first, edge)
@@ -89,10 +88,10 @@ object DelaunayTriangulator {
             ?: throw IllegalStateException()
         triangles.remove(first)
         triangles.remove(second)
-        val triangle1 = Triangle2d(edge.a, firstNoneEdgeVertex, point)
-        val triangle2 = Triangle2d(edge.b, firstNoneEdgeVertex, point)
-        val triangle3 = Triangle2d(edge.a, secondNoneEdgeVertex, point)
-        val triangle4 = Triangle2d(edge.b, secondNoneEdgeVertex, point)
+        val triangle1 = Triangled(edge.a, firstNoneEdgeVertex, point)
+        val triangle2 = Triangled(edge.b, firstNoneEdgeVertex, point)
+        val triangle3 = Triangled(edge.a, secondNoneEdgeVertex, point)
+        val triangle4 = Triangled(edge.b, secondNoneEdgeVertex, point)
         triangles.add(triangle1)
         triangles.add(triangle2)
         triangles.add(triangle3)
@@ -107,9 +106,9 @@ object DelaunayTriangulator {
         val b = triangle.b
         val c = triangle.c
         triangles.remove(triangle)
-        val first = Triangle2d(a, b, point)
-        val second = Triangle2d(b, c, point)
-        val third = Triangle2d(c, a, point)
+        val first = Triangled(a, b, point)
+        val second = Triangled(b, c, point)
+        val third = Triangled(c, a, point)
         triangles.add(first)
         triangles.add(second)
         triangles.add(third)
@@ -132,7 +131,7 @@ object DelaunayTriangulator {
    * @param edge The edge to be legalized
    * @param newVertex The new vertex
    */
-  private fun legalizeEdge(triangles: MutableList<Triangle2d>, triangle: Triangle2d, edge: Edge2d, newVertex: Vec2d) {
+  private fun legalizeEdge(triangles: MutableList<Triangled>, triangle: Triangled, edge: Edge2d, newVertex: Vec2d) {
     val neighbourTriangle = triangles.findNeighbour(triangle, edge)
     // If the triangle has a neighbor, then legalize the edge
     if (neighbourTriangle != null) {
@@ -141,8 +140,8 @@ object DelaunayTriangulator {
         triangles.remove(neighbourTriangle)
         val noneEdgeVertex = neighbourTriangle.getNoneEdgeVertex(edge)
             ?: throw IllegalStateException()
-        val firstTriangle = Triangle2d(noneEdgeVertex, edge.a, newVertex)
-        val secondTriangle = Triangle2d(noneEdgeVertex, edge.b, newVertex)
+        val firstTriangle = Triangled(noneEdgeVertex, edge.a, newVertex)
+        val secondTriangle = Triangled(noneEdgeVertex, edge.b, newVertex)
         triangles.add(firstTriangle)
         triangles.add(secondTriangle)
         legalizeEdge(triangles, firstTriangle, Edge2d(noneEdgeVertex, edge.a), newVertex)
@@ -161,7 +160,7 @@ object DelaunayTriangulator {
  * @return Returns the triangle from this triangle soup that contains the
  *         specified point or null
  */
-private fun List<Triangle2d>.findContainingTriangle(point: Vec2d): Triangle2d? =
+private fun List<Triangled>.findContainingTriangle(point: Vec2d): Triangled? =
     firstOrNull { it.contains(point) }
 
 /**
@@ -174,7 +173,7 @@ private fun List<Triangle2d>.findContainingTriangle(point: Vec2d): Triangle2d? =
  * @return The triangles neighbor triangle sharing the same edge or null if
  *         no triangle exists
  */
-private fun List<Triangle2d>.findNeighbour(triangle: Triangle2d, edge: Edge2d): Triangle2d? =
+private fun List<Triangled>.findNeighbour(triangle: Triangled, edge: Edge2d): Triangled? =
     firstOrNull { it.isNeighbour(edge) && it != triangle }
 
 /**
@@ -186,7 +185,7 @@ private fun List<Triangle2d>.findNeighbour(triangle: Triangle2d, edge: Edge2d): 
  * @param edge The edge
  * @return Returns one triangle that shares the specified edge
  */
-private fun List<Triangle2d>.findOneTriangleSharing(edge: Edge2d): Triangle2d? =
+private fun List<Triangled>.findOneTriangleSharing(edge: Edge2d): Triangled? =
     firstOrNull { it.isNeighbour(edge) }
 
 /**
@@ -195,7 +194,7 @@ private fun List<Triangle2d>.findOneTriangleSharing(edge: Edge2d): Triangle2d? =
  * @param point The point
  * @return The edge from the triangle soup nearest to the specified point
  */
-private fun List<Triangle2d>.findNearestEdge(point: Vec2d): Edge2d? =
+private fun List<Triangled>.findNearestEdge(point: Vec2d): Edge2d =
     asSequence().map { it.findNearestEdge(point) }.sorted().first().edge
 
 /**
@@ -204,5 +203,5 @@ private fun List<Triangle2d>.findNearestEdge(point: Vec2d): Edge2d? =
  *
  * @param vertex The vertex
  */
-private fun MutableList<Triangle2d>.removeTrianglesUsing(vertex: Vec2d): Boolean =
+private fun MutableList<Triangled>.removeTrianglesUsing(vertex: Vec2d): Boolean =
     removeAll { it.hasVertex(vertex) }
