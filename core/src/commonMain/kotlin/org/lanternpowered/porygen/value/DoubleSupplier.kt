@@ -12,9 +12,8 @@ package org.lanternpowered.porygen.value
 /**
  * A module which produces a value.
  *
- * Every [DoubleSupplier] is also a [Vec2dToDouble] and
- * [Vec3dToDouble], it will just produce the same value
- * for each coordinate.
+ * Every [DoubleSupplier] is also a [Vec2dToDouble] and [Vec3dToDouble], it will just produce the
+ * same value for each coordinate.
  */
 interface DoubleSupplier : Vec2dToDouble, Vec3dToDouble {
 

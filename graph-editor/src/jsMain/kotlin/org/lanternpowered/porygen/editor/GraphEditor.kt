@@ -65,7 +65,8 @@ fun GraphEditor() {
         width(100.vw)
       }
       onContextMenu { event ->
-        event.preventDefault()
+        // TODO: Commented for testing purposes
+        // event.preventDefault()
       }
     },
   content = {

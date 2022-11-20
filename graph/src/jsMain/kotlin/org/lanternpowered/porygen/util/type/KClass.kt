@@ -30,12 +30,12 @@ actual fun KClass<*>.isSuperclassOf(derived: KClass<*>): Boolean {
     return true
   val metadata = derived.js.asDynamic().`$metadata$`
     ?: return false
-  var cache = metadata.`$isSuperclass$`.unsafeCast<MutableMap<KClass<*>, Boolean>?>()
+  var cache = metadata.isSuperclass.unsafeCast<MutableMap<KClass<*>, Boolean>?>()
   if (cache == null) {
     cache = HashMap()
-    metadata.`$isSuperclass$` = cache
+    metadata.isSuperclass = cache
   }
-  return cache.computeIfAbsent(derived) { checkSuperclass(this, derived) }
+  return cache.computeIfAbsent(this) { checkSuperclass(this, derived) }
 }
 
 private fun checkSuperclass(base: KClass<*>, derived: KClass<*>): Boolean {

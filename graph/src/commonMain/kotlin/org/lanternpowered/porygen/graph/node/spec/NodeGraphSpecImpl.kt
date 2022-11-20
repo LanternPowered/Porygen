@@ -91,8 +91,7 @@ internal class NodeGraphSpecImpl : NodeGraphSpec, NodeGraphSpecBuilder {
   }
 
   /**
-   * Gets the conversion function that can be used to convert from
-   * the [from] type to the [to] type.
+   * Gets the conversion function that can be used to convert from the [from] type to the [to] type.
    *
    * Returns `null` if the conversion is not possible.
    */
@@ -106,7 +105,7 @@ internal class NodeGraphSpecImpl : NodeGraphSpec, NodeGraphSpecBuilder {
   }
 
   private fun <I, O> buildConversionFunction(
-      from: GenericType<I>, to: GenericType<O>, visitedTypes: List<GenericType<*>> = listOf()
+    from: GenericType<I>, to: GenericType<O>, visitedTypes: List<GenericType<*>> = listOf()
   ): ((I) -> O?)? {
     val fromAccepting = ArrayList<DataConversion<*,*>>()
     for (conversion in dataConversions) {

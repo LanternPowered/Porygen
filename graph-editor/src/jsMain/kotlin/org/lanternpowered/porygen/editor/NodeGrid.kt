@@ -50,14 +50,12 @@ import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.plus
 import org.jetbrains.compose.web.css.position
 import org.jetbrains.compose.web.css.px
-import org.jetbrains.compose.web.css.rgb
 import org.jetbrains.compose.web.css.rgba
 import org.jetbrains.compose.web.css.top
 import org.jetbrains.compose.web.css.transform
 import org.jetbrains.compose.web.css.unaryMinus
 import org.jetbrains.compose.web.css.width
 import org.jetbrains.compose.web.dom.Div
-import org.jetbrains.compose.web.dom.Span
 import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.svg.LinearGradient
 import org.jetbrains.compose.web.svg.Polyline
@@ -76,7 +74,7 @@ import kotlin.math.atan
 private val gridSize = 1000000.px
 private val halfGridSize = gridSize / 2
 private val startPosition = Pair(-halfGridSize, -halfGridSize)
-private val gridCenterId = "grid-center"
+private const val gridCenterId = "grid-center"
 
 @Composable
 fun NodeGrid(graph: NodeGraph) {
@@ -98,7 +96,11 @@ fun NodeGrid(graph: NodeGraph) {
       style {
         flexGrow(1)
         overflow(Overflow.Hidden)
-        cursor(if (dragging || graphViewModel.nodes.any { node -> node.dragging }) Cursor.Grabbing else Cursor.Grab)
+        cursor(when {
+          dragging || graphViewModel.nodes.any { node -> node.dragging } -> Cursor.Grabbing
+          graphViewModel.draggedOutput != null -> Cursor.Auto
+          else -> Cursor.Grab
+        })
       }
       onWheel { event ->
         scale *= 1.0 + -event.deltaY * 0.0008
@@ -113,6 +115,7 @@ fun NodeGrid(graph: NodeGraph) {
       }
       onMouseUp {
         dragging = false
+        graphViewModel.onStopDragOutputPort()
         graphViewModel.nodes.forEach { node -> node.dragging = false }
       }
       onMouseLeave {
@@ -475,7 +478,12 @@ fun NodePort(port: NodePortViewModel) {
               marginRight(5.px)
               height(10.px)
               width(10.px)
-              backgroundColor(Color.green)
+              backgroundColor(
+                when (port.state) {
+                  PortState.Disabled, PortState.Dragging -> EditorColors.NodePortInner
+                  else -> port.color.toCSS()
+                }
+              )
               borderRadius(50.percent)
               display(DisplayStyle.Flex)
             }
@@ -518,12 +526,14 @@ fun NodePort(port: NodePortViewModel) {
                   is NodeOutputViewModel -> port.connected
                   else -> false
                 }
-                if (hovering || port.state == PortState.Dragging || connected) {
+                if ((hovering && port.state != PortState.Disabled && (port.node.graphViewModel.draggedOutput != null || port is NodeOutputViewModel)) ||
+                  port.state == PortState.Dragging || connected
+                ) {
                   Div(
                     attrs = {
                       style {
-                        height(6.px)
-                        width(6.px)
+                        height(4.px)
+                        width(4.px)
                         backgroundColor(port.color.toCSS())
                         borderRadius(50.percent)
                         display(DisplayStyle.Flex)
@@ -537,26 +547,12 @@ fun NodePort(port: NodePortViewModel) {
           }
         )
       }
-//      val line: @Composable () -> Unit = {
-//        Span(
-//          attrs = {
-//            style {
-//              height(2.px)
-//              width(7.px)
-//              backgroundColor(port.color.alpha(0.45).toCSS())
-//              display(DisplayStyle.InlineBlock)
-//            }
-//          }
-//        )
-//      }
       if (!right) {
-//        line()
         circle()
       }
       Text(port.name)
       if (right) {
         circle()
-//        line()
       }
     }
   )
