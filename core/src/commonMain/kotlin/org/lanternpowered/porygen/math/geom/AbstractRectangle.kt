@@ -11,10 +11,7 @@ package org.lanternpowered.porygen.math.geom
 
 import org.lanternpowered.porygen.util.ToStringHelper
 
-abstract class AbstractRectangle<T : Comparable<T>> internal constructor(
-    override val min: T,
-    override val max: T
-) : AbstractShape(), Rectangle<T> {
+abstract class AbstractRectangle<T : Comparable<T>> : AbstractShape(), Rectangle<T> {
 
   override fun intersects(minX: Double, minY: Double, maxX: Double, maxY: Double): Boolean {
     var inside = 0
@@ -35,9 +32,9 @@ abstract class AbstractRectangle<T : Comparable<T>> internal constructor(
   override fun intersects(polygon: Polygond) = polygon.intersects(this)
 
   override fun toString(): String = ToStringHelper(this)
-      .add("min", min)
-      .add("max", max)
-      .toString()
+    .add("min", min)
+    .add("max", max)
+    .toString()
 
   override fun equals(other: Any?): Boolean {
     if (other == null || other::class != this::class)

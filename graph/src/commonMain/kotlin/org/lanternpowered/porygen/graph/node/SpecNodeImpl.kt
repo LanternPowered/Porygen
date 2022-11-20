@@ -12,7 +12,6 @@ package org.lanternpowered.porygen.graph.node
 import org.lanternpowered.porygen.graph.node.spec.NodeSpec
 import org.lanternpowered.porygen.math.vector.Vec2d
 
-@Suppress("UNCHECKED_CAST")
 internal class SpecNodeImpl(
   id: NodeId,
   title: String,

@@ -22,7 +22,7 @@ import kotlin.math.abs
 class DistanceToOceanProcessor(
   private val maxOceanCellDistance: Int = 5,
   private val maxOceanCornerDistance: Int = maxOceanCellDistance + 3,
-  override val areaOffset: Vec2d = Vec2d(0.3, 0.3)
+  override val areaOffset: Vec2d = Vec2d(0.3, 0.3),
 ) : CellMapProcessor {
 
   override fun process(view: CellMapView) {
@@ -48,7 +48,7 @@ class DistanceToOceanProcessor(
   private enum class CornerType {
     Land,
     Coast,
-    Ocean
+    Ocean,
   }
 
   private fun updateCornerOceanDistance(

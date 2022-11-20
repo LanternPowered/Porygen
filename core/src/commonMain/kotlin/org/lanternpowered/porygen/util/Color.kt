@@ -11,12 +11,14 @@
 
 package org.lanternpowered.porygen.util
 
+import kotlin.jvm.JvmInline
 import kotlin.math.roundToInt
 
 /**
  * Represents a color.
  */
-inline class Color(val rgba: Int) {
+@JvmInline
+value class Color(val rgba: Int) {
 
   /**
    * Constructs a new color from the rgb values.

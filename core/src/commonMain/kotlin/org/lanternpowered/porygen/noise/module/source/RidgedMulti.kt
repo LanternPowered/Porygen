@@ -171,9 +171,5 @@ class RidgedMulti(
      * The default noise quality.
      */
     val DefaultQuality = NoiseQuality.Standard
-
-    internal fun calculateSpectralWeights() {
-
-    }
   }
 }

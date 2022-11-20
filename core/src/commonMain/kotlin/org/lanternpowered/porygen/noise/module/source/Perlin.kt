@@ -61,8 +61,9 @@ class Perlin(
 ) : NoiseModule {
 
   init {
-    check(octaves in 1..MaxOctaves) {
-      "octaves must be between 1 and $MaxOctaves (inclusive)" }
+    check(octaves in ValidOctavesRange) {
+      "octaves must be in the range $ValidOctavesRange"
+    }
   }
 
   override fun get(x: Double, y: Double, z: Double): Double {
@@ -103,7 +104,7 @@ class Perlin(
     /**
      * The maximum number of octaves.
      */
-    const val MaxOctaves = 30
+    val ValidOctavesRange = 1..30
 
     /**
      * The default frequency.

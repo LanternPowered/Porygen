@@ -38,14 +38,16 @@ internal class NodeGraphImpl(
 
   override fun createDynamic(spec: NodeSpec?, title: String?, position: Vec2d): DynamicNode {
     val id = allocId()
-    val title0 = title ?: spec?.title ?: "Node $id"
-    val node = DynamicNodeImpl(id, title0, position, this, spec)
+    val titleOrDefault = title ?: spec?.title ?: "Node $id"
+    val node = DynamicNodeImpl(id, titleOrDefault, position, this, spec)
     add(node)
     return node
   }
 
-  override fun create(spec: NodeSpec, position: Vec2d): Node {
-    val id = allocId()
+  override fun create(spec: NodeSpec, position: Vec2d): Node =
+    create(allocId(), spec, position)
+
+  fun create(id: NodeId, spec: NodeSpec, position: Vec2d): Node {
     val node = SpecNodeImpl(id, spec.title, position, this, spec)
     add(node)
     return node

@@ -12,6 +12,6 @@ package org.lanternpowered.porygen.map.processor.edge
 import org.lanternpowered.porygen.map.Edge
 
 data class EdgeDistance(
-    val edge: Edge,
-    val distance: Int
+  val edge: Edge,
+  val distance: Int,
 )

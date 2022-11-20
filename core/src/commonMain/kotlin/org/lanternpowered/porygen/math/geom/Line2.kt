@@ -37,7 +37,7 @@ interface Line2<P> {
    * @return Whether the lines intersect
    */
   fun intersects(line: Line2d): Boolean =
-      intersects(line.start, line.end)
+    intersects(line.start, line.end)
 
   /**
    * Gets whether this [Line2] intersects with
@@ -48,7 +48,7 @@ interface Line2<P> {
    * @return Whether the lines intersect
    */
   fun intersects(start: Vec2i, end: Vec2i): Boolean =
-      intersects(start.x, start.y, end.x, end.y)
+    intersects(start.x, start.y, end.x, end.y)
 
   /**
    * Gets whether this [Line2] intersects with
@@ -59,7 +59,7 @@ interface Line2<P> {
    * @return Whether the lines intersect
    */
   fun intersects(start: Vec2d, end: Vec2d): Boolean =
-      intersects(start.x, start.y, end.x, end.y)
+    intersects(start.x, start.y, end.x, end.y)
 
   /**
    * Gets whether this [Line2] intersects with
@@ -84,7 +84,7 @@ interface Line2<P> {
    * @return Whether the lines intersect
    */
   fun intersects(startX: Int, startY: Int, endX: Int, endY: Int): Boolean =
-      intersects(startX.toDouble(), startY.toDouble(), endX.toDouble(), endY.toDouble())
+    intersects(startX.toDouble(), startY.toDouble(), endX.toDouble(), endY.toDouble())
 
   /**
    * Converts this [Line2]

@@ -54,10 +54,9 @@ object DelaunayTriangulator {
 
     val triangles = mutableListOf<Triangled>()
 
-    // In order for the in circumcircle test to not consider the vertices of
-    // the super triangle we have to start out with a big triangle
-    // containing the whole point set. We have to scale the super triangle
-    // to be very large. Otherwise the triangulation is not convex.
+    // In order for the in circumcircle test to not consider the vertices of the super triangle
+    // we have to start out with a big triangle containing the whole point set. We have to scale
+    // the super triangle to be very large. Otherwise, the triangulation is not convex.
     var maxOfAnyCoordinate = 0.0
     for (vector in points)
       maxOfAnyCoordinate = max(max(vector.x, vector.y), maxOfAnyCoordinate)
@@ -71,21 +70,19 @@ object DelaunayTriangulator {
     for (point in points) {
       val triangle = triangles.findContainingTriangle(point)
       if (triangle == null) {
-        // If no containing triangle exists, then the vertex is not
-        // inside a triangle (this can also happen due to numerical
-        // errors) and lies on an edge. In order to find this edge we
-        // search all edges of the triangle soup and select the one
-        // which is nearest to the point we try to add. This edge is
-        // removed and four new edges are added.
+        // If no containing triangle exists, then the vertex is not inside a triangle (this can
+        // also happen due to numerical errors) and lies on an edge. In order to find this edge we
+        // search all edges of the triangle soup and select the one which is nearest to the point
+        // we try to add. This edge is removed and four new edges are added.
         val edge = triangles.findNearestEdge(point)
         val first = triangles.findOneTriangleSharing(edge)
-            ?: throw IllegalStateException()
+          ?: throw IllegalStateException()
         val second = triangles.findNeighbour(first, edge)
-            ?: throw IllegalStateException()
+          ?: throw IllegalStateException()
         val firstNoneEdgeVertex = first.getNoneEdgeVertex(edge)
-            ?: throw IllegalStateException()
+          ?: throw IllegalStateException()
         val secondNoneEdgeVertex = second.getNoneEdgeVertex(edge)
-            ?: throw IllegalStateException()
+          ?: throw IllegalStateException()
         triangles.remove(first)
         triangles.remove(second)
         val triangle1 = Triangled(edge.a, firstNoneEdgeVertex, point)
@@ -131,62 +128,61 @@ object DelaunayTriangulator {
    * @param edge The edge to be legalized
    * @param newVertex The new vertex
    */
-  private fun legalizeEdge(triangles: MutableList<Triangled>, triangle: Triangled, edge: Edge2d, newVertex: Vec2d) {
+  private fun legalizeEdge(
+    triangles: MutableList<Triangled>,
+    triangle: Triangled,
+    edge: Edge2d,
+    newVertex: Vec2d
+  ) {
     val neighbourTriangle = triangles.findNeighbour(triangle, edge)
     // If the triangle has a neighbor, then legalize the edge
-    if (neighbourTriangle != null) {
-      if (neighbourTriangle.isPointInCircumcircle(newVertex)) {
-        triangles.remove(triangle)
-        triangles.remove(neighbourTriangle)
-        val noneEdgeVertex = neighbourTriangle.getNoneEdgeVertex(edge)
-            ?: throw IllegalStateException()
-        val firstTriangle = Triangled(noneEdgeVertex, edge.a, newVertex)
-        val secondTriangle = Triangled(noneEdgeVertex, edge.b, newVertex)
-        triangles.add(firstTriangle)
-        triangles.add(secondTriangle)
-        legalizeEdge(triangles, firstTriangle, Edge2d(noneEdgeVertex, edge.a), newVertex)
-        legalizeEdge(triangles, secondTriangle, Edge2d(noneEdgeVertex, edge.b), newVertex)
-      }
+    if (neighbourTriangle != null && neighbourTriangle.isPointInCircumcircle(newVertex)) {
+      triangles.remove(triangle)
+      triangles.remove(neighbourTriangle)
+      val noneEdgeVertex = neighbourTriangle.getNoneEdgeVertex(edge)
+        ?: throw IllegalStateException()
+      val firstTriangle = Triangled(noneEdgeVertex, edge.a, newVertex)
+      val secondTriangle = Triangled(noneEdgeVertex, edge.b, newVertex)
+      triangles.add(firstTriangle)
+      triangles.add(secondTriangle)
+      legalizeEdge(triangles, firstTriangle, Edge2d(noneEdgeVertex, edge.a), newVertex)
+      legalizeEdge(triangles, secondTriangle, Edge2d(noneEdgeVertex, edge.b), newVertex)
     }
   }
 }
 
 
 /**
- * Returns the triangle from this triangle soup that contains the specified
- * point or null if no triangle from the triangle soup contains the point.
+ * Returns the triangle from this triangle soup that contains the specified point or null if no
+ * triangle from the triangle soup contains the point.
  *
  * @param point The point
- * @return Returns the triangle from this triangle soup that contains the
- *         specified point or null
+ * @return Returns the triangle from this triangle soup that contains the specified point or null
  */
 private fun List<Triangled>.findContainingTriangle(point: Vec2d): Triangled? =
-    firstOrNull { it.contains(point) }
+  firstOrNull { it.contains(point) }
 
 /**
- * Returns the neighbor triangle of the specified triangle sharing the same
- * edge as specified. If no neighbor sharing the same edge exists null is
- * returned.
+ * Returns the neighbor triangle of the specified triangle sharing the same edge as specified. If
+ * no neighbor sharing the same edge exists null is returned.
  *
  * @param triangle The triangle
  * @param edge The edge
- * @return The triangles neighbor triangle sharing the same edge or null if
- *         no triangle exists
+ * @return The triangles neighbor triangle sharing the same edge or null if no triangle exists
  */
 private fun List<Triangled>.findNeighbour(triangle: Triangled, edge: Edge2d): Triangled? =
-    firstOrNull { it.isNeighbour(edge) && it != triangle }
+  firstOrNull { it.isNeighbour(edge) && it != triangle }
 
 /**
- * Returns one of the possible triangles sharing the specified edge. Based
- * on the ordering of the triangles in this triangle soup the returned
- * triangle may differ. To find the other triangle that shares this edge use
- * the [findNeighbour] method.
+ * Returns one of the possible triangles sharing the specified edge. Based on the ordering of the
+ * triangles in this triangle soup the returned triangle may differ. To find the other triangle
+ * that shares this edge use the [findNeighbour] method.
  *
  * @param edge The edge
  * @return Returns one triangle that shares the specified edge
  */
 private fun List<Triangled>.findOneTriangleSharing(edge: Edge2d): Triangled? =
-    firstOrNull { it.isNeighbour(edge) }
+  firstOrNull { it.isNeighbour(edge) }
 
 /**
  * Returns the edge from the triangle soup nearest to the specified point.
@@ -195,13 +191,12 @@ private fun List<Triangled>.findOneTriangleSharing(edge: Edge2d): Triangled? =
  * @return The edge from the triangle soup nearest to the specified point
  */
 private fun List<Triangled>.findNearestEdge(point: Vec2d): Edge2d =
-    asSequence().map { it.findNearestEdge(point) }.sorted().first().edge
+  asSequence().map { it.findNearestEdge(point) }.sorted().first().edge
 
 /**
- * Removes all triangles from this triangle soup that contain the specified
- * vertex.
+ * Removes all triangles from this triangle soup that contain the specified vertex.
  *
  * @param vertex The vertex
  */
 private fun MutableList<Triangled>.removeTrianglesUsing(vertex: Vec2d): Boolean =
-    removeAll { it.hasVertex(vertex) }
+  removeAll { it.hasVertex(vertex) }

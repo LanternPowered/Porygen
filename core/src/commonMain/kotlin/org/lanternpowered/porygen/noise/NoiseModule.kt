@@ -48,10 +48,10 @@ interface NoiseModule : Vec2dToDouble, Vec3dToDouble {
  * Gets the [Vec3dToDouble] function as a [NoiseModule].
  */
 fun Vec3dToDouble.asNoiseModule(): NoiseModule =
-    if (this is NoiseModule) this else Value3AsNoiseModule(this)
+  if (this is NoiseModule) this else Value3AsNoiseModule(this)
 
 private class Value3AsNoiseModule(
-    private val source: Vec3dToDouble
+  private val source: Vec3dToDouble
 ) : NoiseModule {
   override fun get(x: Double, y: Double, z: Double): Double = source[x, y, z]
 }

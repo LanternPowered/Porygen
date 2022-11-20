@@ -20,14 +20,16 @@ import org.lanternpowered.porygen.util.type.genericTypeOf
 /**
  * Registers a new output port.
  */
-inline fun <reified T> DynamicNode.addOutput(id: PortId, noinline output: (Node) -> T?): OutputPort<T> =
-  addOutput(id, genericTypeOf(), output)
+inline fun <reified T> DynamicNode.addOutput(
+  id: PortId, noinline output: (Node) -> T?
+): OutputPort<T> = addOutput(id, genericTypeOf(), output)
 
 /**
  * Registers a new input port.
  */
-inline fun <reified T> DynamicNode.addInput(id: PortId, noinline default: () -> T? = { null }): InputPort<T> =
-  addInput(id, genericTypeOf(), default)
+inline fun <reified T> DynamicNode.addInput(
+  id: PortId, noinline default: () -> T? = { null }
+): InputPort<T> = addInput(id, genericTypeOf(), default)
 
 /**
  * Registers a new property.
@@ -36,8 +38,8 @@ inline fun <reified T> DynamicNode.addProperty(id: PropertyId, value: T): Proper
   addProperty(id, genericTypeOf(), value)
 
 /**
- * Represents a node that can be dynamically
- * modified.
+ * Represents a node that can be modified dynamically. All input, output and property types must
+ * have a valid serializer registered in the graph spec.
  */
 interface DynamicNode : Node {
 
@@ -52,8 +54,7 @@ interface DynamicNode : Node {
   fun <T> addInput(id: PortId, type: GenericType<T>, default: () -> T? = { null }): InputPort<T>
 
   /**
-   * Removes the port with the given id and removes
-   * all the connections to it. Returns whether it
+   * Removes the port with the given id and removes all the connections to it. Returns whether it
    * was successful.
    */
   fun removePort(id: PortId): Boolean
@@ -64,8 +65,7 @@ interface DynamicNode : Node {
   fun <T> addProperty(id: PropertyId, type: GenericType<T>, value: T): Property<T>
 
   /**
-   * Removes the property with the given id. Returns
-   * whether it was successful.
+   * Removes the property with the given id. Returns whether it was successful.
    */
   fun removeProperty(id: PropertyId): Boolean
 }

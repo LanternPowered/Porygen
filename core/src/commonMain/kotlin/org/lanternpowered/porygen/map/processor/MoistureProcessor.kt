@@ -25,7 +25,7 @@ class MoistureProcessor(
   private val oceanNeighborFactor: Double = 0.3,
   private val oceanMaxNeighbors: Int = 1,
   private val riverNeighborFactor: Double = oceanNeighborFactor / 1.5,
-  private val riverMaxNeighbors: Int = 2
+  private val riverMaxNeighbors: Int = 2,
 ) : CellMapProcessor {
 
   override fun process(view: CellMapView) {

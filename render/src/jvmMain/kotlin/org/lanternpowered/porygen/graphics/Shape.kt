@@ -16,8 +16,7 @@ import org.lanternpowered.porygen.math.geom.Rectanglei
 import java.awt.Polygon
 
 /**
- * Converts this [Polygond] into
- * a drawable [Polygon].
+ * Converts this [Polygond] into a drawable [Polygon].
  *
  * @return The drawable polygon
  */
@@ -33,8 +32,7 @@ fun Polygond.toDrawable(): Polygon {
 }
 
 /**
- * Converts this [Rectangled] into
- * a drawable [Polygon].
+ * Converts this [Rectangled] into a drawable [Polygon].
  *
  * @return The drawable polygon
  */
@@ -53,8 +51,7 @@ fun Rectangled.toDrawable(): Polygon {
 }
 
 /**
- * Converts this [Rectangled] into
- * a drawable [Polygon].
+ * Converts this [Rectangled] into a drawable [Polygon].
  *
  * @return The drawable polygon
  */

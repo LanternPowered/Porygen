@@ -91,9 +91,9 @@ class SingleCellBiomeSelectorProcessor<Biome>(
       val temperatureCategory = TemperatureCategory.fromTemperature(temperature)
       val biomes = biomesByTemperature[temperatureCategory]
       // Fall back if no biomes in the biome category were found
-          ?: biomesByTemperature[TemperatureCategory.MEDIUM]
-          ?: biomesByTemperature[TemperatureCategory.WARM]
-          ?: biomesByTemperature[TemperatureCategory.COLD]
+          ?: biomesByTemperature[TemperatureCategory.Medium]
+          ?: biomesByTemperature[TemperatureCategory.Warm]
+          ?: biomesByTemperature[TemperatureCategory.Cold]
           ?: throw IllegalStateException("No biomes found.")
 
       //cell[SingleCellBiomeGenerator.BIOME_DATA_KEY] = biomes[cellRandom.nextInt(biomes.size)]
@@ -106,18 +106,18 @@ class SingleCellBiomeSelectorProcessor<Biome>(
  * The temperature categories.
  */
 enum class TemperatureCategory {
-  COLD,
-  MEDIUM,
-  WARM,
+  Cold,
+  Medium,
+  Warm,
   ;
 
   companion object {
 
     fun fromTemperature(temperature: Double): TemperatureCategory {
       return when {
-        temperature < 0.2 -> COLD
-        temperature < 1.0 -> MEDIUM
-        else -> WARM
+        temperature < 0.2 -> Cold
+        temperature < 1.0 -> Medium
+        else -> Warm
       }
     }
   }

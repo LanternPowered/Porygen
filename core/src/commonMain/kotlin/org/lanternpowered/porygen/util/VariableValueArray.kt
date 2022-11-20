@@ -63,9 +63,15 @@ class VariableValueArray {
   constructor(bitsPerValue: Int, size: Int, backing: LongArray) : this(backing, bitsPerValue, size)
 
   private constructor(backing: LongArray?, bitsPerValue: Int, size: Int) {
-    check(size > 0) { "size ($size) may not be negative" }
-    check(bitsPerValue >= 1) { "bitsPerValue ($bitsPerValue) may not be smaller then 1" }
-    check(bitsPerValue <= Int.SIZE_BITS) { "bitsPerValue ($bitsPerValue) may not be greater then ${Int.SIZE_BITS}}" }
+    check(size > 0) {
+      "size ($size) may not be negative"
+    }
+    check(bitsPerValue >= 1) {
+      "bitsPerValue ($bitsPerValue) may not be smaller then 1"
+    }
+    check(bitsPerValue <= Int.SIZE_BITS) {
+      "bitsPerValue ($bitsPerValue) may not be greater then ${Int.SIZE_BITS}}"
+    }
 
     this.size = size
     this.bitsPerValue = bitsPerValue
@@ -77,7 +83,9 @@ class VariableValueArray {
     if (backing == null) {
       this.backing = LongArray(backingSize)
     } else {
-      check(backingSize == backing.size) { "expected backing size of $backingSize, but got ${backing.size}" }
+      check(backingSize == backing.size) {
+        "expected backing size of $backingSize, but got ${backing.size}"
+      }
       this.backing = backing
     }
   }

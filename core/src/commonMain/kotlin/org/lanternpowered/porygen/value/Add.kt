@@ -14,7 +14,7 @@ import org.lanternpowered.porygen.noise.asNoiseModule
 
 private data class Add(
   val source1: DoubleSupplier,
-  val source2: DoubleSupplier
+  val source2: DoubleSupplier,
 ) : DoubleSupplier {
   override fun get(): Double =
     source1.get() + source2.get()
@@ -22,7 +22,7 @@ private data class Add(
 
 private data class Add2(
   val source1: Vec2dToDouble,
-  val source2: Vec2dToDouble
+  val source2: Vec2dToDouble,
 ) : Vec2dToDouble {
   override fun get(x: Double, y: Double): Double =
     source1[x, y] + source2[x, y]
@@ -30,7 +30,7 @@ private data class Add2(
 
 private data class Add3(
   val source1: Vec3dToDouble,
-  val source2: Vec3dToDouble
+  val source2: Vec3dToDouble,
 ) : Vec3dToDouble {
   override fun get(x: Double, y: Double, z: Double): Double =
     source1[x, y, z] + source2[x, y, z]

@@ -14,10 +14,13 @@ abstract class AbstractShape : Shape {
   protected abstract fun intersects(minX: Double, minY: Double, maxX: Double, maxY: Double): Boolean
 
   override fun intersects(rectangle: Rectangled): Boolean =
-      intersects(rectangle.min.x, rectangle.min.y, rectangle.max.x, rectangle.max.y)
+    intersects(rectangle.min.x, rectangle.min.y, rectangle.max.x, rectangle.max.y)
 
   override fun intersects(rectangle: Rectanglei): Boolean =
-      intersects(rectangle.min.x.toDouble(), rectangle.min.y.toDouble(), rectangle.max.x.toDouble(), rectangle.max.y.toDouble())
+    intersects(
+      rectangle.min.x.toDouble(), rectangle.min.y.toDouble(),
+      rectangle.max.x.toDouble(), rectangle.max.y.toDouble(),
+    )
 
   protected abstract fun contains(minX: Double, minY: Double, maxX: Double, maxY: Double): Boolean
 
@@ -25,7 +28,10 @@ abstract class AbstractShape : Shape {
       contains(rectangle.min.x, rectangle.min.y, rectangle.max.x, rectangle.max.y)
 
   override fun contains(rectangle: Rectanglei): Boolean =
-      contains(rectangle.min.x.toDouble(), rectangle.min.y.toDouble(), rectangle.max.x.toDouble(), rectangle.max.y.toDouble())
+      contains(
+        rectangle.min.x.toDouble(), rectangle.min.y.toDouble(),
+        rectangle.max.x.toDouble(), rectangle.max.y.toDouble(),
+      )
 
   override fun contains(polygon: Polygond): Boolean {
     if (!polygon.isConvex && polygon.trueIntersection(this))

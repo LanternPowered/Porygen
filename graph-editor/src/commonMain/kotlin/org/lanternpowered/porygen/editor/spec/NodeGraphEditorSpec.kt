@@ -20,6 +20,16 @@ import org.lanternpowered.porygen.value.Vec3dToDouble
 
 interface NodeGraphEditorSpec {
 
+  companion object {
+
+    val Default = NodeGraphEditorSpec {
+      type(PerlinSpec) {
+        preview { node ->
+          // TODO: 2D image
+        }
+      }
+    }
+  }
 }
 
 interface NodeGraphEditorSpecBuilder {
@@ -53,12 +63,4 @@ fun <S : NodeSpec> NodeEditorSpecBuilder<S>.vec2dPreview(output: S.(node: Node) 
 
 fun <S : NodeSpec> NodeEditorSpecBuilder<S>.vec3dPreview(output: S.(node: Node) -> Vec3dToDouble) {
   TODO()
-}
-
-val DefaultNodeGraphEditorSpec = NodeGraphEditorSpec {
-  type(PerlinSpec) {
-    preview { node ->
-      // TODO: 2D image
-    }
-  }
 }

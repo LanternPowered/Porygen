@@ -138,11 +138,10 @@ data class Triangled(
   }
 
   /**
-   * Test if this triangle is oriented counterclockwise (CCW). Let A, B and C
-   * be three 2D points. If det > 0, C lies to the left of the directed
-   * line AB. Equivalently the triangle ABC is oriented counterclockwise. When
-   * det < 0, C lies to the right of the directed line AB, and the triangle
-   * ABC is oriented clockwise. When det = 0, the three points are colinear.
+   * Test if this triangle is oriented counterclockwise (CCW). Let A, B and C be three 2D points.
+   * If det > 0, C lies to the left of the directed line AB. Equivalently the triangle ABC is
+   * oriented counterclockwise. When det < 0, C lies to the right of the directed line AB, and
+   * the triangle ABC is oriented clockwise. When det = 0, the three points are colinear.
    * See Real-Time Collision Detection, chap. 3, p. 32
    *
    * @return Returns true iff the triangle ABC is oriented counterclockwise (CCW)
@@ -231,28 +230,28 @@ data class Triangled(
    * @return Returns true if this triangle contains the edge
    */
   fun isNeighbour(edge: Edge2d): Boolean =
-      (a == edge.a || b == edge.a || c == edge.a) && (a == edge.b || b == edge.b || c == edge.b)
+    (a == edge.a || b == edge.a || c == edge.a) && (a == edge.b || b == edge.b || c == edge.b)
 
   override fun intersects(rectangle: Rectangled): Boolean =
-      this.polygon.intersects(rectangle)
+    this.polygon.intersects(rectangle)
 
   override fun intersects(rectangle: Rectanglei): Boolean =
-      this.polygon.intersects(rectangle)
+    this.polygon.intersects(rectangle)
 
   override fun intersects(minX: Double, minY: Double, maxX: Double, maxY: Double): Boolean =
-      this.polygon.intersects(Rectangled(minX, minY, maxX, maxY))
+    this.polygon.intersects(Rectangled(minX, minY, maxX, maxY))
 
   override fun intersects(polygon: Polygond): Boolean =
-      this.polygon.intersects(polygon)
+    this.polygon.intersects(polygon)
 
   override fun contains(rectangle: Rectangled): Boolean =
-      this.polygon.contains(rectangle)
+    this.polygon.contains(rectangle)
 
   override fun contains(rectangle: Rectanglei): Boolean =
-      this.polygon.contains(rectangle)
+    this.polygon.contains(rectangle)
 
   override fun contains(minX: Double, minY: Double, maxX: Double, maxY: Double): Boolean =
-      this.polygon.contains(Rectangled(minX, minY, maxX, maxY))
+    this.polygon.contains(Rectangled(minX, minY, maxX, maxY))
 
   override fun contains(x: Double, y: Double): Boolean = contains(Vec2d(x, y))
 

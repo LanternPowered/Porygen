@@ -22,12 +22,12 @@ import org.lanternpowered.porygen.math.vector.Vec2d
  */
 data class CellPolygon(
   val center: Vec2d,
-  val polygon: Polygond
+  val polygon: Polygond,
 ) {
 
   fun scale(scale: Vec2d): CellPolygon =
-      CellPolygon(this.center * scale, this.polygon.scale(scale))
+    CellPolygon(this.center * scale, this.polygon.scale(scale))
 
   fun translate(translation: Vec2d): CellPolygon =
-      CellPolygon(this.center + translation, this.polygon.translate(translation))
+    CellPolygon(this.center + translation, this.polygon.translate(translation))
 }

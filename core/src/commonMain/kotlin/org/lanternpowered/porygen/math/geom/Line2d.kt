@@ -18,10 +18,10 @@ class Line2d(start: Vec2d, end: Vec2d) : AbstractLine2<Vec2d>(start, end) {
   override val center: Vec2d by lazy { start + ((end - start) / 2.0) }
 
   constructor(startX: Double, startY: Double, endX: Double, endY: Double) :
-      this(Vec2d(startX, startY), Vec2d(endX, endY))
+    this(Vec2d(startX, startY), Vec2d(endX, endY))
 
   override fun intersects(startX: Double, startY: Double, endX: Double, endY: Double) =
-      linesIntersect(start.x, start.y, end.x, end.y, startX, startY, endX, endY)
+    linesIntersect(start.x, start.y, end.x, end.y, startX, startY, endX, endY)
 
   override fun toInt() = Line2i(start.toInt(), end.toInt())
   override fun toDouble() = this
@@ -34,8 +34,8 @@ class Line2d(start: Vec2d, end: Vec2d) : AbstractLine2<Vec2d>(start, end) {
      * Checks whether the two lines intersect.
      */
     fun linesIntersect(
-        p1X: Double, p1Y: Double, q1X: Double, q1Y: Double,
-        p2X: Double, p2Y: Double, q2X: Double, q2Y: Double
+      p1X: Double, p1Y: Double, q1X: Double, q1Y: Double,
+      p2X: Double, p2Y: Double, q2X: Double, q2Y: Double
     ): Boolean {
 
       // Find the four orientations needed for general and
@@ -77,7 +77,11 @@ class Line2d(start: Vec2d, end: Vec2d) : AbstractLine2<Vec2d>(start, end) {
      * 1 -> Clockwise
      * 2 -> Counterclockwise
      */
-    private fun orientation(pX: Double, pY: Double, qX: Double, qY: Double, rX: Double, rY: Double): Int {
+    private fun orientation(
+      pX: Double, pY: Double,
+      qX: Double, qY: Double,
+      rX: Double, rY: Double,
+    ): Int {
       // See https://www.geeksforgeeks.org/orientation-3-ordered-points/
       // for details of below formula.
       val v = (qY - pY) * (rX - qX) - (qX - pX) * (rY - qY)
@@ -92,7 +96,10 @@ class Line2d(start: Vec2d, end: Vec2d) : AbstractLine2<Vec2d>(start, end) {
      * Given the three colinear points (p, q, r), the function checks if
      * point q lies on line segment 'pr'
      */
-    private fun onSegment(pX: Double, pY: Double, qX: Double, qY: Double, rX: Double, rY: Double): Boolean =
-        qX <= max(pX, rX) && qX >= min(pX, rX) && qY <= max(pY, rY) && qY >= min(pY, rY)
+    private fun onSegment(
+      pX: Double, pY: Double,
+      qX: Double, qY: Double,
+      rX: Double, rY: Double
+    ): Boolean = qX <= max(pX, rX) && qX >= min(pX, rX) && qY <= max(pY, rY) && qY >= min(pY, rY)
   }
 }

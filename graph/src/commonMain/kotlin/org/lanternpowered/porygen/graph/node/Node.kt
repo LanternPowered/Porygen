@@ -20,11 +20,13 @@ import org.lanternpowered.porygen.graph.node.spec.OutputPortSpec
 import org.lanternpowered.porygen.graph.node.spec.PortSpec
 import org.lanternpowered.porygen.graph.node.spec.PropertySpec
 import org.lanternpowered.porygen.math.vector.Vec2d
+import kotlin.jvm.JvmInline
 
 /**
  * Represents the identifier of a node.
  */
-inline class NodeId(val value: Int)
+@JvmInline
+value class NodeId(val value: Int)
 
 /**
  * Represents a single node in a graph.
@@ -32,14 +34,12 @@ inline class NodeId(val value: Int)
 interface Node {
 
   /**
-   * The graph this node is or
-   * was attached to.
+   * The graph this node is or was attached to.
    */
   val graph: NodeGraph
 
   /**
-   * Whether this node is still valid. A node is
-   * valid if it's still attached to its graph.
+   * Whether this node is still valid. A node is valid if it's still attached to its graph.
    */
   val isValid: Boolean
 

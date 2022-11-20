@@ -27,9 +27,9 @@ abstract class AbstractLine2<P : Comparable<P>> internal constructor(start: P, e
   }
 
   override fun toString(): String = ToStringHelper(this)
-      .add("start", start)
-      .add("end", end)
-      .toString()
+    .add("start", start)
+    .add("end", end)
+    .toString()
 
   override fun equals(other: Any?): Boolean {
     if (other == null || other::class != this::class)

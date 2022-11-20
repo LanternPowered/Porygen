@@ -7,9 +7,11 @@
  * This work is licensed under the terms of the MIT License (MIT). For
  * a copy, see 'LICENSE.txt' or <https://opensource.org/licenses/MIT>.
  */
-@file:Suppress("EXPERIMENTAL_FEATURE_WARNING", "FunctionName", "NOTHING_TO_INLINE")
+@file:Suppress("FunctionName", "NOTHING_TO_INLINE")
 
 package org.lanternpowered.porygen.util.pair
+
+import kotlin.jvm.JvmInline
 
 /**
  * Converts the [Pair] into a [IntPair].
@@ -38,7 +40,8 @@ fun unpackIntPairSecond(packed: Long): Int = (packed and 0xffffffffL).toInt()
  * @property first The first value
  * @property second The second value
  */
-inline class IntPair(val packed: Long) {
+@JvmInline
+value class IntPair(val packed: Long) {
 
   /**
    * Constructs a [IntPair] with the given first and second values.

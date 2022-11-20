@@ -15,7 +15,7 @@ import org.lanternpowered.porygen.value.Vec2dToDouble
 
 class OceanLandProcessor(
   private val terrainHeightModule: Vec2dToDouble,
-  override val areaOffset: Vec2d = Vec2d(0.3, 0.3)
+  override val areaOffset: Vec2d = Vec2d(0.3, 0.3),
 ) : CellMapProcessor {
 
   override fun process(view: CellMapView) {

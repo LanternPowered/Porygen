@@ -22,7 +22,7 @@ import org.lanternpowered.porygen.math.vector.Vec2d
  */
 class TriangleCenterProvider(
   val function: (Triangled) -> Vec2d,
-  val alwaysConvexPolygons: Boolean = false
+  val alwaysConvexPolygons: Boolean = false,
 ) {
 
   companion object {
@@ -45,7 +45,11 @@ class TriangleCenterProvider(
     /**
      * Gets a provider which interpolates between the two given [TriangleCenterProvider]s.
      */
-    fun lerp(from: TriangleCenterProvider, to: TriangleCenterProvider, fraction: Double): TriangleCenterProvider {
+    fun lerp(
+      from: TriangleCenterProvider,
+      to: TriangleCenterProvider,
+      fraction: Double,
+    ): TriangleCenterProvider {
       check(fraction in 0.0..1.0)
       if (from === to || fraction == 0.0)
         return from
@@ -57,7 +61,7 @@ class TriangleCenterProvider(
         fromPoint + ((toPoint - fromPoint) * fraction)
       }
       return TriangleCenterProvider(function,
-          from.alwaysConvexPolygons && to.alwaysConvexPolygons)
+        from.alwaysConvexPolygons && to.alwaysConvexPolygons)
     }
   }
 }

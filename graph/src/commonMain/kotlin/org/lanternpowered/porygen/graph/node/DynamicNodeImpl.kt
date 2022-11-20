@@ -24,7 +24,7 @@ internal class DynamicNodeImpl(
   title: String,
   position: Vec2d,
   graph: NodeGraphImpl,
-  spec: NodeSpec?
+  spec: NodeSpec?,
 ) : NodeImpl(id, title, position, graph), DynamicNode {
 
   init {

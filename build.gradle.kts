@@ -1,7 +1,7 @@
 plugins {
-  kotlin("multiplatform") version "1.4.20" apply false
-  kotlin("plugin.serialization") version "1.4.20" apply false
-  id("net.minecrell.licenser") version "0.4.1"
+  kotlin("multiplatform") version "1.7.20" apply false
+  kotlin("plugin.serialization") version "1.7.20" apply false
+  id("org.cadixdev.licenser") version "0.6.1"
 }
 
 allprojects {
@@ -17,13 +17,13 @@ allprojects {
 subprojects {
   // Execute after the individual gradle build files are evaluated
   afterEvaluate {
-    apply(plugin = "net.minecrell.licenser")
+    apply(plugin = "org.cadixdev.licenser")
 
     val multiplatform = extensions.findByType<org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension>()
     val serialization = if (ext.has("serialization")) ext.get("serialization") as? Boolean ?: false else false
 
     fun serialization(module: String) =
-        "org.jetbrains.kotlinx:kotlinx-serialization-$module:1.0.1"
+        "org.jetbrains.kotlinx:kotlinx-serialization-$module:1.4.1"
 
     multiplatform?.apply {
       sourceSets {
@@ -113,35 +113,38 @@ subprojects {
             }
           }
 
-        val javaTarget: Int = (if (ext.has("javaTarget")) ext.get("javaTarget") as? Int else null) ?: 8
-
         targets
           .filterIsInstance<org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget>()
           .forEach { target ->
             target.compilations.forEach { compilation ->
-              compilation.kotlinOptions.jvmTarget = if (javaTarget > 8) javaTarget.toString() else "1.$javaTarget"
+              compilation.kotlinOptions.jvmTarget = 17.toString()
             }
           }
 
         all {
           languageSettings.apply {
-            // languageVersion = "1.5"
+            languageVersion = "1.8"
 
             enableLanguageFeature("InlineClasses")
             enableLanguageFeature("NewInference")
             enableLanguageFeature("NonParenthesizedAnnotationsOnFunctionalTypes")
 
-            useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")
-            useExperimentalAnnotation("kotlin.contracts.ExperimentalContracts")
-            useExperimentalAnnotation("kotlin.ExperimentalStdlibApi")
-            useExperimentalAnnotation("kotlin.experimental.ExperimentalTypeInference")
-            useExperimentalAnnotation("kotlin.time.ExperimentalTime")
+            optIn("kotlin.ExperimentalUnsignedTypes")
+            optIn("kotlin.contracts.ExperimentalContracts")
+            optIn("kotlin.ExperimentalStdlibApi")
+            optIn("kotlin.experimental.ExperimentalTypeInference")
+            optIn("kotlin.time.ExperimentalTime")
 
-            useExperimentalAnnotation("kotlinx.serialization.UnstableDefault")
-            useExperimentalAnnotation("kotlinx.serialization.ExperimentalSerializationApi")
+            optIn("kotlinx.serialization.ExperimentalSerializationApi")
 
             // Compose
-            useExperimentalAnnotation("androidx.compose.foundation.layout.ExperimentalLayout")
+            optIn("org.jetbrains.compose.web.ExperimentalComposeWebApi")
+            optIn("org.jetbrains.compose.web.ExperimentalComposeWebSvgApi")
+            optIn("kotlinx.coroutines.DelicateCoroutinesApi")
+
+            // Compose
+            //optIn("androidx.compose.foundation.layout.ExperimentalLayout")
+            //optIn("androidx.compose.foundation.ExperimentalFoundationApi")
           }
         }
       }
@@ -157,14 +160,14 @@ subprojects {
     }
 
     license {
-      header = rootProject.file("HEADER.txt")
-      newLine = false
-      ignoreFailures = false
+      header(rootProject.file("HEADER.txt"))
+      newLine(false)
+      ignoreFailures(false)
 
       val sourceSetContainer = project.the<SourceSetContainer>()
 
       if (multiplatform != null) {
-        val temp = mutableListOf<SourceSet>()
+        val temp = mutableSetOf<SourceSet>()
         for ((name, kotlinSourceSet) in multiplatform.sourceSets.asMap) {
           temp += sourceSetContainer.create(project.name + "_" + name) {
             allSource.source(kotlinSourceSet.kotlin)
@@ -179,7 +182,7 @@ subprojects {
 
       include("**/*.kt")
 
-      ext {
+      properties {
         set("name", rootProject.name)
         set("url", "https://www.lanternpowered.org")
         set("organization", "LanternPowered")

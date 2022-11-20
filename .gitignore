@@ -74,7 +74,5 @@ nb-configuration.xml
 
 # Other Files #
 ###############
-/openCmd.bat
-/run
-*.launch
 local.properties
+yarn.lock

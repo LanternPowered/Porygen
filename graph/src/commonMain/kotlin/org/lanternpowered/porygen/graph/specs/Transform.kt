@@ -13,7 +13,7 @@ import org.lanternpowered.porygen.graph.node.spec.NodeSpec
 import kotlin.reflect.KClass
 
 abstract class I1Transform<S : Any>(
-    id: String, title: String, val type: KClass<S>
+  id: String, title: String, val type: KClass<S>
 ) : NodeSpec(id, title) {
 
   val input = input("in", type)
@@ -27,7 +27,7 @@ abstract class I1Transform<S : Any>(
 }
 
 abstract class I2Transform<S : Any>(
-    id: String, title: String, val type: KClass<S>
+  id: String, title: String, val type: KClass<S>
 ) : NodeSpec(id, title) {
 
   val input1 = input("in1", type)

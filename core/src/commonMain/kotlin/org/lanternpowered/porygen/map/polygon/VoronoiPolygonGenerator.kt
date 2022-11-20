@@ -22,8 +22,8 @@ import kotlin.math.atan2
  *   gives a different output.
  */
 class VoronoiPolygonGenerator(
-    private val triangleCenterProvider: TriangleCenterProvider = TriangleCenterProvider.Circumcenter,
-    override val areaOffset: Vec2d = Vec2d(0.2, 0.2)
+  private val triangleCenterProvider: TriangleCenterProvider = TriangleCenterProvider.Circumcenter,
+  override val areaOffset: Vec2d = Vec2d(0.2, 0.2),
 ) : CellPolygonGenerator {
 
   override fun generate(points: Collection<Vec2d>): Collection<CellPolygon> {
@@ -62,9 +62,12 @@ class VoronoiPolygonGenerator(
     return centeredPolygons
   }
 
-  private class VertexEntry(val point: Vec2d, private val angle: Double) : Comparable<VertexEntry> {
+  private class VertexEntry(
+    val point: Vec2d,
+    private val angle: Double,
+  ) : Comparable<VertexEntry> {
 
     override fun compareTo(other: VertexEntry): Int =
-        if (this.angle > other.angle) 1 else -1
+      if (this.angle > other.angle) 1 else -1
   }
 }

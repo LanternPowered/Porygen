@@ -27,7 +27,7 @@ internal class InputPortImpl<T>(
   name: String,
   dataType: GenericType<T>,
   node: NodeImpl,
-  private val defaultSupplier: () -> T?
+  private val defaultSupplier: () -> T?,
 ) : PortImpl<T>(id, name, dataType, node), InputPort<T> {
   override var connection: OutputPort<*>? = null
   override val default: T?
@@ -56,7 +56,7 @@ internal class OutputPortImpl<T>(
   name: String,
   dataType: GenericType<T>,
   node: NodeImpl,
-  private val outputBuilder: (Node) -> T?
+  private val outputBuilder: (Node) -> T?,
 ) : PortImpl<T>(id, name, dataType, node), OutputPort<T> {
 
   private val mutableConnections = HashSet<InputPortImpl<*>>()

@@ -12,8 +12,10 @@ package org.lanternpowered.porygen.impl.map
 import org.lanternpowered.porygen.util.pair.packIntPair
 import org.lanternpowered.porygen.util.pair.unpackIntPairFirst
 import org.lanternpowered.porygen.util.pair.unpackIntPairSecond
+import kotlin.jvm.JvmInline
 
-inline class SectionPosition(val packed: Long) {
+@JvmInline
+value class SectionPosition(val packed: Long) {
 
   constructor(x: Int, y: Int) : this(packIntPair(x, y))
 

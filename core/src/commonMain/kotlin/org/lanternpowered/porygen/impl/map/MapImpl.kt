@@ -48,7 +48,8 @@ class MapImpl(
   /**
    * The polygon generator of sections.
    */
-  private val sectionPolygonGenerator = SectionPolygonGenerator(seed, sectionSize, pointsGenerator, polygonGenerator)
+  private val sectionPolygonGenerator = SectionPolygonGenerator(
+    seed, sectionSize, pointsGenerator, polygonGenerator)
 
   /**
    * All the sections that are currently loaded.

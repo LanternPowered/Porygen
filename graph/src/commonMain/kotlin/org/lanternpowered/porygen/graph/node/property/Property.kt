@@ -12,12 +12,14 @@ package org.lanternpowered.porygen.graph.node.property
 import org.lanternpowered.porygen.graph.node.Node
 import org.lanternpowered.porygen.util.Named
 import org.lanternpowered.porygen.util.type.GenericType
+import kotlin.jvm.JvmInline
 import kotlin.reflect.KProperty
 
 /**
  * Represents the identifier of a property.
  */
-inline class PropertyId(val value: String)
+@JvmInline
+value class PropertyId(val value: String)
 
 /**
  * Represents a property of a node.

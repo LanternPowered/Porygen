@@ -58,6 +58,14 @@ internal class NodeSpecImpl {
   fun <T> input(id: String, type: GenericType<T>, default: T): InputPortSpec<T> =
     input0(id, type, default as T?) as InputPortSpec<T>
 
+  /**
+   * Adds a new input port with the given id, data type and default value.
+   */
+  fun <T> closedRangeInput(
+    id: String, type: GenericType<T>, default: T, range: ClosedRange<T>
+  ): InputPortSpec<T> where T : Number, T : Comparable<T> =
+    input0(id, type, default as T?) as InputPortSpec<T> // TODO: Use range
+
   fun <T> property(id: String, type: GenericType<T>, default: () -> T): PropertySpec<T> {
     check(id !in properties) {
       "There's already a property registered with the id: $id" }
@@ -79,17 +87,17 @@ internal object OutputBuilderScopeImpl : OutputBuilderScope {
 internal data class PropertySpecImpl<T>(
   override val id: PropertyId,
   override val dataType: GenericType<T>,
-  val default: () -> T
+  val default: () -> T,
 ) : PropertySpec<T>
 
 internal data class OutputPortSpecImpl<T>(
   override val id: PortId,
   override val dataType: GenericType<out T>,
-  val outputBuilder: (Node) -> T?
+  val outputBuilder: (Node) -> T?,
 ) : OutputPortSpec<T>
 
 internal data class InputPortSpecImpl<T>(
   override val id: PortId,
   override val dataType: GenericType<out T>,
-  val default: () -> T
+  val default: () -> T,
 ) : InputPortSpec<T>

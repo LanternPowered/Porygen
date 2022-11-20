@@ -11,6 +11,8 @@
 
 package org.lanternpowered.porygen.util.pair
 
+import kotlin.jvm.JvmInline
+
 /**
  * Converts the [Pair] into a [FloatPair].
  */
@@ -38,7 +40,8 @@ fun unpackFloatPairSecond(packed: Long): Float = Float.fromBits(unpackIntPairSec
  * @property first The first value
  * @property second The second value
  */
-inline class FloatPair(val packed: Long) {
+@JvmInline
+value class FloatPair(val packed: Long) {
 
   /**
    * Constructs a [FloatPair] with the given first and second values.

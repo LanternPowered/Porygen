@@ -10,9 +10,6 @@
 package org.lanternpowered.porygen.graph.node.spec
 
 import org.lanternpowered.porygen.util.type.genericTypeOf
-import org.lanternpowered.porygen.value.ConstantDouble
-import org.lanternpowered.porygen.value.ConstantInt
-import org.lanternpowered.porygen.value.ConstantLong
 import org.lanternpowered.porygen.value.Vec2dToDouble
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -23,9 +20,8 @@ class NodeGraphSpecTest {
   @Test
   fun testConversion() {
     val spec = NodeGraphSpec {
-      include(DefaultNodeGraphSpec)
+      include(NodeGraphSpec.Default)
     }
-    // TODO: This requires NodeGraphSpecImpl to be public..
     spec as NodeGraphSpecImpl
 
     val intToDouble = spec.getConversionFunction(genericTypeOf<Int>(), genericTypeOf<Double>())

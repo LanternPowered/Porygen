@@ -9,6 +9,8 @@
  */
 package org.lanternpowered.porygen
 
+import org.lanternpowered.porygen.graphics.showGraphics
+import org.lanternpowered.porygen.graphics.toDrawable
 import org.lanternpowered.porygen.impl.map.SectionPolygonGenerator
 import org.lanternpowered.porygen.impl.map.SectionPosition
 import org.lanternpowered.porygen.map.polygon.CellPolygon
@@ -22,7 +24,9 @@ import org.lanternpowered.porygen.points.BlueNoisePointsGenerator
 import org.lanternpowered.porygen.points.PointsGenerator
 import org.lanternpowered.porygen.points.ZoomPointsGenerator
 import org.lanternpowered.porygen.value.scalePoint
-import kotlin.jvm.JvmStatic
+import java.awt.Color
+import kotlin.math.max
+import kotlin.math.min
 
 object PointsGeneratorTest {
 
@@ -36,39 +40,42 @@ object PointsGeneratorTest {
     generator = ZoomPointsGenerator(generator, Vec2d(1.1, 1.1))
 
     val perlin = Perlin(
-        frequency = 0.05,
-        persistence = 0.5,
-        seed = seed.hashCode(),
-        octaves = 10
+      frequency = 0.05,
+      persistence = 0.5,
+      seed = seed.hashCode(),
+      octaves = 10
     ).scalePoint(xScale = 0.07, zScale = 0.07)
 
     var polygonGenerator: CellPolygonGenerator
     polygonGenerator = VoronoiPolygonGenerator(TriangleCenterProvider.Circumcenter)
     // polygonGenerator = DelaunayTrianglePolygonGenerator()
 
-    val sectionPolygonGenerator = SectionPolygonGenerator(seed, Vec2i(300, 300), generator, polygonGenerator)
+    val sectionPolygonGenerator = SectionPolygonGenerator(seed, Vec2i(200, 200), generator,
+      polygonGenerator)
     val centeredPolygons = mutableListOf<CellPolygon>()
     centeredPolygons.addAll(sectionPolygonGenerator.generate(SectionPosition(0, 0)))
     centeredPolygons.addAll(sectionPolygonGenerator.generate(SectionPosition(0, 1)))
     centeredPolygons.addAll(sectionPolygonGenerator.generate(SectionPosition(1, 1)))
     centeredPolygons.addAll(sectionPolygonGenerator.generate(SectionPosition(2, 2)))
     centeredPolygons.addAll(sectionPolygonGenerator.generate(SectionPosition(2, 0)))
+    centeredPolygons.addAll(sectionPolygonGenerator.generate(SectionPosition(3, 0)))
 
-    /*
     showGraphics { _, graphics ->
       for (polygon in centeredPolygons) {
         val center = polygon.center
-        val value = perlin[center.x, 1.0, center.y]
+        var value = perlin[center.x, 1.0, center.y]
         if (value < 1.0) {
+          value = max(0.5, value)
           graphics.color = Color(0, (255.0 - 255.0 * (1.4 - value * 1.3)).toInt(), (255.0 - 255.0 * (1.4 - value * 1.3)).toInt())
         } else {
-          graphics.color = Color((255.0 - 255.0 * ((value - 1.0) * 5)).toInt(), (255.0 - 255.0 * ((value - 1.0) * 5)).toInt(), 0)
+          value = min(2.0, value)
+          graphics.color = Color((255.0 - 255.0 * (value - 1.0)).toInt(), (255.0 - 255.0 * (value - 1.0)).toInt(), 0)
         }
         graphics.fillPolygon(polygon.polygon.toDrawable())
         graphics.color = Color.BLACK
         graphics.fillRect(polygon.center.floorX, polygon.center.floorY, 3, 3)
         graphics.drawPolygon(polygon.polygon.toDrawable())
       }
-    }*/
+    }
   }
 }

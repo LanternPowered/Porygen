@@ -15,21 +15,18 @@ import org.lanternpowered.porygen.math.vector.Vec2d
 /**
  * A processor which will handle the given section [CellMapView].
  *
- * Data which was provided by previous processors may be accessed
- * in this processor.
+ * Data which was provided by previous processors may be accessed in this processor.
  */
 interface CellMapProcessor {
 
   /**
-   * This offset is used in the case that the polygon generator
-   * needs more map data from surrounding areas.
+   * This offset is used in the case that the polygon generator needs more map data from
+   * surrounding areas.
    *
-   * Surrounding areas will only be processed up to the previous
-   * processor state.
+   * Surrounding areas will only be processed up to the previous processor state.
    *
-   * This offset is represented as a additional percentage of
-   * the processed area. For example, using (0.2, 0.2) will add
-   * 20% more map data on each side.
+   * This offset is represented as an additional percentage of the processed area. For example,
+   * using (0.2, 0.2) will add 20% more map data on each side.
    */
   val areaOffset: Vec2d
     get() = Vec2d.Zero

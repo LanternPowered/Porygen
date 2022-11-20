@@ -31,7 +31,8 @@ object PerlinSpec : NodeSpec("noise/perlin", "Perlin") {
 
   val octaves = input(
     id = "octaves",
-    default = Perlin.DefaultOctaves
+    default = Perlin.DefaultOctaves,
+    range = Perlin.ValidOctavesRange,
   )
 
   val persistence = input(
@@ -51,7 +52,7 @@ object PerlinSpec : NodeSpec("noise/perlin", "Perlin") {
       quality = node[quality],
       octaves = node[octaves],
       persistence = node[persistence],
-      seed = node[seed]
+      seed = node[seed],
     )
   }
 }

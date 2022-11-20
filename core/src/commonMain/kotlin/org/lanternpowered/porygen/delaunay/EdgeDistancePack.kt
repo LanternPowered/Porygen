@@ -38,8 +38,11 @@ package org.lanternpowered.porygen.delaunay
  *
  * @author Johannes Diemke
  */
-class EdgeDistancePack(val edge: Edge2d, val distance: Double) : Comparable<EdgeDistancePack> {
+class EdgeDistancePack(
+  val edge: Edge2d,
+  val distance: Double,
+) : Comparable<EdgeDistancePack> {
 
   override fun compareTo(other: EdgeDistancePack): Int =
-      distance.compareTo(other.distance)
+    distance.compareTo(other.distance)
 }

@@ -47,7 +47,7 @@ import kotlin.math.sqrt
  * @property frequency The frequency of the concentric spheres
  */
 class Spheres(
-    val frequency: Double = DefaultFrequency
+  val frequency: Double = DefaultFrequency,
 ) : NoiseModule {
 
   override fun get(x: Double, y: Double, z: Double): Double {

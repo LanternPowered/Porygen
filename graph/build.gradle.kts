@@ -11,12 +11,12 @@ kotlin {
     browser()
     nodejs()
   }
-  // mingwX64()
 
   sourceSets {
     val commonMain by getting {
       dependencies {
         implementation(project(":porygen-core"))
+        implementation(kotlin("reflect"))
       }
     }
     val jvmMain by getting {
@@ -26,8 +26,5 @@ kotlin {
         implementation("it.unimi.dsi:fastutil:8.2.2")
       }
     }
-
-    val nativeCommonMain by creating {}
-    val nativeCommonTest by creating {}
   }
 }

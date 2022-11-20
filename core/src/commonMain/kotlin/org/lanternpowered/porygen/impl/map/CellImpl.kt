@@ -19,7 +19,7 @@ class CellImpl internal constructor(
   override val id: Long,
   override val map: MapImpl,
   override val centerPoint: Vec2i,
-  override val polygon: Polygond
+  override val polygon: Polygond,
 ) : MapElementImpl(), Cell {
 
   private var hashCode: Int = 0

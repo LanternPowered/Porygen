@@ -19,15 +19,15 @@ import kotlin.random.Random
 import kotlin.random.nextInt
 
 class RiverProcessor(
-    private val riverChance: Double = 0.19,
-    private val riverLength: IntRange = 3..15,
-    override val areaOffset: Vec2d = Vec2d(0.3, 0.3)
+  private val riverChance: Double = 0.19,
+  private val riverLength: IntRange = 3..15,
+  override val areaOffset: Vec2d = Vec2d(0.3, 0.3),
 ) : CellMapProcessor {
 
   override fun process(view: CellMapView) {
     // Find all the corners which are next to the ocean
     val beachCorners = view.corners
-        .filter { corner -> corner[DataKeys.DISTANCE_TO_OCEAN] == 0 }
+      .filter { corner -> corner[DataKeys.DISTANCE_TO_OCEAN] == 0 }
 
     // The chance per corner that a river may occur
     for (corner in beachCorners) {
@@ -38,7 +38,7 @@ class RiverProcessor(
 
       val expectedLength = random.nextInt(riverLength)
       val riverData = traverse(corner, random,
-          RiverData(minLength = riverLength.first, expectedLength = expectedLength))
+        RiverData(minLength = riverLength.first, expectedLength = expectedLength))
 
       // Was successful, apply the data to the elements
       if (riverData != null) {
@@ -82,12 +82,12 @@ class RiverProcessor(
 
     // Try to traverse to neighbor corners
     val neighborData = corner.neighbors.shuffled(random)
-        .asSequence()
-        .sortedBy { neighbor -> -(neighbor[DataKeys.DISTANCE_TO_OCEAN] ?: 0) }
-        .map { neighbor -> traverse(neighbor, random, data) }
-        .filterNotNull()
-        .sortedBy { -(it.corners.lastOrNull()?.get(DataKeys.DISTANCE_TO_OCEAN) ?: 0) }
-        .firstOrNull()
+      .asSequence()
+      .sortedBy { neighbor -> -(neighbor[DataKeys.DISTANCE_TO_OCEAN] ?: 0) }
+      .map { neighbor -> traverse(neighbor, random, data) }
+      .filterNotNull()
+      .sortedBy { -(it.corners.lastOrNull()?.get(DataKeys.DISTANCE_TO_OCEAN) ?: 0) }
+      .firstOrNull()
     if (neighborData != null)
       return neighborData
     // Couldn't traverse to the neighbor, so return the current
@@ -96,9 +96,9 @@ class RiverProcessor(
   }
 
   private data class RiverData(
-      val minLength: Int,
-      val expectedLength: Int,
-      val corners: List<Corner> = listOf(),
-      val edges: List<Edge> = listOf()
+    val minLength: Int,
+    val expectedLength: Int,
+    val corners: List<Corner> = listOf(),
+    val edges: List<Edge> = listOf(),
   )
 }

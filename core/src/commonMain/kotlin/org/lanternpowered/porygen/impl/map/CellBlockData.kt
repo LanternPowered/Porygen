@@ -7,8 +7,6 @@
  * This work is licensed under the terms of the MIT License (MIT). For
  * a copy, see 'LICENSE.txt' or <https://opensource.org/licenses/MIT>.
  */
-@file:Suppress("NOTHING_TO_INLINE")
-
 package org.lanternpowered.porygen.impl.map
 
 import org.lanternpowered.porygen.map.Cell
@@ -25,7 +23,7 @@ interface CellBlockData {
 }
 
 class SingleCellBlockData(
-    private val cell: Cell
+  private val cell: Cell
 ) : CellBlockData {
 
   override val cells: Collection<Cell> = listOf(this.cell)
@@ -33,13 +31,14 @@ class SingleCellBlockData(
 }
 
 class ArrayBackedCellBlockData(
-    private val cellArray: Array<Cell>,
-    private val blocks: VariableValueArray,
-    private val sizeY: Int
+  private val cellArray: Array<Cell>,
+  private val blocks: VariableValueArray,
+  private val sizeY: Int
 ) : CellBlockData {
 
   override val cells: Collection<Cell> = this.cellArray.asList()
-  override fun getCell(localX: Int, localY: Int) = this.cellArray[this.blocks[localX * sizeY + localY]]
+  override fun getCell(localX: Int, localY: Int) =
+    this.cellArray[this.blocks[localX * sizeY + localY]]
 }
 
 /**

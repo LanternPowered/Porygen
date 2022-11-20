@@ -61,8 +61,9 @@ class Billow(
 ) : NoiseModule {
 
   init {
-    check(octaves in 1..Perlin.MaxOctaves) {
-      "octaves must be between 1 and $MaxOctaves (inclusive)" }
+    check(octaves in ValidOctavesRange) {
+      "octaves must be between 1 and $ValidOctavesRange (inclusive)"
+    }
   }
 
   override fun get(x: Double, y: Double, z: Double): Double {
@@ -107,7 +108,7 @@ class Billow(
     /**
      * The maximum number of octaves.
      */
-    const val MaxOctaves = 30
+    val ValidOctavesRange = Perlin.ValidOctavesRange
 
     /**
      * The default frequency.

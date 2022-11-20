@@ -16,8 +16,8 @@ import kotlin.math.sqrt
 
 @Serializable
 data class Vec2d(
-    val x: Double,
-    val y: Double
+  val x: Double,
+  val y: Double,
 ) : Comparable<Vec2d> {
 
   val floorX: Int
@@ -33,49 +33,49 @@ data class Vec2d(
     get() = x * x + y * y
 
   operator fun div(value: Double): Vec2d =
-      Vec2d(x / value, y / value)
+    Vec2d(x / value, y / value)
 
   operator fun div(value: Vec2d): Vec2d =
-      Vec2d(x / value.x, y / value.y)
+    Vec2d(x / value.x, y / value.y)
 
   operator fun div(value: Vec2i): Vec2d =
-      Vec2d(x / value.x, y / value.y)
+    Vec2d(x / value.x, y / value.y)
 
   operator fun times(value: Double): Vec2d =
-      Vec2d(x * value, y * value)
+    Vec2d(x * value, y * value)
 
   operator fun times(value: Vec2d): Vec2d =
-      Vec2d(x * value.x, y * value.y)
+    Vec2d(x * value.x, y * value.y)
 
   operator fun times(value: Vec2i): Vec2d =
-      Vec2d(x * value.x, y * value.y)
+    Vec2d(x * value.x, y * value.y)
 
   operator fun plus(value: Vec2d): Vec2d =
-      Vec2d(x + value.x, y + value.y)
+    Vec2d(x + value.x, y + value.y)
 
   fun plus(x: Double, y: Double): Vec2d =
-      Vec2d(this.x + x, this.y + y)
+    Vec2d(this.x + x, this.y + y)
 
   operator fun plus(value: Vec2i): Vec2d =
-      Vec2d(x + value.x, y + value.y)
+    Vec2d(x + value.x, y + value.y)
 
   fun plus(x: Int, y: Int): Vec2d =
-      Vec2d(this.x + x, this.y + y)
+    Vec2d(this.x + x, this.y + y)
 
   operator fun minus(value: Vec2d): Vec2d =
-      Vec2d(x - value.x, y - value.y)
+    Vec2d(x - value.x, y - value.y)
 
   fun minus(x: Double, y: Double): Vec2d =
-      Vec2d(this.x - x, this.y - y)
+    Vec2d(this.x - x, this.y - y)
 
   operator fun minus(value: Vec2i): Vec2d =
-      Vec2d(x - value.x, y - value.y)
+    Vec2d(x - value.x, y - value.y)
 
   fun minus(x: Int, y: Int): Vec2d =
-      Vec2d(this.x - x, this.y - y)
+    Vec2d(this.x - x, this.y - y)
 
   operator fun unaryMinus(): Vec2d =
-      Vec2d(-x, -y)
+    Vec2d(-x, -y)
 
   operator fun unaryPlus(): Vec2d = this
 
@@ -106,17 +106,16 @@ data class Vec2d(
    * @param y The other y coordinate
    * @return The cross product
    */
-  fun cross(x: Double, y: Double): Double =
-      this.y * x - this.x * y
+  fun cross(x: Double, y: Double): Double = this.y * x - this.x * y
 
   fun toInt(): Vec2i =
-      Vec2i(x.toInt(), y.toInt())
+    Vec2i(x.toInt(), y.toInt())
 
   fun floorToInt(): Vec2i =
-      Vec2i(floorToInt(x), floorToInt(y))
+    Vec2i(floorToInt(x), floorToInt(y))
 
   override fun compareTo(other: Vec2d): Int =
-      sign(lengthSquared - other.lengthSquared).toInt()
+    sign(lengthSquared - other.lengthSquared).toInt()
 
   override fun toString(): String = "($x, $y)"
 

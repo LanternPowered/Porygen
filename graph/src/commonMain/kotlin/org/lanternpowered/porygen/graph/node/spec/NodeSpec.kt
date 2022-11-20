@@ -71,8 +71,9 @@ abstract class NodeSpec(
   /**
    * Adds a new input port with the given id and data type.
    */
-  inline fun <reified T : Any> input(id: String): InputPortSpec<T?> =
-    input(id, genericTypeOf(), null)
+  inline fun <reified T : Any> input(id: String): InputPortSpec<T?> {
+    return input(id, genericTypeOf(), null)
+  }
 
   /**
    * Adds a new input port with the given id, data type and default value.
@@ -83,15 +84,81 @@ abstract class NodeSpec(
   /**
    * Adds a new input port with the given id, data type and default value.
    */
+  inline fun <reified T : Enum<T>> input(
+    id: String,
+    values: List<T> = enumValues<T>().asList(),
+    default: T = values.first()
+  ): InputPortSpec<T> = input(id, genericTypeOf(), default)
+
+  /**
+   * Adds a new input port with the given id, data type and default value.
+   */
+  fun <T> input(
+      id: String,
+      genericType: GenericType<T>,
+      default: T,
+      range: ClosedRange<T>
+  ): InputPortSpec<T> where T : Number, T : Comparable<T> =
+    impl.closedRangeInput(id, genericType, default, range)
+
+  /**
+   * Adds a new input port with the given id, data type and default value.
+   */
+  inline fun <reified T> input(
+    id: String,
+    default: T,
+    range: ClosedRange<T>
+  ): InputPortSpec<T> where T : Number, T : Comparable<T> =
+    input(id, genericTypeOf(), default, range)
+
+  /**
+   * Adds a new input port with the given id, data type and default value.
+   */
+  fun input(
+    id: String,
+    default: Int = 0,
+    range: IntRange = Int.MIN_VALUE..Int.MAX_VALUE
+  ): InputPortSpec<Int> = impl.closedRangeInput(id, genericTypeOf(), default, range)
+
+  /**
+   * Adds a new input port with the given id, data type and default value.
+   */
+  fun input(
+    id: String,
+    default: Long = 0,
+    range: LongRange = Long.MIN_VALUE..Long.MAX_VALUE
+  ): InputPortSpec<Long> = impl.closedRangeInput(id, genericTypeOf(), default, range)
+
+  /**
+   * Adds a new input port with the given id, data type and default value.
+   */
+  fun input(
+    id: String,
+    default: Double = 0.0,
+    range: ClosedRange<Double> = Double.MIN_VALUE..Double.MAX_VALUE
+  ): InputPortSpec<Double> = impl.closedRangeInput(id, genericTypeOf(), default, range)
+
+  /**
+   * Adds a new input port with the given id, data type and default value.
+   */
+  fun input(
+    id: String,
+    default: Float = 0.0f,
+    range: ClosedRange<Float> = Float.MIN_VALUE..Float.MAX_VALUE
+  ): InputPortSpec<Float> = impl.closedRangeInput(id, genericTypeOf(), default, range)
+
+  /**
+   * Adds a new input port with the given id, data type and default value.
+   */
   @JsName("input_nullableDefault_reified")
   @JvmName("input_nullableDefault_reified")
   inline fun <reified T : Any> input(id: String, default: T?): InputPortSpec<T?> =
     input(id, genericTypeOf(), default)
 
   fun <T> output(
-    id: String,
-    type: GenericType<T>,
-    factory: OutputBuilderScope.(node: Node) -> T?
+      id: String,
+      type: GenericType<T>,
+      factory: OutputBuilderScope.(node: Node) -> T?
   ): OutputPortSpec<T> =
     impl.output(id, type, factory)
 

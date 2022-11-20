@@ -90,7 +90,7 @@ object MapGeneratorTest {
       seed(seed)
 
       var pointsGenerator: PointsGenerator = BlueNoisePointsGenerator(amount = 300..350)
-      pointsGenerator = ZoomPointsGenerator(pointsGenerator, Vec2d(1.1, 1.1))
+      pointsGenerator = ZoomPointsGenerator(pointsGenerator, Vec2d(1.0, 1.0))
 
       pointsGenerator(pointsGenerator)
       polygonGenerator(VoronoiPolygonGenerator(TriangleCenterProvider.Centroid))

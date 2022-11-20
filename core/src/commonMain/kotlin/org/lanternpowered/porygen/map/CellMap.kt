@@ -20,7 +20,7 @@ import org.lanternpowered.porygen.math.vector.Vec2i
  * Constructs a new [CellMap].
  */
 fun cellMap(fn: CellMapBuilder.() -> Unit): CellMap =
-    CellMapBuilderImpl().apply(fn).build()
+  CellMapBuilderImpl().apply(fn).build()
 
 /**
  * Represents the complete map.

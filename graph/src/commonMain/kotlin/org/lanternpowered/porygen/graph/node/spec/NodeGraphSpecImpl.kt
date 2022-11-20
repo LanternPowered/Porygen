@@ -9,6 +9,7 @@
  */
 package org.lanternpowered.porygen.graph.node.spec
 
+import kotlinx.serialization.KSerializer
 import org.lanternpowered.porygen.util.Color
 import org.lanternpowered.porygen.util.Colors
 import org.lanternpowered.porygen.util.type.GenericType
@@ -19,17 +20,17 @@ import org.lanternpowered.porygen.util.unsafeCast
 import kotlin.reflect.KClass
 
 internal data class DataConversion<I, O>(
-  val input: GenericType<I>,
-  val output: GenericType<O>,
-  val convertor: (I) -> O
+    val input: GenericType<I>,
+    val output: GenericType<O>,
+    val convertor: (I) -> O
 )
 
 private data class DataConversionKey(
-  val input: GenericType<*>,
-  val output: GenericType<*>
+    val input: GenericType<*>,
+    val output: GenericType<*>
 )
 
-class NodeGraphSpecImpl : NodeGraphSpec, NodeGraphSpecBuilder {
+internal class NodeGraphSpecImpl : NodeGraphSpec, NodeGraphSpecBuilder {
 
   private val dataConversions = ArrayList<DataConversion<*,*>>()
   private val dataColors = LinkedHashMap<KClass<*>, Color>()
@@ -44,7 +45,7 @@ class NodeGraphSpecImpl : NodeGraphSpec, NodeGraphSpecBuilder {
   private inner class DataScopeImpl : NodeGraphSpecBuilder.DataScope {
 
     override fun <I, O> conversion(
-      input: GenericType<I>, output: GenericType<O>, function: (I) -> O
+        input: GenericType<I>, output: GenericType<O>, function: (I) -> O
     ) {
       dataConversions += DataConversion(input, output, function)
     }
@@ -53,6 +54,9 @@ class NodeGraphSpecImpl : NodeGraphSpec, NodeGraphSpecBuilder {
       val kClass = type.classifier as? KClass<*> ?: return
       dataColors[kClass] = color
     }
+
+//    override fun <T> serializableType(type: GenericType<T>, name: String, serializer: KSerializer<T>) {
+//    }
   }
 
   override fun include(spec: NodeGraphSpec) {
@@ -66,6 +70,8 @@ class NodeGraphSpecImpl : NodeGraphSpec, NodeGraphSpecBuilder {
       "There's already a node spec registered with the id ${spec.id}" }
     nodeSpecs[spec.id] = spec
   }
+
+  fun nodeSpec(id: String): NodeSpec? = nodeSpecs[id]
 
   override fun data(block: NodeGraphSpecBuilder.DataScope.() -> Unit) {
     data.apply(block)
@@ -100,7 +106,7 @@ class NodeGraphSpecImpl : NodeGraphSpec, NodeGraphSpecBuilder {
   }
 
   private fun <I, O> buildConversionFunction(
-    from: GenericType<I>, to: GenericType<O>, visitedTypes: List<GenericType<*>> = listOf()
+      from: GenericType<I>, to: GenericType<O>, visitedTypes: List<GenericType<*>> = listOf()
   ): ((I) -> O?)? {
     val fromAccepting = ArrayList<DataConversion<*,*>>()
     for (conversion in dataConversions) {

@@ -7,8 +7,6 @@
  * This work is licensed under the terms of the MIT License (MIT). For
  * a copy, see 'LICENSE.txt' or <https://opensource.org/licenses/MIT>.
  */
-@file:Suppress("NOTHING_TO_INLINE")
-
 package org.lanternpowered.porygen.util.collections
 
 actual interface Int2ObjectMap<V> : MutableMap<Int, V> {

@@ -61,12 +61,13 @@ class Simplex(
   val latticeOrientation: LatticeOrientation = DefaultLatticeOrientation,
   val octaves: Int = DefaultOctaves,
   val persistence: Double = DefaultPersistence,
-  val seed: Int = DefaultSeed
+  val seed: Int = DefaultSeed,
 ) : NoiseModule {
 
   init {
     check(octaves in 1..MaxOctaves) {
-      "octaves must be between 1 and $MaxOctaves (inclusive)" }
+      "octaves must be between 1 and $MaxOctaves (inclusive)"
+    }
   }
 
   override fun get(x: Double, y: Double, z: Double): Double {

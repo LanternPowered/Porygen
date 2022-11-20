@@ -9,22 +9,20 @@
  */
 package org.lanternpowered.porygen.math.geom
 
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import org.lanternpowered.porygen.math.vector.Vec2d
 
 /**
  * Represents a polygon.
+ *
+ * @property vertices A list with all the vertices of this polygon
  */
-class Polygond : AbstractShape {
-
-  /**
-   * Gets a [List] with all the vertices
-   * in this [Polygond].
-   *
-   * The vertices should be sorted clockwise.
-   *
-   * @return The vertices
-   */
-  val vertices: List<Vec2d>
+@Serializable
+class Polygond private constructor(
+  val vertices: List<Vec2d>,
+  @Transient private val ignored: Unit = Unit,
+) : AbstractShape() {
 
   // Whether the polygon is convex, -1 means not yet computed
   private var isConvexState = -1
@@ -41,8 +39,9 @@ class Polygond : AbstractShape {
         y += vertex.y
       }
       return Vec2d(
-          x / vertices.size.toDouble(),
-          y / vertices.size.toDouble())
+        x / vertices.size.toDouble(),
+        y / vertices.size.toDouble(),
+      )
     }
 
   /**
@@ -77,15 +76,11 @@ class Polygond : AbstractShape {
       val sign1 = dx1 * dy2 - dy1 * dx2 > 0
       if (i == 0) {
         sign = sign1
-      } else if (sign != sign1)
+      } else if (sign != sign1) {
         return false
+      }
     }
     return true
-  }
-
-  private constructor(vertices: List<Vec2d>) {
-    check(vertices.size >= 3) { "There must be at least 3 vertices." }
-    this.vertices = vertices
   }
 
   /**
@@ -95,10 +90,10 @@ class Polygond : AbstractShape {
    *
    * @param vertices The vertices
    */
-  constructor(vararg vertices: Vec2d) {
-    check(vertices.size >= 3) { "There must be at least 3 vertices." }
-    this.vertices = vertices.asList()
-  }
+  constructor(vararg vertices: Vec2d) :
+    this(
+      vertices.also { check(it.size >= 3) { "There must be at least 3 vertices." } }.asList()
+    )
 
   /**
    * Constructs a [Polygond] from the given vertices.
@@ -125,11 +120,12 @@ class Polygond : AbstractShape {
   }
 
   override fun contains(minX: Double, minY: Double, maxX: Double, maxY: Double): Boolean {
-    // Non convex polygons need special handling
+    // Non-convex polygons need special handling
     if (!isConvex && trueIntersection(minX, minY, maxX, maxY))
       return false
     // Just check if the 4 corners are inside this polygon
-    return contains(minX, minY) && contains(minX, maxY) && contains(maxX, minY) && contains(maxX, maxY)
+    return contains(minX, minY) && contains(minX, maxY) &&
+      contains(maxX, minY) && contains(maxX, maxY)
   }
 
   internal fun trueIntersection(shape: Shape): Boolean {
@@ -243,8 +239,7 @@ class Polygond : AbstractShape {
   }
 
   /**
-   * Multiplies all the vertices of this polygon
-   * with the given [vector] and returns a new
+   * Multiplies all the vertices of this polygon with the given [vector] and returns a new
    * [Polygond].
    */
   fun scale(vector: Vec2d): Polygond {
@@ -255,8 +250,7 @@ class Polygond : AbstractShape {
   }
 
   /**
-   * Translates all the vertices of this polygon
-   * with the given [vector] and returns a new
+   * Translates all the vertices of this polygon with the given [vector] and returns a new
    * [Polygond].
    */
   fun translate(vector: Vec2d): Polygond {
@@ -272,13 +266,9 @@ class Polygond : AbstractShape {
   companion object {
 
     /**
-     * Creates a [Polygond] from the given vertices
-     * of which is known that it is a convex polygon.
+     * Creates a [Polygond] from the given [vertices] of which is known that it is a convex polygon.
      *
      * The polygon vertices should be sorted clockwise.
-     *
-     * @param vertices The vertices
-     * @return The polygon
      */
     fun newConvexPolygon(vararg vertices: Vec2d): Polygond {
       val polygon = Polygond(vertices.asList())
@@ -287,13 +277,9 @@ class Polygond : AbstractShape {
     }
 
     /**
-     * Creates a [Polygond] from the given vertices
-     * of which is known that it is a convex polygon.
+     * Creates a [Polygond] from the given [vertices] of which is known that it is a convex polygon.
      *
      * The polygon vertices should be sorted clockwise.
-     *
-     * @param vertices The vertices
-     * @return The polygon
      */
     fun newConvexPolygon(vertices: Iterable<Vec2d>): Polygond {
       val polygon = Polygond(vertices)
@@ -302,10 +288,10 @@ class Polygond : AbstractShape {
     }
 
     private fun trueIntersection(
-        x1: Double, y1: Double,
-        x2: Double, y2: Double,
-        x3: Double, y3: Double,
-        x4: Double, y4: Double
+      x1: Double, y1: Double,
+      x2: Double, y2: Double,
+      x3: Double, y3: Double,
+      x4: Double, y4: Double,
     ): Boolean {
       // Fail fast if possible
       if (x1 == x3 && y1 == y3 || x2 == x4 && y2 == y4)

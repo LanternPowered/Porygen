@@ -9,7 +9,6 @@
  */
 package org.lanternpowered.porygen.graph.node
 
-import kotlinx.serialization.Serializable
 import org.lanternpowered.porygen.graph.node.port.InputPort
 import org.lanternpowered.porygen.graph.node.port.InputPortImpl
 import org.lanternpowered.porygen.graph.node.port.OutputPort
@@ -32,7 +31,6 @@ import org.lanternpowered.porygen.util.collections.asUnmodifiableCollection
 import org.lanternpowered.porygen.util.type.GenericType
 import org.lanternpowered.porygen.util.unsafeCast
 
-@Serializable(with = NodeSerializer::class)
 internal abstract class NodeImpl(
   override val id: NodeId,
   override var title: String,

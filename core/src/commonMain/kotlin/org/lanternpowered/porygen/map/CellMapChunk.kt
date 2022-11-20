@@ -12,18 +12,15 @@ package org.lanternpowered.porygen.map
 import org.lanternpowered.porygen.math.vector.Vec2i
 
 /**
- * Represents a chunk on a map. A chunk consists of
- * (chunkSize.x * chunkSize.y) tiles.
+ * Represents a chunk on a map. A chunk consists of (chunkSize.x * chunkSize.y) tiles.
  *
- * After the chunk is no longer needed, it should be released through
- * [release]. Otherwise it's kept into memory until the map itself is
- * destroyed.
+ * After the chunk is no longer needed, it should be released through [release]. Otherwise, it is
+ * kept into memory until the map itself is destroyed.
  */
 interface CellMapChunk : CellMapElement, Releasable {
 
   /**
-   * The chunk size. This should be the same
-   * for every section in a map.
+   * The chunk size. This should be the same for every section in a map.
    */
   val chunkSize: Vec2i
 

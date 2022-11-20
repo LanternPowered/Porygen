@@ -21,15 +21,13 @@ object DataKeys {
   val IS_OCEAN = DataKey<Boolean>("is_ocean")
 
   /**
-   * A key to represent whether a edge is marked
-   * or corner is marked as a river.
+   * A key to represent whether an edge is marked or corner is marked as a river.
    */
   val IS_RIVER = DataKey<Boolean>("is_river")
 
   /**
-   * The distance from the start of the river, if the corner
-   * or edge is a river. A river starts at the ocean and goes
-   * inwards the land.
+   * The distance from the start of the river, if the corner or edge is a river. A river starts
+   * at the ocean and goes inwards the land.
    */
   val DISTANCE_TO_RIVER_START = DataKey<Int>("distance_to_river_start")
 

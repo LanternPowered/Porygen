@@ -19,14 +19,20 @@ class Line2i(start: Vec2i, end: Vec2i) : AbstractLine2<Vec2i>(start, end) {
     start + ((dEnd - dStart) / 2.0).floorToInt()
   }
 
-  constructor(startX: Int, startY: Int, endX: Int, endY: Int) : this(Vec2i(startX, startY), Vec2i(endX, endY))
+  constructor(startX: Int, startY: Int, endX: Int, endY: Int) :
+    this(Vec2i(startX, startY), Vec2i(endX, endY))
 
-  override fun intersects(startX: Double, startY: Double, endX: Double, endY: Double) = Line2d.linesIntersect(
-      start.x.toDouble(), start.y.toDouble(), end.x.toDouble(), end.y.toDouble(), startX, startY, endX, endY)
+  override fun intersects(startX: Double, startY: Double, endX: Double, endY: Double) =
+    Line2d.linesIntersect(
+      start.x.toDouble(), start.y.toDouble(),
+      end.x.toDouble(), end.y.toDouble(),
+      startX, startY,
+      endX, endY,
+    )
 
   override fun toInt() = this
   override fun toDouble() = Line2d(start.toDouble(), end.toDouble())
 
   fun translate(offset: Vec2i): Line2i =
-      Line2i(start + offset, end + offset)
+    Line2i(start + offset, end + offset)
 }

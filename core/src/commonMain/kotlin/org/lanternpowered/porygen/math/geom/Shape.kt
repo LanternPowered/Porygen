@@ -99,7 +99,7 @@ interface Shape {
    * @return Whether this 2d shape contains the point
    */
   operator fun contains(point: Vec2i): Boolean =
-      contains(point.x, point.y)
+    contains(point.x, point.y)
 
   /**
    * Gets whether the given is are located within this [Shape].
@@ -117,7 +117,7 @@ interface Shape {
    * @return Whether this 2d shape contains the point
    */
   operator fun contains(point: Vec2d): Boolean =
-      contains(point.x, point.y)
+    contains(point.x, point.y)
 
   /**
    * Gets whether the given is are located within this [Shape].

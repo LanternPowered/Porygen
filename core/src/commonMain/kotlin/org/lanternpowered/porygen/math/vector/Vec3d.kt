@@ -16,9 +16,9 @@ import kotlin.math.sqrt
 
 @Serializable
 data class Vec3d(
-    val x: Double,
-    val y: Double,
-    val z: Double
+  val x: Double,
+  val y: Double,
+  val z: Double,
 ) : Comparable<Vec3d> {
 
   val floorX: Int
@@ -37,57 +37,57 @@ data class Vec3d(
     get() = this.x * this.x + this.y * this.y + this.z * this.z
 
   operator fun div(value: Double): Vec3d =
-      Vec3d(this.x / value, this.y / value, this.z / value)
+    Vec3d(this.x / value, this.y / value, this.z / value)
 
   operator fun div(value: Vec3d): Vec3d =
-      Vec3d(this.x / value.x, this.y / value.y, this.z / value.z)
+    Vec3d(this.x / value.x, this.y / value.y, this.z / value.z)
 
   operator fun div(value: Vec3i): Vec3d =
-      Vec3d(this.x / value.x, this.y / value.y, this.z / value.z)
+    Vec3d(this.x / value.x, this.y / value.y, this.z / value.z)
 
   operator fun times(value: Double): Vec3d =
-      Vec3d(this.x * value, this.y * value, this.z * value)
+    Vec3d(this.x * value, this.y * value, this.z * value)
 
   operator fun times(value: Vec3d): Vec3d =
-      Vec3d(this.x * value.x, this.y * value.y, this.z * value.z)
+    Vec3d(this.x * value.x, this.y * value.y, this.z * value.z)
 
   operator fun times(value: Vec3i): Vec3d =
-      Vec3d(this.x * value.x, this.y * value.y, this.z * value.z)
+    Vec3d(this.x * value.x, this.y * value.y, this.z * value.z)
 
   operator fun plus(value: Vec3d): Vec3d =
-      Vec3d(this.x + value.x, this.y + value.y, this.z + value.z)
+    Vec3d(this.x + value.x, this.y + value.y, this.z + value.z)
 
   fun plus(x: Double, y: Double, z: Double): Vec3d =
-      Vec3d(this.x + x, this.y + y, this.z + z)
+    Vec3d(this.x + x, this.y + y, this.z + z)
 
   operator fun plus(value: Vec3i): Vec3d =
-      Vec3d(this.x + value.x, this.y + value.y, this.z + value.z)
+    Vec3d(this.x + value.x, this.y + value.y, this.z + value.z)
 
   fun plus(x: Int, y: Int, z: Int): Vec3d =
-      Vec3d(this.x + x, this.y + y, this.z + z)
+    Vec3d(this.x + x, this.y + y, this.z + z)
 
   operator fun minus(value: Vec3d): Vec3d =
-      Vec3d(this.x - value.x, this.y - value.y, this.z - value.z)
+    Vec3d(this.x - value.x, this.y - value.y, this.z - value.z)
 
   fun minus(x: Double, y: Double, z: Double): Vec3d =
-      Vec3d(this.x - x, this.y - y, this.z - z)
+    Vec3d(this.x - x, this.y - y, this.z - z)
 
   operator fun minus(value: Vec3i): Vec3d =
-      Vec3d(this.x - value.x, this.y - value.y, this.z - value.z)
+    Vec3d(this.x - value.x, this.y - value.y, this.z - value.z)
 
   fun minus(x: Int, y: Int, z: Int): Vec3d =
-      Vec3d(this.x - x, this.y - y, this.z - z)
+    Vec3d(this.x - x, this.y - y, this.z - z)
 
   operator fun unaryMinus(): Vec3d =
-      Vec3d(-this.x, -this.y, -this.z)
+    Vec3d(-this.x, -this.y, -this.z)
 
   operator fun unaryPlus(): Vec3d = this
 
   fun toInt(): Vec3i =
-      Vec3i(this.x.toInt(), this.y.toInt(), this.z.toInt())
+    Vec3i(this.x.toInt(), this.y.toInt(), this.z.toInt())
 
   override fun compareTo(other: Vec3d): Int =
-      sign(this.lengthSquared - other.lengthSquared).toInt()
+    sign(this.lengthSquared - other.lengthSquared).toInt()
 
   override fun toString(): String = "($x, $y, $z)"
 

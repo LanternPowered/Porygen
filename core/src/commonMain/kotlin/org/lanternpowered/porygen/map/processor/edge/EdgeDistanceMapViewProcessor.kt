@@ -23,7 +23,7 @@ import kotlin.math.sqrt
  * @property sideIterations The amount of iterations on each side of each edge
  */
 class EdgeDistanceMapViewProcessor(
-    private val sideIterations: Int = 10
+  private val sideIterations: Int = 10
 ) : CellMapProcessor {
 
   override fun process(view: CellMapView) {

@@ -17,20 +17,20 @@ import org.lanternpowered.porygen.math.vector.Vec2d
  * Generates [CellPolygon]s that are delaunay triangles.
  */
 class DelaunayTrianglePolygonGenerator(
-    override val areaOffset: Vec2d = Vec2d(0.2, 0.2)
+  override val areaOffset: Vec2d = Vec2d(0.2, 0.2)
 ) : CellPolygonGenerator {
 
   override fun generate(points: Collection<Vec2d>): Collection<CellPolygon> {
     if (points.size < 3)
       return emptyList()
     return DelaunayTriangulator.triangulate(points.toList())
-        .map { triangle ->
-          // Use the centroid as center point to make sure
-          // that it falls inside the constructed triangle
-          val center = triangle.centroid
-          val polygon = Polygond.newConvexPolygon(
-              triangle.a, triangle.b, triangle.c)
-          CellPolygon(center, polygon)
-        }
+      .map { triangle ->
+        // Use the centroid as center point to make sure
+        // that it falls inside the constructed triangle
+        val center = triangle.centroid
+        val polygon = Polygond.newConvexPolygon(
+          triangle.a, triangle.b, triangle.c)
+        CellPolygon(center, polygon)
+      }
   }
 }
