@@ -71,8 +71,7 @@ class Turbulence(
     val yDistort = y + yDistortModule[x1, y1, z1] * power
     val zDistort = z + zDistortModule[x2, y2, z2] * power
 
-    // Retrieve the output value at the offset input value instead of the
-    // original input value.
+    // Retrieve the output value at the offset input value instead of the original input value.
     return source[xDistort, yDistort, zDistort]
   }
 

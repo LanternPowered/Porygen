@@ -13,8 +13,7 @@ import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
 /**
- * Uses the [Releasable] and releases it when
- * the [block] was executed.
+ * Uses the [Releasable] and releases it when the [block] was executed.
  */
 fun <T : Releasable, R> T.use(block: T.() -> R): R {
   contract {

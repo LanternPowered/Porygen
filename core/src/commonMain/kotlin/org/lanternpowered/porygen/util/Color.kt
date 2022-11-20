@@ -36,7 +36,7 @@ value class Color(val rgba: Int) {
    * Constructs a new color from the rgb values. Each component with range 0 - 255.
    */
   constructor(red: Int, green: Int, blue: Int) :
-    this(red, green, blue, 0)
+    this(red, green, blue, 255)
 
   /**
    * Constructs a new color from the rgba values. Each component with range 0 - 255.
@@ -86,6 +86,9 @@ value class Color(val rgba: Int) {
       alpha
     )
   }
+
+  fun alpha(value: Double): Color =
+    Color(red, green, blue, (value.coerceIn(0.0..1.0) * 255).toInt())
 
   override fun toString(): String {
     val alpha = alpha

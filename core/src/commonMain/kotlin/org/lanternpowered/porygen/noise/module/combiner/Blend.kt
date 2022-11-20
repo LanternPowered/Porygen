@@ -44,9 +44,9 @@ import org.lanternpowered.porygen.noise.Utils
  * modules using the [control] module.
  */
 class Blend(
-    val source1: NoiseModule,
-    val source2: NoiseModule,
-    val control: NoiseModule
+  val source1: NoiseModule,
+  val source2: NoiseModule,
+  val control: NoiseModule,
 ) : NoiseModule {
 
   override fun get(x: Double, y: Double, z: Double): Double {

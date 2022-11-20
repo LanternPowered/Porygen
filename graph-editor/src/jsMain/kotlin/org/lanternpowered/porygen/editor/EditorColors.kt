@@ -10,17 +10,18 @@
 package org.lanternpowered.porygen.editor
 
 import org.jetbrains.compose.web.css.rgb
+import org.jetbrains.compose.web.css.rgba
 
 object EditorColors {
 
   val Background = rgb(31, 31, 31)
 
-  val Node = rgb(60, 60, 60)
+  val Node = rgba(83, 83, 83, 0.75)
   val NodeBorder = rgb(20, 20, 20)
   val NodeInnerDivider = rgb(30, 30, 30)
   val NodeInputs = Node
 
-  val NodeOutputs = rgb(45, 45, 45)
+  val NodeOutputs = rgba(32, 32, 32, 0.5)
   val NodeSelectionOutline = rgb(90, 130, 150)
 
   val NodeText = rgb(195, 195, 195)

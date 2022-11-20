@@ -32,16 +32,18 @@
  */
 package org.lanternpowered.porygen.math.geom
 
+import kotlinx.serialization.Serializable
 import org.lanternpowered.porygen.delaunay.Edge2d
 import org.lanternpowered.porygen.delaunay.EdgeDistancePack
 import org.lanternpowered.porygen.math.vector.Vec2d
 import kotlin.math.sign
 import kotlin.math.sqrt
 
+@Serializable
 data class Triangled(
   val a: Vec2d,
   val b: Vec2d,
-  val c: Vec2d
+  val c: Vec2d,
 ) : AbstractShape() {
 
   private val polygon by lazy {

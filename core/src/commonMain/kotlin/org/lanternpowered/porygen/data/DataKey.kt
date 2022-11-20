@@ -12,8 +12,7 @@ package org.lanternpowered.porygen.data
 import org.lanternpowered.porygen.util.ToStringHelper
 
 /**
- * Represents a key that can be used
- * to attach data to a [DataHolder].
+ * Represents a key that can be used to attach data to a [DataHolder].
  *
  * @param T The data value type
  */

@@ -11,20 +11,7 @@ package org.lanternpowered.porygen.math.geom
 
 import org.lanternpowered.porygen.util.ToStringHelper
 
-abstract class AbstractLine2<P : Comparable<P>> internal constructor(start: P, end: P) : Line2<P> {
-
-  final override val start: P
-  final override val end: P
-
-  init {
-    if (start < end) {
-      this.start = start
-      this.end = end
-    } else {
-      this.start = end
-      this.end = start
-    }
-  }
+abstract class AbstractLine2<P : Comparable<P>> internal constructor() : Line2<P> {
 
   override fun toString(): String = ToStringHelper(this)
     .add("start", start)

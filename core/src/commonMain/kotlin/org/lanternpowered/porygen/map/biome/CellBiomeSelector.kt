@@ -13,8 +13,7 @@ import org.lanternpowered.porygen.map.Cell
 import kotlin.random.Random
 
 /**
- * A selector which can be used to select a [Biome]
- * on [Cell] level.
+ * A selector which can be used to select a [Biome] on [Cell] level.
  */
 interface CellBiomeSelector<Biome> {
 

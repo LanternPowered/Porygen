@@ -36,6 +36,9 @@
  */
 package org.lanternpowered.porygen.noise
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 enum class LatticeOrientation {
 
   /**

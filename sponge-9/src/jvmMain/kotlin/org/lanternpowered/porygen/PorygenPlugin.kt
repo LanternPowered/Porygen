@@ -10,22 +10,22 @@
 package org.lanternpowered.porygen
 
 import com.google.inject.Inject
-import org.slf4j.Logger
+import org.apache.logging.log4j.Logger
+import org.spongepowered.api.Server
 import org.spongepowered.api.event.Listener
-import org.spongepowered.api.event.game.state.GameInitializationEvent
+import org.spongepowered.api.event.lifecycle.StartedEngineEvent
 import org.spongepowered.api.event.world.LoadWorldEvent
 import org.spongepowered.api.event.world.UnloadWorldEvent
-import org.spongepowered.api.event.world.chunk.LoadChunkEvent
-import org.spongepowered.api.event.world.chunk.UnloadChunkEvent
-import org.spongepowered.api.plugin.Plugin
+import org.spongepowered.api.event.world.chunk.ChunkEvent
+import org.spongepowered.plugin.builtin.jvm.Plugin
 
-@Plugin(id = "porygen")
+@Plugin("porygen")
 class PorygenPlugin @Inject constructor(
-    val logger: Logger
+  val logger: Logger
 ) {
 
   @Listener
-  fun onInit(event: GameInitializationEvent) {
+  fun onInit(event: StartedEngineEvent<Server>) {
     logger.info("Initializing!")
   }
 
@@ -40,12 +40,12 @@ class PorygenPlugin @Inject constructor(
   }
 
   @Listener
-  fun onLoadChunk(event: LoadChunkEvent) {
+  fun onLoadChunk(event: ChunkEvent.Load) {
 
   }
 
   @Listener
-  fun onUnloadChunk(event: UnloadChunkEvent) {
+  fun onUnloadChunk(event: ChunkEvent.Unload) {
 
   }
 }

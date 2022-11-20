@@ -156,9 +156,9 @@ abstract class NodeSpec(
     input(id, genericTypeOf(), default)
 
   fun <T> output(
-      id: String,
-      type: GenericType<T>,
-      factory: OutputBuilderScope.(node: Node) -> T?
+    id: String,
+    type: GenericType<T>,
+    factory: OutputBuilderScope.(node: Node) -> T?
   ): OutputPortSpec<T> =
     impl.output(id, type, factory)
 

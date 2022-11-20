@@ -18,8 +18,8 @@ import org.lanternpowered.porygen.math.vector.Vec2d
 interface CellPolygonGenerator {
 
   /**
-   * This offset is used in the case that the polygon generator
-   * needs more points than the usual (0, 1) range.
+   * This offset is used in the case that the polygon generator needs more points than the usual
+   * (0, 1) range.
    */
   val areaOffset: Vec2d
     get() = Vec2d.Zero

@@ -18,10 +18,13 @@ import androidx.compose.web.events.SyntheticMouseEvent
 import kotlinx.browser.document
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.web.css.CSSColorValue
 import org.jetbrains.compose.web.css.Color
 import org.jetbrains.compose.web.css.DisplayStyle
+import org.jetbrains.compose.web.css.JustifyContent
 import org.jetbrains.compose.web.css.LineStyle
 import org.jetbrains.compose.web.css.Position
+import org.jetbrains.compose.web.css.alignItems
 import org.jetbrains.compose.web.css.backgroundColor
 import org.jetbrains.compose.web.css.border
 import org.jetbrains.compose.web.css.borderRadius
@@ -32,22 +35,33 @@ import org.jetbrains.compose.web.css.div
 import org.jetbrains.compose.web.css.flexBasis
 import org.jetbrains.compose.web.css.flexGrow
 import org.jetbrains.compose.web.css.height
+import org.jetbrains.compose.web.css.justifyContent
 import org.jetbrains.compose.web.css.left
+import org.jetbrains.compose.web.css.marginLeft
+import org.jetbrains.compose.web.css.marginRight
 import org.jetbrains.compose.web.css.minus
 import org.jetbrains.compose.web.css.overflow
 import org.jetbrains.compose.web.css.padding
+import org.jetbrains.compose.web.css.paddingBottom
+import org.jetbrains.compose.web.css.paddingLeft
+import org.jetbrains.compose.web.css.paddingRight
+import org.jetbrains.compose.web.css.paddingTop
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.plus
 import org.jetbrains.compose.web.css.position
 import org.jetbrains.compose.web.css.px
-import org.jetbrains.compose.web.css.textAlign
+import org.jetbrains.compose.web.css.rgb
+import org.jetbrains.compose.web.css.rgba
 import org.jetbrains.compose.web.css.top
 import org.jetbrains.compose.web.css.transform
 import org.jetbrains.compose.web.css.unaryMinus
 import org.jetbrains.compose.web.css.width
 import org.jetbrains.compose.web.dom.Div
+import org.jetbrains.compose.web.dom.Span
 import org.jetbrains.compose.web.dom.Text
-import org.jetbrains.compose.web.svg.Line
+import org.jetbrains.compose.web.svg.LinearGradient
+import org.jetbrains.compose.web.svg.Polyline
+import org.jetbrains.compose.web.svg.Stop
 import org.jetbrains.compose.web.svg.Svg
 import org.lanternpowered.porygen.editor.web.css.Cursor
 import org.lanternpowered.porygen.editor.web.css.Overflow
@@ -55,18 +69,29 @@ import org.lanternpowered.porygen.editor.web.css.Width
 import org.lanternpowered.porygen.graph.node.NodeGraph
 import org.lanternpowered.porygen.graph.node.port.Port
 import org.lanternpowered.porygen.math.geom.Rectangled
+import org.lanternpowered.porygen.math.radToDeg
 import org.lanternpowered.porygen.math.vector.Vec2d
+import kotlin.math.atan
 
 private val gridSize = 1000000.px
 private val halfGridSize = gridSize / 2
 private val startPosition = Pair(-halfGridSize, -halfGridSize)
+private val gridCenterId = "grid-center"
 
 @Composable
 fun NodeGrid(graph: NodeGraph) {
-  val graphViewModel by remember { mutableStateOf(NodeGraphViewModel(graph)) }
+  val graphViewModel by remember { mutableStateOf(NodeGraphViewModel(graph, save = { save(graph) })) }
   var scale by remember { mutableStateOf(1.0) }
   var translate by remember { mutableStateOf(startPosition) }
   var dragging by mutableStateOf(false)
+  var mousePosition by mutableStateOf(Vec2d.Zero)
+
+  fun updateMousePosition(event: SyntheticMouseEvent) {
+    val rect = document.getElementById(gridCenterId).asDynamic().getBoundingClientRect()
+    val x = event.clientX.toDouble() - rect.left as Double
+    val y = event.clientY.toDouble() - rect.top as Double
+    mousePosition = Vec2d(x, y) / scale
+  }
 
   Div(
     attrs = {
@@ -95,6 +120,7 @@ fun NodeGrid(graph: NodeGraph) {
         graphViewModel.nodes.forEach { node -> node.dragging = false }
       }
       onMouseMove { event ->
+        updateMousePosition(event)
         if (dragging) {
           val (tx, ty) = translate
           translate = Pair(tx + event.movementX.px, ty + event.movementY.px)
@@ -120,56 +146,126 @@ fun NodeGrid(graph: NodeGraph) {
         content = {
           Div(
             attrs = {
+              id(gridCenterId)
               style {
-                position(Position.Relative)
+                position(Position.Absolute)
                 left(halfGridSize)
                 top(halfGridSize)
               }
             },
             content = {
-              Text("TEST")
-
               for (node in graphViewModel.nodes) {
-                Node(node, scale)
+                Node(
+                  node = node,
+                  scale = scale,
+                  updateMousePosition = ::updateMousePosition
+                )
               }
-              Div(
+            }
+          )
+          Div(
+            attrs = {
+              style {
+                position(Position.Absolute)
+                property("z-index", -1)
+              }
+            },
+            content = {
+              Svg(
                 attrs = {
                   style {
-                    position(Position.Absolute)
-                    left(-halfGridSize)
-                    top(-halfGridSize)
-                    width(gridSize)
-                    height(gridSize)
-                    property("z-index", -1)
+                    overflow(Overflow.Visible)
+                  }
+                  onClick {
+                    println("CLICK SVG")
                   }
                 },
                 content = {
-                  Svg(
-                    attrs = {
-                      style {
-                        overflow(Overflow.Visible)
-                      }
-                    },
-                    content = {
-                      for (node in graphViewModel.nodes) {
-                        for (connection in node.connections) {
-                          val output = connection.output
-                          val input = connection.input
-
-                          Line(
-                            x1 = halfGridSize + input.position.x.px,
-                            y1 = halfGridSize + input.position.y.px,
-                            x2 = halfGridSize + output.position.x.px,
-                            y2 = halfGridSize + output.position.y.px,
-                            attrs = {
-                              attr("stroke", Color.red.toString())
-                              attr("stroke-width", 5.px.toString())
-                            }
-                          )
+                  @Composable
+                  fun drawLine(
+                    id: String,
+                    start: Vec2d,
+                    end: Vec2d,
+                    startColor: CSSColorValue,
+                    endColor: CSSColorValue
+                  ) {
+                    LinearGradient(
+                      attrs = {
+                        val xDiff = end.x - start.x
+                        val yDiff = end.y - start.y
+                        val radians = atan(yDiff / xDiff)
+                        var degrees = radToDeg(radians)
+                        if (degrees.isNaN()) {
+                          degrees = 0.0
                         }
+                        attr("id", id)
+                        attr("x1", if (start.x < end.x) "0%" else "100%")
+                        attr("y1", "0%")
+                        attr("x2", if (start.x < end.x) "100%" else "0%")
+                        attr("y2", "0%")
+                        attr("gradientTransform", "rotate(${degrees} 0.5 0.5)")
+                      },
+                      content = {
+                        Stop(
+                          attrs = {
+                            attr("offset", "0%")
+                            attr("style", "stop-color:$startColor;stop-opacity:1")
+                          }
+                        )
+                        Stop(
+                          attrs = {
+                            attr("offset", "100%")
+                            attr("style", "stop-color:$endColor;stop-opacity:1")
+                          }
+                        )
                       }
+                    )
+                    Polyline(
+                      points = arrayOf(
+                        halfGridSize.value + start.x - 7, // +7 to extend line to dot
+                        halfGridSize.value + start.y + 1,
+                        halfGridSize.value + start.x + 15,
+                        halfGridSize.value + start.y + 1,
+                        halfGridSize.value + end.x - 15,
+                        halfGridSize.value + end.y + 1,
+                        halfGridSize.value + end.x + 7, // +7 to extend line to dot, TODO: move value?
+                        halfGridSize.value + end.y + 1,
+                      ),
+                      attrs = {
+                        attr("fill", "none")
+                        attr("stroke", Color.red.toString())
+                        attr("stroke", "url(#$id)")
+                        attr("stroke-width", 2.px.toString())
+                        attr("stroke-linejoin", "round")
+                      }
+                    )
+                  }
+                  val draggedOutput = graphViewModel.draggedOutput
+                  if (draggedOutput != null) {
+                    val color = draggedOutput.color.toCSS()
+                    drawLine(
+                      id = "dragged",
+                      start = draggedOutput.position,
+                      end = mousePosition,
+                      startColor = color,
+                      endColor = color,
+                    )
+                  }
+                  for (node in graphViewModel.nodes) {
+                    for (connection in node.connections) {
+                      val output = connection.output
+                      val input = connection.input
+                      fun NodePortViewModel.ref() = "${id.value}_${node.id.value}"
+                      val id = "${input.ref()}_to_${output.ref()}"
+                      drawLine(
+                        id = id,
+                        start = output.position,
+                        end = input.position,
+                        startColor = input.color.toCSS(),
+                        endColor = output.color.toCSS(),
+                      )
                     }
-                  )
+                  }
                 }
               )
             }
@@ -180,24 +276,21 @@ fun NodeGrid(graph: NodeGraph) {
   )
 }
 
+private fun org.lanternpowered.porygen.util.Color.toCSS() = rgba(red, green, blue, alpha / 255.0)
+
 private fun NodeViewModel.move(event: SyntheticMouseEvent, scale: Double) {
   if (dragging) {
     val movement = Vec2d(event.movementX.toDouble(), event.movementY.toDouble()) / scale
     updatePosition(position + movement)
     updateConnectionPositions()
-    save()
   }
 }
 
 private fun NodeViewModel.updateConnectionPositions() {
   for (port in inputs + outputs) {
-    val element = portElement(this, port.port)
+    val element = portElement(port.port)
     updatePortBounds(port.id, elementBounds(element))
   }
-}
-
-private fun NodeViewModel.save() {
-  save(graphViewModel.graph)
 }
 
 private fun elementBounds(element: dynamic): Rectangled {
@@ -213,15 +306,15 @@ private fun elementBounds(element: dynamic): Rectangled {
   )
 }
 
-private fun portElement(node: NodeViewModel, port: Port<*>): dynamic {
-  return document.getElementById(portElementId(node, port))
+private fun portElement(port: Port<*>): dynamic {
+  return document.getElementById(portElementId(port))
 }
 
-private fun portElementId(node: NodeViewModel, port: Port<*>): String =
-  "node_${node.id}_port_${port.id.value}"
+private fun portElementId(port: Port<*>): String =
+  "node_${port.node.id}_port_${port.id.value}"
 
 @Composable
-fun Node(node: NodeViewModel, scale: Double) {
+fun Node(node: NodeViewModel, scale: Double, updateMousePosition: (SyntheticMouseEvent) -> Unit) {
   val borderWidth = 1.px
   val borderRadius = 5.px
   Div(
@@ -277,6 +370,7 @@ fun Node(node: NodeViewModel, scale: Double) {
           }
           onMouseMove { event ->
             event.stopPropagation()
+            updateMousePosition(event)
             node.move(event, scale)
           }
         },
@@ -301,17 +395,7 @@ fun Node(node: NodeViewModel, scale: Double) {
               },
               content = {
                 for (input in node.inputs) {
-                  Div(
-                    attrs = {
-                      id(portElementId(node, input.port))
-                      style {
-                        padding(3.px, 5.px)
-                      }
-                    },
-                    content = {
-                      Text(input.name)
-                    }
-                  )
+                  NodePort(input)
                 }
               }
             )
@@ -345,18 +429,7 @@ fun Node(node: NodeViewModel, scale: Double) {
               },
               content = {
                 for (output in node.outputs) {
-                  Div(
-                    attrs = {
-                      id(portElementId(node, output.port))
-                      style {
-                        textAlign("right")
-                        padding(3.px, 5.px)
-                      }
-                    },
-                    content = {
-                      Text(output.name)
-                    }
-                  )
+                  NodePort(output)
                 }
               }
             )
@@ -370,6 +443,121 @@ fun Node(node: NodeViewModel, scale: Double) {
           }
         }
       )
+    }
+  )
+}
+
+@Composable
+fun NodePort(port: NodePortViewModel) {
+  val right = port is NodeOutputViewModel
+  var hovering by mutableStateOf(false)
+  Div(
+    attrs = {
+      id(portElementId(port.port))
+      style {
+        if (right) {
+          justifyContent(JustifyContent.End)
+        }
+        paddingLeft(if (right) 10.px else 0.px)
+        paddingTop(3.px)
+        paddingBottom(3.px)
+        paddingRight(if (right) 0.px else 10.px)
+        display(DisplayStyle.Flex)
+        alignItems("center")
+      }
+    },
+    content = {
+      val circle: @Composable () -> Unit = {
+        Div(
+          attrs = {
+            style {
+              marginLeft(5.px)
+              marginRight(5.px)
+              height(10.px)
+              width(10.px)
+              backgroundColor(Color.green)
+              borderRadius(50.percent)
+              display(DisplayStyle.Flex)
+            }
+            onMouseEnter {
+              hovering = true
+              port.onStartHover()
+            }
+            onMouseLeave {
+              hovering = false
+              port.onStopHover()
+            }
+            onMouseUp {
+              port.onStopDragOutput()
+            }
+            if (port is NodeOutputViewModel) {
+              onMouseDown {
+                port.onStartDragOutput()
+              }
+            } else if (port is NodeInputViewModel) {
+              onClick {
+                port.disconnect()
+              }
+            }
+          },
+          content = {
+            Div(
+              attrs = {
+                style {
+                  height(8.px)
+                  width(8.px)
+                  backgroundColor(EditorColors.NodePortInner)
+                  borderRadius(50.percent)
+                  display(DisplayStyle.Flex)
+                  property("margin", "auto")
+                }
+              },
+              content = {
+                val connected = when (port) {
+                  is NodeInputViewModel -> port.connection != null
+                  is NodeOutputViewModel -> port.connected
+                  else -> false
+                }
+                if (hovering || port.state == PortState.Dragging || connected) {
+                  Div(
+                    attrs = {
+                      style {
+                        height(6.px)
+                        width(6.px)
+                        backgroundColor(port.color.toCSS())
+                        borderRadius(50.percent)
+                        display(DisplayStyle.Flex)
+                        property("margin", "auto")
+                      }
+                    }
+                  )
+                }
+              }
+            )
+          }
+        )
+      }
+//      val line: @Composable () -> Unit = {
+//        Span(
+//          attrs = {
+//            style {
+//              height(2.px)
+//              width(7.px)
+//              backgroundColor(port.color.alpha(0.45).toCSS())
+//              display(DisplayStyle.InlineBlock)
+//            }
+//          }
+//        )
+//      }
+      if (!right) {
+//        line()
+        circle()
+      }
+      Text(port.name)
+      if (right) {
+        circle()
+//        line()
+      }
     }
   )
 }

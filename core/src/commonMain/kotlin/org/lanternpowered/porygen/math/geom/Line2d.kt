@@ -9,16 +9,20 @@
  */
 package org.lanternpowered.porygen.math.geom
 
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import org.lanternpowered.porygen.math.vector.Vec2d
 import kotlin.math.max
 import kotlin.math.min
 
-class Line2d(start: Vec2d, end: Vec2d) : AbstractLine2<Vec2d>(start, end) {
+@Serializable
+class Line2d private constructor(
+  override val start: Vec2d,
+  override val end: Vec2d,
+  @Transient private val ignored: Unit = Unit,
+) : AbstractLine2<Vec2d>() {
 
   override val center: Vec2d by lazy { start + ((end - start) / 2.0) }
-
-  constructor(startX: Double, startY: Double, endX: Double, endY: Double) :
-    this(Vec2d(startX, startY), Vec2d(endX, endY))
 
   override fun intersects(startX: Double, startY: Double, endX: Double, endY: Double) =
     linesIntersect(start.x, start.y, end.x, end.y, startX, startY, endX, endY)
@@ -27,6 +31,29 @@ class Line2d(start: Vec2d, end: Vec2d) : AbstractLine2<Vec2d>(start, end) {
   override fun toDouble() = this
 
   companion object {
+
+    operator fun invoke(
+      start: Vec2d,
+      end: Vec2d,
+    ): Line2d {
+      val realStart: Vec2d
+      val realEnd: Vec2d
+      if (start < end) {
+        realStart = start
+        realEnd = end
+      } else {
+        realStart = end
+        realEnd = start
+      }
+      return Line2d(realStart, realEnd, Unit)
+    }
+
+    operator fun invoke(
+      startX: Double,
+      startY: Double,
+      endX: Double,
+      endY: Double,
+    ): Line2d = Line2d(Vec2d(startX, startY), Vec2d(endX, endY))
 
     // https://www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
 

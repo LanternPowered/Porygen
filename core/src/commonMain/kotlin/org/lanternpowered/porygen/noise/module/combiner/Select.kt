@@ -53,7 +53,7 @@ class Select(
   val control: NoiseModule,
   edgeFalloff: Double = DefaultEdgeFalloff,
   val lowerBound: Double = DefaultLowerBound,
-  val upperBound: Double = DefaultUpperBound
+  val upperBound: Double = DefaultUpperBound,
 ) : NoiseModule {
 
   val edgeFalloff: Double

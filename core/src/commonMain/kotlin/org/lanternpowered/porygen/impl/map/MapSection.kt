@@ -12,20 +12,18 @@ package org.lanternpowered.porygen.impl.map
 import org.lanternpowered.porygen.math.geom.Rectanglei
 
 /**
- * Represents a "section" of a map. A section is a bigger area
- * that contains multiple chunks. The map is also generated per
- * section.
+ * Represents a "section" of a map. A section is a bigger area that contains multiple chunks. The
+ * map is also generated per section.
  *
- * So if you request a single chunk, the whole section will be
- * loaded into memory.
+ * So if you request a single chunk, the whole section will be loaded into memory.
  */
 class MapSection(
-    val position: SectionPosition,
-    val map: MapImpl,
-    val viewRectangle: Rectanglei,
-    val cells: Collection<CellImpl>,
-    val corners: Collection<CornerImpl>,
-    val edges: Collection<EdgeImpl>
+  val position: SectionPosition,
+  val map: MapImpl,
+  val viewRectangle: Rectanglei,
+  val cells: Collection<CellImpl>,
+  val corners: Collection<CornerImpl>,
+  val edges: Collection<EdgeImpl>,
 ) {
 
   /**
@@ -45,8 +43,7 @@ class MapSection(
   fun removeReference(reference: MapSectionReference) {
     if (!this.references.remove(reference))
       return
-    // No more references, the section is
-    // no longer needed
+    // No more references, the section is no longer needed
     if (this.references.isEmpty()) {
       // TODO: Remove section from map
     }

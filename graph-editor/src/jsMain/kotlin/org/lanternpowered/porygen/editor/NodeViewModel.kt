@@ -12,8 +12,6 @@ package org.lanternpowered.porygen.editor
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import org.jetbrains.compose.web.css.CSSColorValue
-import org.jetbrains.compose.web.css.Color
 import org.lanternpowered.porygen.graph.node.Node
 import org.lanternpowered.porygen.graph.node.NodeGraph
 import org.lanternpowered.porygen.graph.node.NodeId
@@ -24,6 +22,8 @@ import org.lanternpowered.porygen.graph.node.port.PortId
 import org.lanternpowered.porygen.graph.node.property.Property
 import org.lanternpowered.porygen.math.geom.Rectangled
 import org.lanternpowered.porygen.math.vector.Vec2d
+import org.lanternpowered.porygen.util.Color
+import org.lanternpowered.porygen.util.Colors
 import org.lanternpowered.porygen.util.collections.asUnmodifiableCollection
 import org.lanternpowered.porygen.util.type.GenericType
 
@@ -35,7 +35,8 @@ enum class PortState {
 }
 
 class NodeGraphViewModel(
-  val graph: NodeGraph
+  val graph: NodeGraph,
+  val save: () -> Unit,
 ) {
 
   private val nodesById = graph.nodes.associate { it.id to NodeViewModel(it, this) }
@@ -145,17 +146,31 @@ abstract class NodePortViewModel(
   val dataType: GenericType<*>
     get() = port.dataType
 
-  val color: CSSColorValue = Color.red // TODO
+  val color: Color = Colors.Green // TODO
 
   var position by mutableStateOf(Vec2d.Zero)
 
   var state by mutableStateOf(PortState.Default)
+
+  fun onStartHover() {
+    node.onStartHover(this)
+  }
+
+  fun onStopHover() {
+    node.onStopHover()
+  }
+
+  fun onStopDragOutput() {
+    node.onStopDragOutput()
+  }
 }
 
 class NodeOutputViewModel(
   node: NodeViewModel,
   override val port: OutputPort<*>
 ) : NodePortViewModel(node) {
+
+  var connected: Boolean by mutableStateOf(false)
 
   fun connectTo(input: NodeInputViewModel) {
     val previousConnectedNode = input.connection?.node
@@ -165,6 +180,11 @@ class NodeOutputViewModel(
     if (previousConnectedNode != null && previousConnectedNode != node)
       previousConnectedNode.updateConnections()
     input.node.updateConnections()
+    node.save()
+  }
+
+  fun onStartDragOutput() {
+    node.onStartDragOutput(this)
   }
 }
 
@@ -187,6 +207,7 @@ class NodeInputViewModel(
     port.disconnect()
     connectedNode.updateConnections()
     node.updateConnections()
+    node.save()
   }
 
   fun isDataTypeAccepted(type: GenericType<*>): Boolean =
@@ -245,6 +266,10 @@ class NodeViewModel(
   val outputs get() = outputsByKey.values
   val properties = node.properties.map(::NodePropertyViewModel)
 
+  fun save() {
+    graphViewModel.save()
+  }
+
   fun inputOrNull(portId: PortId): NodeInputViewModel? =
     inputsByKey[portId]
 
@@ -262,8 +287,10 @@ class NodeViewModel(
 
   private fun loadConnections() = node.outputs
     .flatMap { output ->
+      val outputViewModel = output(output.id)
+      outputViewModel.connected = output.connections.isNotEmpty()
       output.connections.map { input ->
-        NodeConnection(output(output.id), input.id, input.node.id)
+        NodeConnection(outputViewModel, input.id, input.node.id)
       }
     }
 
@@ -271,9 +298,8 @@ class NodeViewModel(
     connections = loadConnections()
   }
 
-  fun onStartDragOutput(portId: PortId) {
-    val output = outputsByKey[portId] ?: error("Port with id $id is missing.")
-    graphViewModel.onStartDragOutputPort(output)
+  fun onStartDragOutput(port: NodeOutputViewModel) {
+    graphViewModel.onStartDragOutputPort(port)
   }
 
   fun onStopDragOutput() {
@@ -283,8 +309,8 @@ class NodeViewModel(
   private fun port(portId: PortId): NodePortViewModel =
     outputsByKey[portId] ?: inputsByKey[portId] ?: error("Port with id $id is missing.")
 
-  fun onStartHover(portId: PortId) {
-    graphViewModel.onStartPortHover(port(portId))
+  fun onStartHover(port: NodePortViewModel) {
+    graphViewModel.onStartPortHover(port)
   }
 
   fun onStopHover() {
@@ -314,6 +340,7 @@ class NodeViewModel(
   fun updatePosition(position: Vec2d) {
     node.position = position
     this.position = position
+    graphViewModel.save()
   }
 
   fun updateExpanded(expanded: Boolean) {

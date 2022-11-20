@@ -48,9 +48,9 @@ import org.lanternpowered.porygen.noise.Utils
  *   between all control points is inverted.
  */
 class Terrace(
-    val source: NoiseModule,
-    controlPoints: List<Double>,
-    val invertTerraces: Boolean = false
+  val source: NoiseModule,
+  controlPoints: List<Double>,
+  val invertTerraces: Boolean = false,
 ) : NoiseModule {
 
   /**
@@ -69,11 +69,12 @@ class Terrace(
    *   between all control points is inverted.
    */
   constructor(source: NoiseModule, controlPointsCount: Int, invertTerraces: Boolean = false) :
-      this(source, getDefaultControlPoints(controlPointsCount), invertTerraces)
+    this(source, getDefaultControlPoints(controlPointsCount), invertTerraces)
 
   init {
     check(controlPoints.toSet().size == controlPoints.size) {
-      "Every control point value must be unique" }
+      "Every control point value must be unique"
+    }
   }
 
   override fun get(x: Double, y: Double, z: Double): Double {

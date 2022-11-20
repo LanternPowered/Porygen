@@ -36,26 +36,36 @@
  */
 package org.lanternpowered.porygen.noise
 
+import kotlinx.serialization.Serializable
 import org.lanternpowered.porygen.noise.Utils.LatticePointBCC
 
+@Serializable
 enum class SimplexNoiseQuality(
-    val kernelSquaredRadius: Double,
-    val randomVectors: DoubleArray,
-    val lookup: Array<LatticePointBCC>
+  val kernelSquaredRadius: Double,
+  val randomVectors: DoubleArray,
+  val lookup: Array<LatticePointBCC>
 ) {
 
   /**
-   * Generates simplex-style noise using the four nearst lattice vertices and smaller kernels. The
+   * Generates simplex-style noise using the four nearest lattice vertices and smaller kernels. The
    * appearance might be more bubbly, and there might be more straight line segments in the ridged
    * noise. However, Ridged noise using this setting may still be more favorable than the
    * Perlin / non-Simplex Ridged noise.
    */
-  Standard(0.5, Utils.RANDOM_VECTORS_SIMPLEXSTYLE_STANDARD, Utils.LOOKUP_SIMPLEXSTYLE_STANDARD),
+  Standard(
+    kernelSquaredRadius = 0.5,
+    randomVectors = Utils.RANDOM_VECTORS_SIMPLEXSTYLE_STANDARD,
+    lookup = Utils.LOOKUP_SIMPLEXSTYLE_STANDARD
+  ),
 
   /**
    * Generates simplex-style using the eight nearest lattice vertices and larger kernels. The
    * appearance will be smoother, and there will be fewer to no straight line segments in the ridged
    * noise.
    */
-  Smooth(0.75, Utils.RANDOM_VECTORS_SIMPLEXSTYLE_SMOOTH, Utils.LOOKUP_SIMPLEXSTYLE_SMOOTH)
+  Smooth(
+    kernelSquaredRadius = 0.75,
+    randomVectors = Utils.RANDOM_VECTORS_SIMPLEXSTYLE_SMOOTH,
+    lookup = Utils.LOOKUP_SIMPLEXSTYLE_SMOOTH
+  )
 }

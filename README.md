@@ -6,8 +6,23 @@ A polygonal world generator. This is the official world generator that will be u
 * [Issues]
 * [Wiki]
 
+## Modules
+* core
+  * Core package with all the noise modules and world generators. 
+  * Supports `java`, `js` and `native`.
+* graph
+  * Graph package that allows the modules to be connected using nodes with input and output ports. 
+    Node structures can be serialized/deserialized and can be built using the node editor.
+  * Supports `java` and `js`
+* graph-editor
+  * Graph editor web application.
+* render
+  * Temporary package with test examples that render to java frames.
+* sponge-7
+  * Sponge plugin that allows graphs to be used for Minecraft terrain generation.
+
 ## Prerequisites
-* [Java 8]
+* Java 17
 
 ## Clone
 The following steps will ensure your project is cloned properly.
@@ -18,27 +33,18 @@ The following steps will ensure your project is cloned properly.
 ## Building
 __Note:__ If you do not have [Gradle] installed then use ./gradlew for Unix systems or Git Bash and gradlew.bat for Windows systems in place of any 'gradle' command.
 
-In order to build Porygen you simply need to run the `gradle build` command. You can find the compiled JAR file in `./build/libs` labeled similarly to 'porygen-x.x.x-SNAPSHOT.jar'.
+In order to build Porygen you simply need to run the `gradle build` command.
 
 ## IDE Setup
 __Note:__ If you do not have [Gradle] installed then use ./gradlew for Unix systems or Git Bash and gradlew.bat for Windows systems in place of any 'gradle' command.
-
-__For [Eclipse]__
-  1. Run `gradle eclipse`
-  2. Import Porygen as an existing project (File > Import > General)
-  3. Select the root folder for Porygen
-  4. Check Porygen when it finishes building and click **Finish**
 
 __For [IntelliJ]__
   1. Make sure you have the Gradle plugin enabled (File > Settings > Plugins)
   2. Click File > New > Project from Existing Sources > Gradle and select the root folder for Porygen
   3. Select Use customizable gradle wrapper if you do not have Gradle installed.
 
-[Eclipse]: https://eclipse.org/
 [Gradle]: https://www.gradle.org/
-[IntelliJ]: http://www.jetbrains.com/idea/
 [Source]: https://github.com/LanternPowered/Porygen
-[Java 8]: http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
 [Issues]: https://github.com/LanternPowered/Porygen/issues
 [Wiki]: https://github.com/LanternPowered/Porygen/wiki
 [MIT License]: https://www.tldrlegal.com/license/mit-license

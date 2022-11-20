@@ -9,9 +9,16 @@
  */
 package org.lanternpowered.porygen.math.geom
 
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import org.lanternpowered.porygen.math.vector.Vec2i
 
-class Line2i(start: Vec2i, end: Vec2i) : AbstractLine2<Vec2i>(start, end) {
+@Serializable
+class Line2i private constructor(
+  override val start: Vec2i,
+  override val end: Vec2i,
+  @Transient private val ignored: Unit = Unit,
+) : AbstractLine2<Vec2i>() {
 
   override val center: Vec2i by lazy {
     val dStart = start.toDouble()
@@ -24,10 +31,14 @@ class Line2i(start: Vec2i, end: Vec2i) : AbstractLine2<Vec2i>(start, end) {
 
   override fun intersects(startX: Double, startY: Double, endX: Double, endY: Double) =
     Line2d.linesIntersect(
-      start.x.toDouble(), start.y.toDouble(),
-      end.x.toDouble(), end.y.toDouble(),
-      startX, startY,
-      endX, endY,
+      p1X = start.x.toDouble(),
+      p1Y = start.y.toDouble(),
+      q1X = end.x.toDouble(),
+      q1Y = end.y.toDouble(),
+      p2X = startX,
+      p2Y = startY,
+      q2X = endX,
+      q2Y = endY,
     )
 
   override fun toInt() = this
@@ -35,4 +46,31 @@ class Line2i(start: Vec2i, end: Vec2i) : AbstractLine2<Vec2i>(start, end) {
 
   fun translate(offset: Vec2i): Line2i =
     Line2i(start + offset, end + offset)
+
+  companion object {
+
+    operator fun invoke(
+      start: Vec2i,
+      end: Vec2i,
+    ): Line2i {
+      val realStart: Vec2i
+      val realEnd: Vec2i
+      if (start < end) {
+        realStart = start
+        realEnd = end
+      } else {
+        realStart = end
+        realEnd = start
+      }
+      return Line2i(realStart, realEnd, Unit)
+    }
+
+    operator fun invoke(
+      startX: Int,
+      startY: Int,
+      endX: Int,
+      endY: Int,
+    ): Line2i = Line2i(Vec2i(startX, startY), Vec2i(endX, endY))
+
+  }
 }
