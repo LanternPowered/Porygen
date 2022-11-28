@@ -18,16 +18,16 @@ import kotlin.random.Random
  * Has a period of 2^192 - 2^32.
  */
 class XorWowRandom private constructor(
-    private var x: Int,
-    private var y: Int,
-    private var z: Int,
-    private var w: Int,
-    private var v: Int,
-    private var d: Int
+  private var x: Int,
+  private var y: Int,
+  private var z: Int,
+  private var w: Int,
+  private var v: Int,
+  private var d: Int,
 ) : Random() {
 
   private constructor(seed1: Int, seed2: Int) :
-      this(seed1, seed2, 0, 0, seed1.inv(), (seed1 shl 10) xor (seed2 ushr 4))
+    this(seed1, seed2, 0, 0, seed1.inv(), (seed1 shl 10) xor (seed2 ushr 4))
 
   constructor(seed: Long) : this((seed and 0xffffffffL).toInt(), (seed ushr 32).toInt())
 
@@ -46,5 +46,5 @@ class XorWowRandom private constructor(
   }
 
   override fun nextBits(bitCount: Int): Int =
-      nextInt().takeUpperBits(bitCount)
+    nextInt().takeUpperBits(bitCount)
 }

@@ -41,28 +41,28 @@ private class ScalePoint3(
 }
 
 fun Vec2dToDouble.scalePoint(xScale: Double = 1.0, yScale: Double = 1.0): Vec2dToDouble =
-    ScalePoint2(this, xScale, yScale)
+  ScalePoint2(this, xScale, yScale)
 
 fun Vec2dToDouble.scalePoint(scale: Vec2d): Vec2dToDouble =
-    ScalePoint2(this, scale.x, scale.y)
+  ScalePoint2(this, scale.x, scale.y)
 
 fun Vec2dToDouble.scalePoint(scale: Double): Vec2dToDouble =
-    ScalePoint2(this, scale, scale)
+  ScalePoint2(this, scale, scale)
 
 fun Vec3dToDouble.scalePoint(xScale: Double = 1.0, yScale: Double = 1.0, zScale: Double = 1.0): Vec3dToDouble =
-    ScalePoint3(this, xScale, yScale, zScale)
+  ScalePoint3(this, xScale, yScale, zScale)
 
 fun Vec3dToDouble.scalePoint(scale: Double): Vec3dToDouble =
-    ScalePoint3(this, scale, scale, scale)
+  ScalePoint3(this, scale, scale, scale)
 
 fun Vec3dToDouble.scalePoint(scale: Vec3d): Vec3dToDouble =
-    ScalePoint3(this, scale.x, scale.y, scale.z)
+  ScalePoint3(this, scale.x, scale.y, scale.z)
 
 fun NoiseModule.scalePoint(xScale: Double = 1.0, yScale: Double = 1.0, zScale: Double = 1.0): NoiseModule =
-    ScalePoint3(this, xScale, yScale, zScale).asNoiseModule()
+  ScalePoint3(this, xScale, yScale, zScale).asNoiseModule()
 
 fun NoiseModule.scalePoint(scale: Double): NoiseModule =
-    ScalePoint3(this, scale, scale, scale).asNoiseModule()
+  ScalePoint3(this, scale, scale, scale).asNoiseModule()
 
 fun NoiseModule.scalePoint(scale: Vec3d): NoiseModule =
-    ScalePoint3(this, scale.x, scale.y, scale.z).asNoiseModule()
+  ScalePoint3(this, scale.x, scale.y, scale.z).asNoiseModule()

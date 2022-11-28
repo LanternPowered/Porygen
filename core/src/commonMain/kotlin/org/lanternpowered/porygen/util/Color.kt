@@ -7,7 +7,7 @@
  * This work is licensed under the terms of the MIT License (MIT). For
  * a copy, see 'LICENSE.txt' or <https://opensource.org/licenses/MIT>.
  */
-@file:Suppress("FunctionName", "NOTHING_TO_INLINE", "DEPRECATION")
+@file:Suppress("FunctionName")
 
 package org.lanternpowered.porygen.util
 
@@ -117,6 +117,8 @@ fun Collection<Color>.mix(): Color {
 }
 
 object Colors {
+
+  val Transparent = Color(0, 0, 0, 0)
 
   val Red = Color(255, 0, 0)
 

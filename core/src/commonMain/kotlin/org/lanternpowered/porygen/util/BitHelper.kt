@@ -15,7 +15,7 @@ import kotlin.jvm.JvmStatic
  * Takes upper [bitCount] bits (0..32) from this number.
  */
 fun Int.takeUpperBits(bitCount: Int): Int =
-    (this ushr (32 - bitCount)) and (-bitCount shr 31)
+  (this ushr (32 - bitCount)) and (-bitCount shr 31)
 
 object BitHelper {
 

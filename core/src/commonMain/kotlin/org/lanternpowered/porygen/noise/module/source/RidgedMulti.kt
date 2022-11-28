@@ -64,7 +64,8 @@ class RidgedMulti(
 
   init {
     check(octaves in 1..MaxOctaves) {
-      "octaves must be between 1 and $MaxOctaves (inclusive)" }
+      "octaves must be between 1 and $MaxOctaves (inclusive)"
+    }
 
     // Calculate the spectral weights
 
@@ -97,7 +98,7 @@ class RidgedMulti(
     val offset = 1.0
     val gain = 2.0
 
-    for (curOctave in 0 until octaves) {
+    for (curOctave in 0..<octaves) {
       // Make sure that these floating-point values have the same range as a 32-
       // bit integer so that we can pass them to the coherent-noise functions.
       val nx = Utils.makeIntRange(x1)
@@ -106,7 +107,7 @@ class RidgedMulti(
 
       // Get the coherent-noise value.
       val seed = seed + curOctave and 0x7fffffff
-      var signal = Noise.gradientCoherentNoise3D(nx, ny, nz, seed, quality) * 2 - 1
+      var signal = Noise.gradientCoherentNoise3D(nx, ny, nz, seed, quality)
 
       // Make the ridges.
       signal = abs(signal)
@@ -122,12 +123,7 @@ class RidgedMulti(
 
       // Weight successive contributions by the previous signal.
       weight = signal * gain
-      if (weight > 1.0) {
-        weight = 1.0
-      }
-      if (weight < 0.0) {
-        weight = 0.0
-      }
+      weight = weight.coerceIn(0.0, 1.0)
 
       // Add the signal to the output value.
       value += signal * spectralWeights[curOctave]

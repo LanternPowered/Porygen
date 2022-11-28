@@ -29,7 +29,10 @@ internal class InputPortImpl<T>(
   node: NodeImpl,
   private val defaultSupplier: () -> T?,
 ) : PortImpl<T>(id, name, dataType, node), InputPort<T> {
+
   override var connection: OutputPort<*>? = null
+  override var value: T? = null
+
   override val default: T?
     get() = defaultSupplier()
 
@@ -40,8 +43,7 @@ internal class InputPortImpl<T>(
     node.graph.spec.getConversionFunction(type, dataType) != null
 
   override fun buildTree(): T? {
-    val output = connection
-      ?: return null
+    val output = connection ?: return value
     val value = output.buildTree()
     if (!dataType.isNullable && value == null)
       return null

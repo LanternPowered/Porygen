@@ -77,19 +77,18 @@ class Billow(
 
     var value = 0.0
     var curPersistence = 1.0
-
-    for (curOctave in 0 until octaves) {
-      // Make sure that these floating-point values have the same range as a 32-
-      // bit integer so that we can pass them to the coherent-noise functions.
+    for (curOctave in 0..<octaves) {
+      // Make sure that these floating-point values have the same range as a 32-bit integer so
+      // that we can pass them to the coherent-noise functions.
       val nx = Utils.makeIntRange(x1)
       val ny = Utils.makeIntRange(y1)
       val nz = Utils.makeIntRange(z1)
 
-      // Get the coherent-noise value from the input value and add it to the
-      // final result.
+      // Get the coherent-noise value from the input value and add it to the final result.
       val seed = seed + curOctave
-      var signal = Noise.gradientCoherentNoise3D(nx, ny, nz, seed, quality) * 2 - 1
-      signal = abs(signal)
+      var signal = Noise.gradientCoherentNoise3D(nx, ny, nz, seed, quality)
+      signal *= 0.87 // scale closer to [-1, 1]
+      signal = 2.0 * abs(signal) - 1.0
       value += signal * curPersistence
 
       // Prepare the next octave.
@@ -98,9 +97,7 @@ class Billow(
       z1 *= lacunarity
       curPersistence *= persistence
     }
-
-    value += 0.25
-    return value
+    return value / 2 + 1.0 // ~[-1, 1] to ~[0, 1]
   }
 
   companion object {

@@ -16,8 +16,8 @@ import kotlin.random.Random
  * Zooms in on the points of the underlying [PointsGenerator].
  */
 class ZoomPointsGenerator(
-    private val original: PointsGenerator,
-    private val scale: Vec2d
+  private val original: PointsGenerator,
+  private val scale: Vec2d,
 ) : PointsGenerator {
 
   override fun generate(random: Random): List<Vec2d> =

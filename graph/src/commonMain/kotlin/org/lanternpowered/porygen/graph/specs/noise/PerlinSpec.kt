@@ -46,11 +46,14 @@ object PerlinSpec : NodeSpec("noise/perlin", "Perlin") {
   )
 
   val output = output("out") { node ->
+    val octaves = node[octaves]
+    if (octaves !in Perlin.ValidOctavesRange)
+      return@output null
     Perlin(
       frequency = node[frequency],
       lacunarity = node[lacunarity],
       quality = node[quality],
-      octaves = node[octaves],
+      octaves = octaves,
       persistence = node[persistence],
       seed = node[seed],
     )

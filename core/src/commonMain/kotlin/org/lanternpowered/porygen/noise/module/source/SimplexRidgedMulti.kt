@@ -69,7 +69,8 @@ class SimplexRidgedMulti(
 
   init {
     check(octaves in 1..MaxOctaves) {
-      "octaves must be between 1 and $MaxOctaves (inclusive)" }
+      "octaves must be between 1 and $MaxOctaves (inclusive)"
+    }
 
     // Calculate the spectral weights
 

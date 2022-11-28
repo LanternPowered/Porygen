@@ -11,31 +11,32 @@ package org.lanternpowered.porygen.editor.spec
 
 import androidx.compose.runtime.Composable
 import org.lanternpowered.porygen.graph.node.Node
+import org.lanternpowered.porygen.graph.node.port.InputPort
 import org.lanternpowered.porygen.graph.node.spec.InputPortSpec
 import org.lanternpowered.porygen.graph.node.spec.NodeSpec
 import org.lanternpowered.porygen.graph.node.spec.OutputPortSpec
-import org.lanternpowered.porygen.graph.specs.noise.PerlinSpec
+import org.lanternpowered.porygen.util.type.GenericType
+import org.lanternpowered.porygen.util.type.genericTypeOf
 import org.lanternpowered.porygen.value.Vec2dToDouble
 import org.lanternpowered.porygen.value.Vec3dToDouble
 
 interface NodeGraphEditorSpec {
 
-  companion object {
+  fun <S : NodeSpec> spec(spec: S): NodeEditorSpec<S>
 
-    val Default = NodeGraphEditorSpec {
-      type(PerlinSpec) {
-        preview { node ->
-          // TODO: 2D image
-        }
-      }
-    }
-  }
+  fun <T> constantContent(type: GenericType<T>): (@Composable NodeSpec.(port: InputPort<T>) -> Unit)?
 }
 
 interface NodeGraphEditorSpecBuilder {
 
-  fun <S : NodeSpec> type(spec: S, fn: NodeEditorSpecBuilder<S>.() -> Unit)
+  fun <S : NodeSpec> type(spec: S, block: NodeEditorSpecBuilder<S>.() -> Unit)
+
+  fun <T> constant(type: GenericType<T>, content: @Composable NodeSpec.(port: InputPort<T>) -> Unit)
 }
+
+inline fun <reified T> NodeGraphEditorSpecBuilder.constant(
+  noinline content: @Composable NodeSpec.(port: InputPort<T>) -> Unit
+) = constant(genericTypeOf(), content)
 
 interface NodeEditorSpecBuilder<S : NodeSpec> {
 
@@ -55,7 +56,8 @@ interface NodeEditorSpecBuilder<S : NodeSpec> {
   fun preview(preview: @Composable S.(node: Node) -> Unit)
 }
 
-fun NodeGraphEditorSpec(fn: NodeGraphEditorSpecBuilder.() -> Unit): NodeGraphEditorSpec = TODO()
+fun NodeGraphEditorSpec(block: NodeGraphEditorSpecBuilder.() -> Unit): NodeGraphEditorSpec =
+  NodeGraphEditorSpecImpl().also(block)
 
 fun <S : NodeSpec> NodeEditorSpecBuilder<S>.vec2dPreview(output: S.(node: Node) -> Vec2dToDouble) {
   TODO()

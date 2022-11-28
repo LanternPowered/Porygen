@@ -27,6 +27,9 @@ internal class DynamicNodeImpl(
   spec: NodeSpec?,
 ) : NodeImpl(id, title, position, graph), DynamicNode {
 
+  override val spec: NodeSpec?
+    get() = null
+
   init {
     if (spec != null)
       initSpec(spec)

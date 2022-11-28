@@ -41,6 +41,7 @@ import org.lanternpowered.porygen.noise.Noise
 import org.lanternpowered.porygen.noise.NoiseModule
 import org.lanternpowered.porygen.noise.SimplexNoiseQuality
 import org.lanternpowered.porygen.noise.Utils
+import kotlin.math.pow
 
 /**
  * Generates summed octave Simplex-style noise. The base Simplex uses a different
@@ -64,6 +65,13 @@ class Simplex(
   val seed: Int = DefaultSeed,
 ) : NoiseModule {
 
+  /*
+   * Each successive octave adds persistence ^ current_octaves to max possible output.
+   * So (p = persistence, o = octave): Max(simplex) = p + p*p + p*p*p + ... + p^(o-1).
+   * Using geometric series formula we can narrow it down to this:
+   */
+  private val scaleFactor = (persistence.pow(octaves) - 1) / (persistence - 1.0)
+
   init {
     check(octaves in 1..MaxOctaves) {
       "octaves must be between 1 and $MaxOctaves (inclusive)"
@@ -82,7 +90,7 @@ class Simplex(
     y1 *= frequency
     z1 *= frequency
 
-    for (curOctave in 0 until octaves) {
+    for (curOctave in 0..<octaves) {
       // Make sure that these floating-point values have the same range as a 32-
       // bit integer so that we can pass them to the coherent-noise functions.
       val nx = Utils.makeIntRange(x1)
@@ -102,7 +110,7 @@ class Simplex(
       curPersistence *= persistence
     }
 
-    return value
+    return value / scaleFactor
   }
 
   companion object {

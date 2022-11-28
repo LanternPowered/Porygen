@@ -1,3 +1,12 @@
+/*
+ * Porygen
+ *
+ * Copyright (c) LanternPowered <https://www.lanternpowered.org>
+ * Copyright (c) contributors
+ *
+ * This work is licensed under the terms of the MIT License (MIT). For
+ * a copy, see 'LICENSE.txt' or <https://opensource.org/licenses/MIT>.
+ */
 package org.lanternpowered.porygen.graph.serializer
 
 import kotlinx.serialization.json.Json
@@ -18,6 +27,7 @@ import org.lanternpowered.porygen.graph.node.NodeGraph
 import org.lanternpowered.porygen.graph.node.NodeGraphImpl
 import org.lanternpowered.porygen.graph.node.NodeId
 import org.lanternpowered.porygen.graph.node.SpecNodeImpl
+import org.lanternpowered.porygen.graph.node.port.InputPort
 import org.lanternpowered.porygen.graph.node.port.PortId
 import org.lanternpowered.porygen.graph.node.property.Property
 import org.lanternpowered.porygen.graph.node.property.PropertyId
@@ -37,6 +47,7 @@ private object Keys {
   const val Expanded = "expanded"
   const val Connections = "connections"
   const val Outputs = "outputs"
+  const val Inputs = "inputs"
   const val Value = "value"
   const val Properties = "properties"
 }
@@ -58,7 +69,7 @@ fun JsonObject.toNodeGraph(graphSpec: NodeGraphSpec): NodeGraph {
     val node = graph.create(id, spec, position)
     node.title = nodeJson.require(Keys.Title).jsonPrimitive.content
     node.expanded = nodeJson.require(Keys.Expanded).jsonPrimitive.boolean
-    nodeJson.require(Keys.Properties).jsonArray.forEach { propertyJson ->
+    nodeJson[Keys.Properties]?.jsonArray?.forEach { propertyJson ->
       propertyJson as JsonObject
       val propertyId = PropertyId(propertyJson.require(Keys.Id).jsonPrimitive.content)
       val property = node.property(propertyId).unsafeCast<Property<Any?>?>()
@@ -69,12 +80,25 @@ fun JsonObject.toNodeGraph(graphSpec: NodeGraphSpec): NodeGraph {
         property.value = Json.decodeFromJsonElement(serializer, value)
       }
     }
+    nodeJson[Keys.Inputs]?.jsonArray?.forEach { inputJson ->
+      inputJson as JsonObject
+      val inputPortId = inputJson.require(Keys.Id).portId
+      val inputPort = node.input(inputPortId).unsafeCast<InputPort<Any?>?>()
+      if (inputPort != null) {
+        val serializer = serializerOrNull(inputPort.dataType.kType)
+          ?: error("${inputPort.dataType} is not deserializable")
+        val value = inputJson[Keys.Value]
+        if (value != null) {
+          inputPort.value = Json.decodeFromJsonElement(serializer, value)
+        }
+      }
+    }
   }
   nodeJsonArray.forEach { nodeJson ->
     nodeJson as JsonObject
     val id = NodeId(nodeJson.require(Keys.Id).jsonPrimitive.int)
     val node = graph[id]!!
-    nodeJson.require(Keys.Outputs).jsonArray.forEach { outputPortJson ->
+    nodeJson[Keys.Outputs]?.jsonArray?.forEach { outputPortJson ->
       outputPortJson as JsonObject
       val outputPortId = outputPortJson.require(Keys.Id).portId
       val outputPort = node.output(outputPortId)
@@ -123,28 +147,49 @@ fun NodeGraph.toJson(): JsonObject {
         put(Keys.Title, node.title)
         put(Keys.Position, Json.encodeToJsonElement(node.position))
         put(Keys.Expanded, node.expanded)
-        val outputPortArray = node.outputs.map { outputPort ->
-          buildJsonObject {
-            put(Keys.Id, outputPort.id.value)
-            val connectionArray = outputPort.connections.map { inputPort ->
-              buildJsonObject {
-                put(Keys.NodeId, inputPort.node.id.value)
-                put(Keys.PortId, inputPort.id.value)
+        val outputPortArray = node.outputs.mapNotNull { outputPort ->
+          if (outputPort.connections.isEmpty()) {
+            null
+          } else {
+            buildJsonObject {
+              put(Keys.Id, outputPort.id.value)
+              val connectionArray = outputPort.connections.map { inputPort ->
+                buildJsonObject {
+                  put(Keys.NodeId, inputPort.node.id.value)
+                  put(Keys.PortId, inputPort.id.value)
+                }
               }
+              put(Keys.Connections, JsonArray(connectionArray))
             }
-            put(Keys.Connections, JsonArray(connectionArray))
           }
         }
-        put(Keys.Outputs, JsonArray(outputPortArray))
-        val propertyArray = node.properties.map { property ->
-          buildJsonObject {
-            put(Keys.Id, property.id.value)
-            val serializer = serializerOrNull(property.dataType.kType)
-              ?: error("${property.dataType} is not serializable")
-            put(Keys.Value, Json.encodeToJsonElement(serializer, property.value))
+        if (outputPortArray.isNotEmpty())
+          put(Keys.Outputs, JsonArray(outputPortArray))
+        val inputPortArray = node.inputs.mapNotNull { inputPort ->
+          if (inputPort.value != null) {
+            buildJsonObject {
+              put(Keys.Id, inputPort.id.value)
+              val serializer = serializerOrNull(inputPort.dataType.kType)
+                ?: error("${inputPort.dataType} is not serializable")
+              put(Keys.Value, Json.encodeToJsonElement(serializer, inputPort.value))
+            }
+          } else {
+            null
           }
         }
-        put(Keys.Properties, JsonArray(propertyArray))
+        if (inputPortArray.isNotEmpty())
+          put(Keys.Inputs, JsonArray(inputPortArray))
+        if (node.properties.isNotEmpty()) {
+          val propertyArray = node.properties.map { property ->
+            buildJsonObject {
+              put(Keys.Id, property.id.value)
+              val serializer = serializerOrNull(property.dataType.kType)
+                ?: error("${property.dataType} is not serializable")
+              put(Keys.Value, Json.encodeToJsonElement(serializer, property.value))
+            }
+          }
+          put(Keys.Properties, JsonArray(propertyArray))
+        }
       }
     }
     put(Keys.Nodes, JsonArray(nodeArray))

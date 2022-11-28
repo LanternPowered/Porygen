@@ -64,6 +64,12 @@ interface InputPort<T> : Port<T> {
   val default: T?
 
   /**
+   * The constant value that is assigned to this input port, if applicable. Is ignored if the port
+   * is connected.
+   */
+  var value: T?
+
+  /**
    * Disconnects the input port from the currently connected output port, if any.
    */
   fun disconnect(): Boolean

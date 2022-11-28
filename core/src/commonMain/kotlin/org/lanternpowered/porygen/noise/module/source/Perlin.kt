@@ -77,7 +77,7 @@ class Perlin(
 
     var value = 0.0
     var curPersistence = 1.0
-    for (curOctave in 0 until octaves) {
+    for (curOctave in 0..<octaves) {
       // Make sure that these floating-point values have the same range as a 32-
       // bit integer so that we can pass them to the coherent-noise functions.
       val nx = Utils.makeIntRange(x1)
@@ -96,7 +96,7 @@ class Perlin(
       z1 *= lacunarity
       curPersistence *= persistence
     }
-    return value
+    return value / 2.0 + 0.5
   }
 
   companion object {

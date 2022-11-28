@@ -170,7 +170,16 @@ class NodeOutputViewModel(
   override val port: OutputPort<*>
 ) : NodePortViewModel(node) {
 
+  var tree: Any? by mutableStateOf(null)
   var connected: Boolean by mutableStateOf(false)
+
+  init {
+    rebuildTree()
+  }
+
+  fun rebuildTree() {
+    tree = port.buildTree()
+  }
 
   fun connectTo(input: NodeInputViewModel) {
     val previousConnectedNode = input.connection?.node
@@ -180,6 +189,7 @@ class NodeOutputViewModel(
     if (previousConnectedNode != null && previousConnectedNode != node)
       previousConnectedNode.updateConnections()
     input.node.updateConnections()
+    input.node.rebuildTree()
     node.save()
   }
 
@@ -207,6 +217,7 @@ class NodeInputViewModel(
     port.disconnect()
     connectedNode.updateConnections()
     node.updateConnections()
+    node.rebuildTree()
     node.save()
   }
 
@@ -236,7 +247,7 @@ class NodeConnection(
  * The view model of a single node.
  */
 class NodeViewModel(
-  private val node: Node,
+  val node: Node,
   val graphViewModel: NodeGraphViewModel
 ) {
 
@@ -265,6 +276,10 @@ class NodeViewModel(
   val inputs get() = inputsByKey.values
   val outputs get() = outputsByKey.values
   val properties = node.properties.map(::NodePropertyViewModel)
+
+  fun rebuildTree() {
+    outputs.forEach { it.rebuildTree() }
+  }
 
   fun save() {
     graphViewModel.save()

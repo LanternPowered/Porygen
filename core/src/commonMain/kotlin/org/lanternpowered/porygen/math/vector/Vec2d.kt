@@ -41,6 +41,9 @@ data class Vec2d(
   operator fun div(value: Vec2i): Vec2d =
     Vec2d(x / value.x, y / value.y)
 
+  operator fun times(value: Int): Vec2d =
+    Vec2d(x * value, y * value)
+
   operator fun times(value: Double): Vec2d =
     Vec2d(x * value, y * value)
 

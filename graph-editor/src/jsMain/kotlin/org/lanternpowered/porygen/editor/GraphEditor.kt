@@ -71,7 +71,7 @@ fun GraphEditor() {
     },
   content = {
     Menu()
-    NodeGrid(graph)
+    NodeGrid(graph, WebNodeGraphEditorSpec.Default)
   })
 }
 

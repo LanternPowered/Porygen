@@ -10,7 +10,6 @@
 package org.lanternpowered.porygen.util.type
 
 import org.lanternpowered.porygen.util.collections.asUnmodifiableList
-import org.lanternpowered.porygen.util.collections.computeIfAbsent
 import kotlin.reflect.KClass
 import kotlin.js.unsafeCast
 import kotlin.reflect.KType
@@ -35,7 +34,7 @@ actual fun KClass<*>.isSuperclassOf(derived: KClass<*>): Boolean {
     cache = HashMap()
     metadata.isSuperclass = cache
   }
-  return cache.computeIfAbsent(this) { checkSuperclass(this, derived) }
+  return cache.getOrPut(this) { checkSuperclass(this, derived) }
 }
 
 private fun checkSuperclass(base: KClass<*>, derived: KClass<*>): Boolean {

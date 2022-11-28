@@ -19,7 +19,7 @@ import kotlin.random.nextInt
  * @property amount The amount of points that will be generated
  */
 class WhiteNoisePointsGenerator(
-    private val amount: IntRange
+  private val amount: IntRange
 ) : PointsGenerator {
 
   override fun generate(random: Random): List<Vec2d> {

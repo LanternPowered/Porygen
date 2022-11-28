@@ -18,12 +18,12 @@ import kotlin.random.Random
  * Has a period of 2^192 - 1.
  */
 class Xor192Random private constructor(
-    private var x: Int,
-    private var y: Int,
-    private var z: Int,
-    private var w: Int,
-    private var v: Int,
-    private var u: Int
+  private var x: Int,
+  private var y: Int,
+  private var z: Int,
+  private var w: Int,
+  private var v: Int,
+  private var u: Int,
 ) : Random() {
 
   private constructor(seed1: Int, seed2: Int) : this(seed1, seed2, 0, seed1.inv(), 0, 0)
@@ -45,5 +45,5 @@ class Xor192Random private constructor(
   }
 
   override fun nextBits(bitCount: Int): Int =
-      nextInt().takeUpperBits(bitCount)
+    nextInt().takeUpperBits(bitCount)
 }

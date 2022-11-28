@@ -67,7 +67,12 @@ object Noise {
    * @return The generated gradient-coherent-noise value.
    */
   fun simplexStyleGradientCoherentNoise3D(
-      x: Double, y: Double, z: Double, seed: Int, orientation: LatticeOrientation, quality: SimplexNoiseQuality
+    x: Double,
+    y: Double,
+    z: Double,
+    seed: Int,
+    orientation: LatticeOrientation,
+    quality: SimplexNoiseQuality,
   ): Double {
     val squaredRadius = quality.kernelSquaredRadius
     val randomVectors = quality.randomVectors
@@ -149,7 +154,7 @@ object Noise {
   /**
    * Generates a gradient-coherent-noise value from the coordinates of a three-dimensional input value.
    *
-   * The return value ranges from 0 to 1.
+   * The return value ranges from -1 to 1.
    *
    * For an explanation of the difference between *gradient* noise and *value* noise, see the
    * comments for the GradientNoise3D() function.
@@ -216,16 +221,17 @@ object Noise {
   }
 
   /**
-   * Generates a gradient-noise value from the coordinates of a three-dimensional input value and the integer
-   * coordinates of a nearby three-dimensional value.
+   * Generates a gradient-noise value from the coordinates of a three-dimensional input value and
+   * the integer coordinates of a nearby three-dimensional value.
    *
-   * The difference between fx and ix must be less than or equal to one. The difference between [fy] and [iy]
-   * must be less than or equal to one. The difference between [fz] and [iz] must be less than or equal to one.
+   * The difference between fx and ix must be less than or equal to one. The difference between
+   * [fy] and [iy]  must be less than or equal to one. The difference between [fz] and [iz] must be
+   * less than or equal to one.
    *
-   * A *gradient*-noise function generates better-quality noise than a *value*-noise function. Most noise modules
-   * use gradient noise for this reason, although it takes much longer to calculate.
+   * A *gradient*-noise function generates better-quality noise than a *value*-noise function. Most
+   * noise modules use gradient noise for this reason, although it takes much longer to calculate.
    *
-   * The return value ranges from 0 to 1.
+   * The return value ranges from -1 to 1.
    *
    * This function generates a gradient-noise value by performing the following steps:
    * - It first calculates a random normalized vector based on the nearby integer value passed to this function.
@@ -233,8 +239,8 @@ object Noise {
    * - It then calculates the dot product of the above-generated value and the floating-point input value passed
    * to this function.
    *
-   * A noise function differs from a random-number generator because it always returns the same output value if
-   * the same input value is passed to it.
+   * A noise function differs from a random-number generator because it always returns the same
+   * output value if the same input value is passed to it.
    *
    * @param fx The floating-point @a x coordinate of the input value.
    * @param fy The floating-point @a y coordinate of the input value.
@@ -245,7 +251,15 @@ object Noise {
    * @param seed The random number seed.
    * @return The generated gradient-noise value.
    */
-  fun gradientNoise3D(fx: Double, fy: Double, fz: Double, ix: Int, iy: Int, iz: Int, seed: Int): Double {
+  private fun gradientNoise3D(
+    fx: Double,
+    fy: Double,
+    fz: Double,
+    ix: Int,
+    iy: Int,
+    iz: Int,
+    seed: Int
+  ): Double {
     // Randomly generate a gradient vector given the integer coordinates of the
     // input value.  This implementation generates a random number and uses it
     // as an index into a normalized-vector lookup table.
@@ -262,10 +276,9 @@ object Noise {
     val yvPoint = fy - iy
     val zvPoint = fz - iz
 
-    // Now compute the dot product of the gradient vector with the distance
-    // vector. The resulting value is gradient noise. Apply a scaling and
-    // offset value so that this noise value ranges from 0 to 1.
-    return xvGradient * xvPoint + yvGradient * yvPoint + zvGradient * zvPoint + 0.5
+    // Now compute the dot product of the gradient vector with the distance vector. The resulting
+    // value is gradient noise.
+    return xvGradient * xvPoint + yvGradient * yvPoint + zvGradient * zvPoint
   }
 
   /**
@@ -282,7 +295,7 @@ object Noise {
    * @param seed A random number seed.
    * @return The generated integer-noise value.
    */
-  fun intValueNoise3D(x: Int, y: Int, z: Int, seed: Int): Int {
+  private fun intValueNoise3D(x: Int, y: Int, z: Int, seed: Int): Int {
     // All constants are primes and must remain prime in order for this noise
     // function to work correctly.
     var n = X_NOISE_GEN * x + Y_NOISE_GEN * y + Z_NOISE_GEN * z + SEED_NOISE_GEN * seed and 0x7fffffff
@@ -338,10 +351,9 @@ object Noise {
       }
     }
 
-    // Now calculate the noise values at each vertex of the cube.  To generate
-    // the coherent-noise value at the input point, interpolate these eight
-    // noise values using the S-curve value as the interpolant (trilinear
-    // interpolation.)
+    // Now calculate the noise values at each vertex of the cube.  To generate the coherent-noise
+    // value at the input point, interpolate these eight noise values using the S-curve value as
+    // the interpolant (trilinear interpolation.)
     var n0 = valueNoise3D(x0, y0, z0, seed)
     var n1 = valueNoise3D(x1, y0, z0, seed)
     var ix0 = linearInterp(n0, n1, xs)
@@ -362,7 +374,7 @@ object Noise {
   /**
    * Generates a value-noise value from the coordinates of a three-dimensional input value.
    *
-   * The return value ranges from 0 to 1.
+   * The return value ranges from -1 to 1.
    *
    * A noise function differs from a random-number generator because it always returns the same
    * output value if the same input value is passed to it.
@@ -374,5 +386,5 @@ object Noise {
    * @return The generated value-noise value.
    */
   fun valueNoise3D(x: Int, y: Int, z: Int, seed: Int): Double =
-      intValueNoise3D(x, y, z, seed) / 2147483647.0
+    1.0 - intValueNoise3D(x, y, z, seed) / 1073741824.0
 }

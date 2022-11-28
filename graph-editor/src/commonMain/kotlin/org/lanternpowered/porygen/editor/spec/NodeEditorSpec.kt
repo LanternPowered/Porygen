@@ -7,20 +7,13 @@
  * This work is licensed under the terms of the MIT License (MIT). For
  * a copy, see 'LICENSE.txt' or <https://opensource.org/licenses/MIT>.
  */
-package org.lanternpowered.porygen.graph.node
+package org.lanternpowered.porygen.editor.spec
 
+import androidx.compose.runtime.Composable
+import org.lanternpowered.porygen.graph.node.Node
 import org.lanternpowered.porygen.graph.node.spec.NodeSpec
-import org.lanternpowered.porygen.math.vector.Vec2d
 
-internal class SpecNodeImpl(
-  id: NodeId,
-  title: String,
-  position: Vec2d,
-  graph: NodeGraphImpl,
-  override val spec: NodeSpec
-) : NodeImpl(id, title, position, graph) {
+interface NodeEditorSpec<S : NodeSpec> {
 
-  init {
-    initSpec(spec)
-  }
+  val preview: (@Composable S.(node: Node) -> Unit)?
 }

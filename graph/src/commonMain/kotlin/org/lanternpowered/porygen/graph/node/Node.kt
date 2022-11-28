@@ -16,6 +16,7 @@ import org.lanternpowered.porygen.graph.node.port.PortId
 import org.lanternpowered.porygen.graph.node.property.Property
 import org.lanternpowered.porygen.graph.node.property.PropertyId
 import org.lanternpowered.porygen.graph.node.spec.InputPortSpec
+import org.lanternpowered.porygen.graph.node.spec.NodeSpec
 import org.lanternpowered.porygen.graph.node.spec.OutputPortSpec
 import org.lanternpowered.porygen.graph.node.spec.PortSpec
 import org.lanternpowered.porygen.graph.node.spec.PropertySpec
@@ -32,6 +33,8 @@ value class NodeId(val value: Int)
  * Represents a single node in a graph.
  */
 interface Node {
+
+  val spec: NodeSpec?
 
   /**
    * The graph this node is or was attached to.

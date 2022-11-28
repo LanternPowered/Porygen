@@ -18,8 +18,8 @@ import androidx.compose.web.events.SyntheticMouseEvent
 import kotlinx.browser.document
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.web.css.AnimationTimingFunction
 import org.jetbrains.compose.web.css.CSSColorValue
-import org.jetbrains.compose.web.css.Color
 import org.jetbrains.compose.web.css.DisplayStyle
 import org.jetbrains.compose.web.css.JustifyContent
 import org.jetbrains.compose.web.css.LineStyle
@@ -51,8 +51,10 @@ import org.jetbrains.compose.web.css.plus
 import org.jetbrains.compose.web.css.position
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.css.rgba
+import org.jetbrains.compose.web.css.s
 import org.jetbrains.compose.web.css.top
 import org.jetbrains.compose.web.css.transform
+import org.jetbrains.compose.web.css.transitions
 import org.jetbrains.compose.web.css.unaryMinus
 import org.jetbrains.compose.web.css.width
 import org.jetbrains.compose.web.dom.Div
@@ -61,11 +63,16 @@ import org.jetbrains.compose.web.svg.LinearGradient
 import org.jetbrains.compose.web.svg.Polyline
 import org.jetbrains.compose.web.svg.Stop
 import org.jetbrains.compose.web.svg.Svg
+import org.lanternpowered.porygen.editor.spec.NodeGraphEditorSpec
 import org.lanternpowered.porygen.editor.web.css.Cursor
 import org.lanternpowered.porygen.editor.web.css.Overflow
 import org.lanternpowered.porygen.editor.web.css.Width
+import org.lanternpowered.porygen.graph.node.Node
 import org.lanternpowered.porygen.graph.node.NodeGraph
+import org.lanternpowered.porygen.graph.node.port.InputPort
+import org.lanternpowered.porygen.graph.node.port.OutputPort
 import org.lanternpowered.porygen.graph.node.port.Port
+import org.lanternpowered.porygen.graph.node.spec.OutputPortSpec
 import org.lanternpowered.porygen.math.geom.Rectangled
 import org.lanternpowered.porygen.math.radToDeg
 import org.lanternpowered.porygen.math.vector.Vec2d
@@ -73,14 +80,13 @@ import kotlin.math.atan
 
 private val gridSize = 1000000.px
 private val halfGridSize = gridSize / 2
-private val startPosition = Pair(-halfGridSize, -halfGridSize)
 private const val gridCenterId = "grid-center"
 
 @Composable
-fun NodeGrid(graph: NodeGraph) {
+fun NodeGrid(graph: NodeGraph, editorSpec: NodeGraphEditorSpec) {
   val graphViewModel by remember { mutableStateOf(NodeGraphViewModel(graph, save = { save(graph) })) }
   var scale by remember { mutableStateOf(1.0) }
-  var translate by remember { mutableStateOf(startPosition) }
+  var translate by remember { mutableStateOf(Vec2d(0.0, 0.0)) }
   var dragging by mutableStateOf(false)
   var mousePosition by mutableStateOf(Vec2d.Zero)
 
@@ -103,12 +109,12 @@ fun NodeGrid(graph: NodeGraph) {
         })
       }
       onWheel { event ->
-        scale *= 1.0 + -event.deltaY * 0.0008
         event.preventDefault()
+        scale *= 1.0 + -event.deltaY * 0.0008
       }
       onDoubleClick {
         scale = 1.0
-        translate = startPosition
+        translate = Vec2d.Zero
       }
       onMouseDown {
         dragging = true
@@ -126,7 +132,7 @@ fun NodeGrid(graph: NodeGraph) {
         updateMousePosition(event)
         if (dragging) {
           val (tx, ty) = translate
-          translate = Pair(tx + event.movementX.px, ty + event.movementY.px)
+          translate = Vec2d(tx + event.movementX, ty + event.movementY)
         } else {
           graphViewModel.nodes.forEach { node -> node.move(event, scale) }
         }
@@ -141,134 +147,159 @@ fun NodeGrid(graph: NodeGraph) {
             height(gridSize)
             transform {
               val (tx, ty) = translate
-              translate(tx, ty)
-              scale(scale)
+              translate(-halfGridSize + tx.px, -halfGridSize + ty.px)
             }
           }
         },
         content = {
           Div(
             attrs = {
-              id(gridCenterId)
               style {
-                position(Position.Absolute)
-                left(halfGridSize)
-                top(halfGridSize)
-              }
-            },
-            content = {
-              for (node in graphViewModel.nodes) {
-                Node(
-                  node = node,
-                  scale = scale,
-                  updateMousePosition = ::updateMousePosition
-                )
-              }
-            }
-          )
-          Div(
-            attrs = {
-              style {
-                position(Position.Absolute)
-                property("z-index", -1)
-              }
-            },
-            content = {
-              Svg(
-                attrs = {
-                  style {
-                    overflow(Overflow.Visible)
+                height(100.percent)
+                width(100.percent)
+                transform {
+                  scale(scale)
+                  transitions {
+                    properties("transform") {
+                      duration = 0.5.s
+                      timingFunction = AnimationTimingFunction.EaseInOut
+                    }
                   }
-                  onClick {
-                    println("CLICK SVG")
+                }
+              }
+            },
+            content = {
+              Div(
+                attrs = {
+                  id(gridCenterId)
+                  style {
+                    position(Position.Absolute)
+                    left(halfGridSize)
+                    top(halfGridSize)
                   }
                 },
                 content = {
-                  @Composable
-                  fun drawLine(
-                    id: String,
-                    start: Vec2d,
-                    end: Vec2d,
-                    startColor: CSSColorValue,
-                    endColor: CSSColorValue
-                  ) {
-                    LinearGradient(
-                      attrs = {
-                        val xDiff = end.x - start.x
-                        val yDiff = end.y - start.y
-                        val radians = atan(yDiff / xDiff)
-                        var degrees = radToDeg(radians)
-                        if (degrees.isNaN()) {
-                          degrees = 0.0
-                        }
-                        attr("id", id)
-                        attr("x1", if (start.x < end.x) "0%" else "100%")
-                        attr("y1", "0%")
-                        attr("x2", if (start.x < end.x) "100%" else "0%")
-                        attr("y2", "0%")
-                        attr("gradientTransform", "rotate(${degrees} 0.5 0.5)")
-                      },
-                      content = {
-                        Stop(
-                          attrs = {
-                            attr("offset", "0%")
-                            attr("style", "stop-color:$startColor;stop-opacity:1")
-                          }
-                        )
-                        Stop(
-                          attrs = {
-                            attr("offset", "100%")
-                            attr("style", "stop-color:$endColor;stop-opacity:1")
-                          }
-                        )
-                      }
-                    )
-                    Polyline(
-                      points = arrayOf(
-                        halfGridSize.value + start.x - 7, // +7 to extend line to dot
-                        halfGridSize.value + start.y + 1,
-                        halfGridSize.value + start.x + 15,
-                        halfGridSize.value + start.y + 1,
-                        halfGridSize.value + end.x - 15,
-                        halfGridSize.value + end.y + 1,
-                        halfGridSize.value + end.x + 7, // +7 to extend line to dot, TODO: move value?
-                        halfGridSize.value + end.y + 1,
-                      ),
-                      attrs = {
-                        attr("fill", "none")
-                        attr("stroke", Color.red.toString())
-                        attr("stroke", "url(#$id)")
-                        attr("stroke-width", 2.px.toString())
-                        attr("stroke-linejoin", "round")
-                      }
-                    )
-                  }
-                  val draggedOutput = graphViewModel.draggedOutput
-                  if (draggedOutput != null) {
-                    val color = draggedOutput.color.toCSS()
-                    drawLine(
-                      id = "dragged",
-                      start = draggedOutput.position,
-                      end = mousePosition,
-                      startColor = color,
-                      endColor = color,
-                    )
-                  }
                   for (node in graphViewModel.nodes) {
-                    for (connection in node.connections) {
-                      val output = connection.output
-                      val input = connection.input
-                      fun NodePortViewModel.ref() = "${id.value}_${node.id.value}"
-                      val id = "${input.ref()}_to_${output.ref()}"
-                      drawLine(
-                        id = id,
-                        start = output.position,
-                        end = input.position,
-                        startColor = input.color.toCSS(),
-                        endColor = output.color.toCSS(),
-                      )
-                    }
+                    Node(
+                      editorSpec = editorSpec,
+                      node = node,
+                      scale = scale,
+                      updateMousePosition = ::updateMousePosition,
+                    )
                   }
+                }
+              )
+              Div(
+                attrs = {
+                  style {
+                    position(Position.Absolute)
+                    property("z-index", -1)
+                  }
+                },
+                content = {
+                  Svg(
+                    attrs = {
+                      style {
+                        overflow(Overflow.Visible)
+                      }
+                      onClick {
+                        println("CLICK SVG")
+                      }
+                    },
+                    content = {
+                      @Composable
+                      fun drawLine(
+                        id: String,
+                        start: Vec2d,
+                        end: Vec2d,
+                        startColor: CSSColorValue,
+                        endColor: CSSColorValue
+                      ) {
+                        val gradient = startColor != endColor
+                        if (gradient) {
+                          LinearGradient(
+                            attrs = {
+                              val xDiff = end.x - start.x
+                              val yDiff = end.y - start.y
+                              val radians = atan(yDiff / xDiff)
+                              var degrees = radToDeg(radians)
+                              if (degrees.isNaN()) {
+                                degrees = 0.0
+                              }
+                              attr("id", id)
+                              attr("x1", if (start.x < end.x) "0%" else "100%")
+                              attr("y1", "0%")
+                              attr("x2", if (start.x < end.x) "100%" else "0%")
+                              attr("y2", "0%")
+                              attr("gradientTransform", "rotate(${degrees} 0.5 0.5)")
+                            },
+                            content = {
+                              Stop(
+                                attrs = {
+                                  attr("offset", "0%")
+                                  attr("style", "stop-color:$startColor;stop-opacity:1")
+                                }
+                              )
+                              Stop(
+                                attrs = {
+                                  attr("offset", "100%")
+                                  attr("style", "stop-color:$endColor;stop-opacity:1")
+                                }
+                              )
+                            }
+                          )
+                        }
+                        Polyline(
+                          points = arrayOf(
+                            halfGridSize.value + start.x - 7, // +7 to extend line to dot
+                            halfGridSize.value + start.y + 1,
+                            halfGridSize.value + start.x + 15,
+                            halfGridSize.value + start.y + 1,
+                            halfGridSize.value + end.x - 15,
+                            halfGridSize.value + end.y + 1,
+                            halfGridSize.value + end.x + 7, // +7 to extend line to dot, TODO: move value?
+                            halfGridSize.value + end.y + 1,
+                          ),
+                          attrs = {
+                            attr("fill", "none")
+                            if (gradient) {
+                              attr("stroke", "url(#$id)")
+                            } else {
+                              attr("stroke", startColor.toString())
+                            }
+                            attr("stroke-width", 2.px.toString())
+                            attr("stroke-linejoin", "round")
+                          }
+                        )
+                      }
+                      val draggedOutput = graphViewModel.draggedOutput
+                      if (draggedOutput != null) {
+                        val color = draggedOutput.color.toCSS()
+                        drawLine(
+                          id = "dragged",
+                          start = draggedOutput.position,
+                          end = mousePosition,
+                          startColor = color,
+                          endColor = color,
+                        )
+                      }
+                      for (node in graphViewModel.nodes) {
+                        for (connection in node.connections) {
+                          val output = connection.output
+                          val input = connection.input
+                          fun NodePortViewModel.ref() = "${id.value}_${node.id.value}"
+                          val id = "${input.ref()}_to_${output.ref()}"
+                          drawLine(
+                            id = id,
+                            start = output.position,
+                            end = input.position,
+                            startColor = input.color.toCSS(),
+                            endColor = output.color.toCSS(),
+                          )
+                        }
+                      }
+                    }
+                  )
                 }
               )
             }
@@ -317,7 +348,12 @@ private fun portElementId(port: Port<*>): String =
   "node_${port.node.id}_port_${port.id.value}"
 
 @Composable
-fun Node(node: NodeViewModel, scale: Double, updateMousePosition: (SyntheticMouseEvent) -> Unit) {
+fun Node(
+  editorSpec: NodeGraphEditorSpec,
+  node: NodeViewModel,
+  scale: Double,
+  updateMousePosition: (SyntheticMouseEvent) -> Unit,
+) {
   val borderWidth = 1.px
   val borderRadius = 5.px
   Div(
@@ -381,11 +417,25 @@ fun Node(node: NodeViewModel, scale: Double, updateMousePosition: (SyntheticMous
           Text(node.title)
         }
       )
+      val spec = node.node.spec!!
+      val preview = editorSpec.spec(spec).preview
       Div(
         attrs = {
           style {
             display(DisplayStyle.Flex)
             cursor(if (node.dragging) Cursor.Grabbing else Cursor.Auto)
+            if (preview != null) {
+              border(
+                style = LineStyle.Solid,
+                color = EditorColors.NodeBorder,
+              )
+              borderWidth(
+                top = 0.px,
+                bottom = 1.px,
+                left = 0.px,
+                right = 0.px,
+              )
+            }
           }
         },
         content = {
@@ -398,7 +448,7 @@ fun Node(node: NodeViewModel, scale: Double, updateMousePosition: (SyntheticMous
               },
               content = {
                 for (input in node.inputs) {
-                  NodePort(input)
+                  NodePort(editorSpec, input)
                 }
               }
             )
@@ -425,14 +475,14 @@ fun Node(node: NodeViewModel, scale: Double, updateMousePosition: (SyntheticMous
                     topLeft = 0.px,
                     topRight = 0.px,
                     bottomLeft = if (node.inputs.isEmpty()) borderRadius - borderWidth else 0.px,
-                    bottomRight = borderRadius - borderWidth,
+                    bottomRight = if (preview != null) 0.px else borderRadius - borderWidth,
                   )
                   backgroundColor(EditorColors.NodeOutputs)
                 }
               },
               content = {
                 for (output in node.outputs) {
-                  NodePort(output)
+                  NodePort(editorSpec, output)
                 }
               }
             )
@@ -446,12 +496,18 @@ fun Node(node: NodeViewModel, scale: Double, updateMousePosition: (SyntheticMous
           }
         }
       )
+      if (preview != null) {
+        preview(spec, NodeWrapper(node))
+      }
     }
   )
 }
 
 @Composable
-fun NodePort(port: NodePortViewModel) {
+fun NodePort(
+  editorSpec: NodeGraphEditorSpec,
+  port: NodePortViewModel,
+) {
   val right = port is NodeOutputViewModel
   var hovering by mutableStateOf(false)
   Div(
@@ -462,15 +518,16 @@ fun NodePort(port: NodePortViewModel) {
           justifyContent(JustifyContent.End)
         }
         paddingLeft(if (right) 10.px else 0.px)
-        paddingTop(3.px)
-        paddingBottom(3.px)
+        paddingTop(4.px)
+        paddingBottom(4.px)
         paddingRight(if (right) 0.px else 10.px)
         display(DisplayStyle.Flex)
         alignItems("center")
       }
     },
     content = {
-      val circle: @Composable () -> Unit = {
+      @Composable
+      fun circle() {
         Div(
           attrs = {
             style {
@@ -549,6 +606,7 @@ fun NodePort(port: NodePortViewModel) {
       }
       if (!right) {
         circle()
+        NodePortContent(editorSpec, port.port as InputPort<*>, port as NodeInputViewModel)
       }
       Text(port.name)
       if (right) {
@@ -556,4 +614,48 @@ fun NodePort(port: NodePortViewModel) {
       }
     }
   )
+}
+
+@Composable
+fun <T> NodePortContent(
+  editorSpec: NodeGraphEditorSpec,
+  port: InputPort<T>,
+  portViewModel: NodeInputViewModel,
+) {
+  val content = editorSpec.constantContent(port.dataType)
+  if (content != null) {
+    port.node.spec!!.content(InputPortUpdateWrapper(port, portViewModel))
+  }
+}
+
+internal class InputPortUpdateWrapper<T>(
+  private val delegate: InputPort<T>,
+  private val inputViewModel: NodeInputViewModel,
+) : InputPort<T> by delegate {
+
+  override var value: T?
+    get() = delegate.value
+    set(value) {
+      delegate.value = value
+      inputViewModel.node.rebuildTree()
+      inputViewModel.node.save()
+    }
+}
+
+class NodeWrapper(
+  private val nodeViewModel: NodeViewModel,
+) : Node by nodeViewModel.node {
+
+  override fun <T> port(spec: OutputPortSpec<T>): OutputPort<T>? =
+    nodeViewModel.node.port(spec)?.let { OutputPortEditorWrapper(nodeViewModel.output(it.id)) }
+
+  override fun <T> requirePort(spec: OutputPortSpec<T>): OutputPort<T> =
+    nodeViewModel.node.requirePort(spec).let { OutputPortEditorWrapper(nodeViewModel.output(it.id)) }
+}
+
+internal class OutputPortEditorWrapper<T>(
+  private val outputViewModel: NodeOutputViewModel,
+) : OutputPort<T> by outputViewModel.port.unsafeCast<OutputPort<T>>() {
+
+  override fun buildTree(): T? = outputViewModel.tree.unsafeCast<T?>()
 }

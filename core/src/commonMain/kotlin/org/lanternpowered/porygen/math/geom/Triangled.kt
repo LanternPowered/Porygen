@@ -165,7 +165,7 @@ data class Triangled(
    * @return Returns true if the Vertex is one of the vertices describing this triangle
    */
   fun hasVertex(vertex: Vec2d): Boolean =
-      a == vertex || b == vertex || c == vertex
+    a == vertex || b == vertex || c == vertex
 
   /**
    * Returns the vertex of this triangle that is not part of the given edge.

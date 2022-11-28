@@ -18,8 +18,8 @@ import kotlin.random.Random
 import kotlin.random.nextInt
 
 class GridBasedPointsGenerator(
-    private val amount: IntRange,
-    private val gridSize: Vec2i = getDefaultCells(amount)
+  private val amount: IntRange,
+  private val gridSize: Vec2i = getDefaultCells(amount)
 ) : PointsGenerator {
 
   override fun generate(random: Random): List<Vec2d> {

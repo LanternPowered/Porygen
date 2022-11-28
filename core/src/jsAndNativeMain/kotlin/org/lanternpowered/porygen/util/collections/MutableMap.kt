@@ -11,7 +11,8 @@
 
 package org.lanternpowered.porygen.util.collections
 
-inline fun <K, V> MutableMap<K, V>.computeIfAbsent(key: K, crossinline function: () -> V): V {
+@PublishedApi
+internal inline fun <K, V> MutableMap<K, V>.computeIfAbsent(key: K, crossinline function: () -> V): V {
   var value = get(key)
   if (value != null || containsKey(key))
     return value as V

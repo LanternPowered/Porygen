@@ -193,9 +193,9 @@ object Utils {
   )
 
   // These were computed by gradient ascent using the above gradient set.
-  private const val NORMALIZER_SIMPLEXSTYLE_STANDARD = 0.0185703274687564875
-  private const val NORMALIZER_SIMPLEXSTYLE_SMOOTH = 0.17315490496873540625
-  private const val NORMALIZER_PERLIN = 1.7252359327388492
+  private const val NORMALIZER_SIMPLEXSTYLE_STANDARD = 0.018570327468756486
+  private const val NORMALIZER_SIMPLEXSTYLE_SMOOTH = 0.1731549049687354
+  private const val NORMALIZER_PERLIN = 1.7252359327388491 / 2
 
   val RANDOM_VECTORS_SIMPLEXSTYLE_STANDARD: DoubleArray
   val RANDOM_VECTORS_SIMPLEXSTYLE_SMOOTH: DoubleArray
@@ -229,9 +229,9 @@ object Utils {
     RANDOM_VECTORS_SIMPLEXSTYLE_SMOOTH = DoubleArray(randomVectors.size)
 
     for (i in randomVectors.indices) {
-      RANDOM_VECTORS_PERLIN[i] = randomVectors[i] * NORMALIZER_PERLIN
-      RANDOM_VECTORS_SIMPLEXSTYLE_STANDARD[i] = randomVectors[i] * NORMALIZER_SIMPLEXSTYLE_STANDARD
-      RANDOM_VECTORS_SIMPLEXSTYLE_SMOOTH[i] = randomVectors[i] * NORMALIZER_SIMPLEXSTYLE_SMOOTH
+      RANDOM_VECTORS_PERLIN[i] = randomVectors[i] / NORMALIZER_PERLIN
+      RANDOM_VECTORS_SIMPLEXSTYLE_STANDARD[i] = randomVectors[i] / NORMALIZER_SIMPLEXSTYLE_STANDARD
+      RANDOM_VECTORS_SIMPLEXSTYLE_SMOOTH[i] = randomVectors[i] / NORMALIZER_SIMPLEXSTYLE_SMOOTH
     }
 
     val simplexLookupStandard = arrayOfNulls<LatticePointBCC>(8)
